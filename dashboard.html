@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SaaS Dashboard Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="dashboard.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="logo">Asterix</div>
+      <nav>
+        <a href="#" class="nav-item active">Overview</a>
+        <a href="#" class="nav-item">Analytics</a>
+        <a href="#" class="nav-item">Customers</a>
+        <a href="#" class="nav-item">Billing</a>
+        <a href="#" class="nav-item">Integrations</a>
+        <a href="#" class="nav-item">Settings</a>
+      </nav>
+      <div class="sidebar-footer">
+        <p>Pro Plan</p>
+        <small>Renewal in 12 days</small>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="top-header">
+        <div>
+          <h1>Dashboard</h1>
+          <p class="subtitle">Performance overview for this month</p>
+        </div>
+        <div class="top-actions">
+          <div class="theme-switch">
+            <span>Dark</span>
+            <label class="switch" for="themeToggle">
+              <input id="themeToggle" type="checkbox" aria-label="Toggle dark mode">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="user-chip">
+            <div class="avatar">YC</div>
+            <div>
+              <strong>Yair Cruz</strong>
+              <small>Product Lead</small>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section class="kpi-grid">
+        <article class="kpi-card">
+          <p class="kpi-label">Revenue</p>
+          <h2>$84,390</h2>
+          <p class="kpi-change up">+12.4% vs last month</p>
+        </article>
+
+        <article class="kpi-card">
+          <p class="kpi-label">Users</p>
+          <h2>18,742</h2>
+          <p class="kpi-change up">+8.1% vs last month</p>
+        </article>
+
+        <article class="kpi-card">
+          <p class="kpi-label">Conversion Rate</p>
+          <h2>4.82%</h2>
+          <p class="kpi-change down">-0.3% vs last month</p>
+        </article>
+      </section>
+
+      <section class="charts-grid">
+        <article class="panel chart-panel">
+          <div class="panel-head">
+            <h3>Revenue Trend</h3>
+            <span>Last 7 months</span>
+          </div>
+          <canvas id="lineChart"></canvas>
+        </article>
+
+        <article class="panel chart-panel">
+          <div class="panel-head">
+            <h3>Users by Plan</h3>
+            <span>Current snapshot</span>
+          </div>
+          <canvas id="barChart"></canvas>
+        </article>
+      </section>
+
+      <section class="panel table-panel">
+        <div class="panel-head">
+          <h3>Recent Activity</h3>
+          <span>Updated just now</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Event</th>
+                <th>Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Sarah Kim</td>
+                <td>Upgraded to Growth plan</td>
+                <td>Mar 05, 2026</td>
+                <td><span class="status success">Completed</span></td>
+              </tr>
+              <tr>
+                <td>Marcus Reed</td>
+                <td>Failed payment retry</td>
+                <td>Mar 05, 2026</td>
+                <td><span class="status warning">Pending</span></td>
+              </tr>
+              <tr>
+                <td>Ana Velasquez</td>
+                <td>Invited 3 team members</td>
+                <td>Mar 04, 2026</td>
+                <td><span class="status success">Completed</span></td>
+              </tr>
+              <tr>
+                <td>Jason Li</td>
+                <td>Requested enterprise demo</td>
+                <td>Mar 03, 2026</td>
+                <td><span class="status info">In Review</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const lineCtx = document.getElementById("lineChart");
+    const barCtx = document.getElementById("barChart");
+    const themeToggle = document.getElementById("themeToggle");
+    const themeKey = "dashboard-theme";
+    let lineChart;
+    let barChart;
+
+    function getThemeTokens() {
+      const style = getComputedStyle(document.documentElement);
+      return {
+        chartGrid: style.getPropertyValue("--chart-grid").trim(),
+        chartTicks: style.getPropertyValue("--chart-ticks").trim(),
+        lineColor: style.getPropertyValue("--line-series").trim(),
+        lineFill: style.getPropertyValue("--line-fill").trim(),
+        barA: style.getPropertyValue("--bar-a").trim(),
+        barB: style.getPropertyValue("--bar-b").trim(),
+        barC: style.getPropertyValue("--bar-c").trim(),
+        barD: style.getPropertyValue("--bar-d").trim()
+      };
+    }
+
+    function createCharts() {
+      const tokens = getThemeTokens();
+
+      if (lineChart) {
+        lineChart.destroy();
+      }
+
+      if (barChart) {
+        barChart.destroy();
+      }
+
+      lineChart = new Chart(lineCtx, {
+        type: "line",
+        data: {
+          labels: ["Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"],
+          datasets: [{
+            label: "Revenue ($k)",
+            data: [42, 48, 51, 57, 63, 69, 84],
+            tension: 0.35,
+            borderColor: tokens.lineColor,
+            backgroundColor: tokens.lineFill,
+            fill: true,
+            pointRadius: 3,
+            pointBackgroundColor: tokens.lineColor
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: { color: tokens.chartGrid },
+              ticks: { color: tokens.chartTicks }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: tokens.chartTicks }
+            }
+          }
+        }
+      });
+
+      barChart = new Chart(barCtx, {
+        type: "bar",
+        data: {
+          labels: ["Starter", "Growth", "Scale", "Enterprise"],
+          datasets: [{
+            label: "Users",
+            data: [5600, 7300, 4100, 1742],
+            backgroundColor: [tokens.barA, tokens.barB, tokens.barC, tokens.barD],
+            borderRadius: 8,
+            borderSkipped: false
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: { color: tokens.chartGrid },
+              ticks: { color: tokens.chartTicks }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: tokens.chartTicks }
+            }
+          }
+        }
+      });
+    }
+
+    function setTheme(isDark) {
+      document.body.classList.toggle("dark", isDark);
+      themeToggle.checked = isDark;
+      localStorage.setItem(themeKey, isDark ? "dark" : "light");
+      createCharts();
+    }
+
+    const storedTheme = localStorage.getItem(themeKey);
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    setTheme(storedTheme ? storedTheme === "dark" : prefersDark);
+
+    themeToggle.addEventListener("change", () => {
+      setTheme(themeToggle.checked);
+    });
+  </script>
+</body>
+</html>
