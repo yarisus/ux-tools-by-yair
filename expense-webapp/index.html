@@ -1,0 +1,212 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#16697a" />
+    <title>Control de Gastos Mensuales</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="./icon-192.svg" />
+    <link rel="apple-touch-icon" href="./icon-192.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="bg-shape bg-a"></div>
+    <div class="bg-shape bg-b"></div>
+
+    <main class="app-shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow"><i class="bi bi-wallet2"></i> Finanzas Personales</p>
+          <h1>Control mensual simple, claro y rapido</h1>
+          <p class="subtitle">
+            Registra gastos fijos, variables y semi-fijos; visualiza saldo disponible y cuanto puedes gastar por semana y por dia.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <button id="installAppBtn" class="ghost-btn is-hidden"><i class="bi bi-download"></i> Instalar app</button>
+          <button id="openExpenseModalBtn" class="primary-btn"><i class="bi bi-plus-circle"></i> Agregar gasto</button>
+          <button id="resetDataBtn" class="ghost-btn"><i class="bi bi-arrow-counterclockwise"></i> Reiniciar datos</button>
+        </div>
+      </header>
+
+      <section class="metrics-grid">
+        <article class="card metric income">
+          <div class="metric-head">
+            <p class="metric-label"><i class="bi bi-cash-stack"></i> Sueldo mensual</p>
+            <button id="toggleSalaryBtn" class="icon-btn" type="button" title="Mostrar/Ocultar sueldo">
+              <i class="bi bi-eye"></i>
+            </button>
+          </div>
+          <div class="input-with-prefix">
+            <span>$</span>
+            <input id="salaryInput" type="number" min="0" step="0.01" placeholder="0" />
+          </div>
+        </article>
+
+        <article class="card metric">
+          <p class="metric-label"><i class="bi bi-receipt-cutoff"></i> Gasto mensual en uso</p>
+          <p id="monthlySpend" class="metric-value">$ 0</p>
+        </article>
+
+        <article class="card metric balance">
+          <p class="metric-label"><i class="bi bi-piggy-bank"></i> Saldo disponible</p>
+          <p id="availableBalance" class="metric-value">$ 0</p>
+        </article>
+
+        <article class="card metric">
+          <p class="metric-label"><i class="bi bi-calendar-week"></i> Puedes gastar aprox. por semana</p>
+          <p id="weeklyBudget" class="metric-value">$ 0</p>
+        </article>
+
+        <article class="card metric">
+          <p class="metric-label"><i class="bi bi-calendar-day"></i> Puedes gastar aprox. por dia</p>
+          <p id="dailyBudget" class="metric-value">$ 0</p>
+        </article>
+      </section>
+
+      <section class="workspace-grid">
+        <article class="card table-card">
+          <header class="table-head">
+            <div>
+              <h2 class="section-title"><i class="bi bi-table"></i> Detalle de gastos</h2>
+              <p class="section-subtitle">Todos tus items en una tabla, con filtros por categoria y estado.</p>
+            </div>
+
+            <div class="filters">
+              <label class="filter-label">
+                <span><i class="bi bi-funnel"></i> Categoria</span>
+                <select id="categoryFilter">
+                  <option value="all">Todas</option>
+                  <option value="fijos">Gastos fijos</option>
+                  <option value="variables">Gastos variables</option>
+                  <option value="semifijos">Fijos variables</option>
+                </select>
+              </label>
+
+              <label class="filter-label">
+                <span><i class="bi bi-sliders2"></i> Estado</span>
+                <select id="statusFilter">
+                  <option value="all">Todos</option>
+                  <option value="en-uso">En uso</option>
+                  <option value="libre">Libre</option>
+                </select>
+              </label>
+            </div>
+          </header>
+
+          <div class="table-wrap">
+            <table class="expense-table">
+              <thead>
+                <tr>
+                  <th><i class="bi bi-tag"></i> Item</th>
+                  <th><i class="bi bi-grid-3x3-gap"></i> Categoria</th>
+                  <th><i class="bi bi-activity"></i> Estado</th>
+                  <th><i class="bi bi-currency-dollar"></i> Monto</th>
+                  <th><i class="bi bi-gear"></i> Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="expenseTableBody"></tbody>
+            </table>
+          </div>
+        </article>
+
+        <aside class="card chart-card">
+          <header class="chart-head">
+            <h3><i class="bi bi-pie-chart"></i> Donut por categoria</h3>
+            <p>Distribucion del gasto mensual en uso.</p>
+          </header>
+
+          <div class="donut-wrap">
+            <div id="categoryDonut" class="donut-chart" role="img" aria-label="Grafico donut de categorias">
+              <div class="donut-center">
+                <p>Total</p>
+                <strong id="donutTotal">$ 0</strong>
+              </div>
+            </div>
+          </div>
+
+          <ul id="donutLegend" class="donut-legend"></ul>
+        </aside>
+      </section>
+    </main>
+
+    <div id="expenseModal" class="modal" aria-hidden="true">
+      <div class="modal-backdrop" data-close-modal="true"></div>
+      <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <header class="modal-head">
+          <h2 id="modalTitle"><i class="bi bi-plus-circle"></i> Agregar gasto</h2>
+          <button id="closeExpenseModalBtn" class="icon-btn" type="button" title="Cerrar">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </header>
+
+        <form id="expenseForm" class="expense-form">
+          <label>
+            Categoria
+            <select id="categoryInput" required>
+              <option value="fijos">Gastos fijos</option>
+              <option value="variables">Gastos variables</option>
+              <option value="semifijos">Fijos variables</option>
+            </select>
+          </label>
+
+          <label>
+            Item
+            <input id="nameInput" type="text" placeholder="Ej: Luz" required maxlength="60" />
+          </label>
+
+          <label>
+            Monto
+            <div class="input-with-prefix">
+              <span>$</span>
+              <input id="amountInput" type="number" min="0" step="0.01" placeholder="0" required />
+            </div>
+          </label>
+
+          <label>
+            Estado
+            <select id="statusInput" required>
+              <option value="en-uso">En uso</option>
+              <option value="libre">Libre</option>
+            </select>
+          </label>
+
+          <button type="submit" class="primary-btn full"><i class="bi bi-check2-circle"></i> Guardar item</button>
+        </form>
+      </section>
+    </div>
+
+    <template id="tableRowTemplate">
+      <tr>
+        <td class="item-name"></td>
+        <td class="category-cell">
+          <span class="category-chip"></span>
+          <button class="info-btn" type="button" title="">
+            <i class="bi bi-exclamation-circle-fill"></i>
+          </button>
+        </td>
+        <td><span class="status-pill"></span></td>
+        <td>
+          <div class="input-with-prefix mini">
+            <span>$</span>
+            <input class="inline-amount" type="number" min="0" step="0.01" />
+          </div>
+        </td>
+        <td class="row-actions">
+          <button class="mini-btn status-btn" type="button"></button>
+          <button class="mini-btn danger delete-btn" type="button"><i class="bi bi-trash3"></i></button>
+        </td>
+      </tr>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>
