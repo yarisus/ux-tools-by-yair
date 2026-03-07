@@ -93,7 +93,7 @@
               <p class="section-subtitle">Todos tus items en una tabla, con filtros por categoria y estado.</p>
             </div>
 
-            <div class="filters">
+            <div class="filters desktop-filters">
               <label class="filter-label">
                 <span><i class="bi bi-funnel"></i> Categoria</span>
                 <select id="categoryFilter">
@@ -113,6 +113,15 @@
                 </select>
               </label>
             </div>
+
+            <div class="mobile-filters">
+              <button id="mobileCategoryFilterBtn" class="ghost-btn mobile-filter-btn" type="button">
+                <i class="bi bi-funnel"></i> Categoria: Todas
+              </button>
+              <button id="mobileStatusFilterBtn" class="ghost-btn mobile-filter-btn" type="button">
+                <i class="bi bi-sliders2"></i> Estado: Todos
+              </button>
+            </div>
           </header>
 
           <div class="table-wrap">
@@ -129,6 +138,8 @@
               <tbody id="expenseTableBody"></tbody>
             </table>
           </div>
+
+          <div id="expenseMobileList" class="expense-mobile-list"></div>
         </article>
 
         <aside class="card chart-card">
@@ -197,6 +208,19 @@
       </section>
     </div>
 
+    <div id="filterSheet" class="sheet" aria-hidden="true">
+      <div class="sheet-backdrop" data-close-sheet="true"></div>
+      <section class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="filterSheetTitle">
+        <header class="sheet-head">
+          <h3 id="filterSheetTitle"></h3>
+          <button id="closeFilterSheetBtn" class="icon-btn" type="button" title="Cerrar">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </header>
+        <div id="filterSheetOptions" class="sheet-options"></div>
+      </section>
+    </div>
+
     <div id="toast" class="toast" aria-live="polite" aria-atomic="true"></div>
 
     <template id="tableRowTemplate">
@@ -220,6 +244,36 @@
           <button class="mini-btn danger delete-btn" type="button"><i class="bi bi-trash3"></i></button>
         </td>
       </tr>
+    </template>
+
+    <template id="mobileItemTemplate">
+      <article class="mobile-expense-card">
+        <header class="mobile-item-head">
+          <p class="mobile-item-name"></p>
+          <button class="mini-btn danger delete-btn" type="button"><i class="bi bi-trash3"></i></button>
+        </header>
+
+        <div class="mobile-item-meta">
+          <div class="mobile-chip-wrap">
+            <span class="category-chip"></span>
+            <button class="info-btn" type="button" title="">
+              <i class="bi bi-exclamation-circle-fill"></i>
+            </button>
+          </div>
+          <span class="status-pill"></span>
+        </div>
+
+        <div class="mobile-item-controls">
+          <label class="mobile-control">
+            <span>Monto</span>
+            <div class="input-with-prefix mini">
+              <span>$</span>
+              <input class="inline-amount" type="number" min="0" step="0.01" />
+            </div>
+          </label>
+          <button class="mini-btn status-btn" type="button"></button>
+        </div>
+      </article>
     </template>
 
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>

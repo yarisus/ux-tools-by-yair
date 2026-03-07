@@ -23,6 +23,7 @@ const state = loadState();
 
 let deferredInstallPrompt = null;
 let toastTimer = null;
+let activeFilterSheet = "";
 
 const salaryInput = document.getElementById("salaryInput");
 const toggleSalaryBtn = document.getElementById("toggleSalaryBtn");
@@ -37,8 +38,12 @@ const openExpenseModalBtn = document.getElementById("openExpenseModalBtn");
 const closeExpenseModalBtn = document.getElementById("closeExpenseModalBtn");
 const categoryFilter = document.getElementById("categoryFilter");
 const statusFilter = document.getElementById("statusFilter");
+const mobileCategoryFilterBtn = document.getElementById("mobileCategoryFilterBtn");
+const mobileStatusFilterBtn = document.getElementById("mobileStatusFilterBtn");
 const expenseTableBody = document.getElementById("expenseTableBody");
 const tableRowTemplate = document.getElementById("tableRowTemplate");
+const expenseMobileList = document.getElementById("expenseMobileList");
+const mobileItemTemplate = document.getElementById("mobileItemTemplate");
 const categoryDonut = document.getElementById("categoryDonut");
 const donutLegend = document.getElementById("donutLegend");
 const donutTotal = document.getElementById("donutTotal");
@@ -47,10 +52,15 @@ const downloadMenuBtn = document.getElementById("downloadMenuBtn");
 const downloadMenu = document.getElementById("downloadMenu");
 const exportCsvBtn = document.getElementById("exportCsvBtn");
 const exportPdfBtn = document.getElementById("exportPdfBtn");
+const filterSheet = document.getElementById("filterSheet");
+const closeFilterSheetBtn = document.getElementById("closeFilterSheetBtn");
+const filterSheetTitle = document.getElementById("filterSheetTitle");
+const filterSheetOptions = document.getElementById("filterSheetOptions");
 const toast = document.getElementById("toast");
 
 salaryInput.value = state.salary;
 applySalaryVisibility();
+updateMobileFilterButtonLabels();
 
 salaryInput.addEventListener("input", () => {
   state.salary = Number(salaryInput.value || 0);
@@ -76,18 +86,6 @@ expenseModal.addEventListener("click", (event) => {
   if (target.dataset.closeModal === "true") {
     closeModal();
   }
-});
-
-document.addEventListener("keydown", (event) => {
-  if (event.key !== "Escape") {
-    return;
-  }
-
-  if (expenseModal.classList.contains("show")) {
-    closeModal();
-  }
-
-  hideDownloadMenu();
 });
 
 expenseForm.addEventListener("submit", (event) => {
@@ -133,11 +131,28 @@ resetDataBtn.addEventListener("click", () => {
 });
 
 categoryFilter.addEventListener("change", () => {
-  renderExpenseTable();
+  renderByFilters();
 });
 
 statusFilter.addEventListener("change", () => {
-  renderExpenseTable();
+  renderByFilters();
+});
+
+mobileCategoryFilterBtn.addEventListener("click", () => {
+  openFilterSheet("category");
+});
+
+mobileStatusFilterBtn.addEventListener("click", () => {
+  openFilterSheet("status");
+});
+
+closeFilterSheetBtn.addEventListener("click", closeFilterSheet);
+
+filterSheet.addEventListener("click", (event) => {
+  const target = event.target;
+  if (target.dataset.closeSheet === "true") {
+    closeFilterSheet();
+  }
 });
 
 downloadMenuBtn.addEventListener("click", (event) => {
@@ -147,6 +162,30 @@ downloadMenuBtn.addEventListener("click", (event) => {
 
 downloadMenu.addEventListener("click", (event) => {
   event.stopPropagation();
+});
+
+filterSheetOptions.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) {
+    return;
+  }
+
+  const optionBtn = target.closest("button[data-filter-type]");
+  if (!optionBtn) {
+    return;
+  }
+
+  const filterType = optionBtn.dataset.filterType;
+  const filterValue = optionBtn.dataset.filterValue || "all";
+
+  if (filterType === "category") {
+    categoryFilter.value = filterValue;
+  } else if (filterType === "status") {
+    statusFilter.value = filterValue;
+  }
+
+  renderByFilters();
+  closeFilterSheet();
 });
 
 document.addEventListener("click", () => {
@@ -226,6 +265,16 @@ if ("serviceWorker" in navigator && window.location.protocol !== "file:") {
   });
 }
 
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape") {
+    return;
+  }
+
+  closeModal();
+  closeFilterSheet();
+  hideDownloadMenu();
+});
+
 function createItemId() {
   if (globalThis.crypto && typeof globalThis.crypto.randomUUID === "function") {
     return globalThis.crypto.randomUUID();
@@ -250,6 +299,63 @@ function hideDownloadMenu() {
 
 function toggleDownloadMenu() {
   downloadMenu.classList.toggle("is-hidden");
+}
+
+function closeFilterSheet() {
+  filterSheet.classList.remove("show");
+  filterSheet.setAttribute("aria-hidden", "true");
+  activeFilterSheet = "";
+}
+
+function openFilterSheet(type) {
+  activeFilterSheet = type;
+  renderFilterSheet();
+  hideDownloadMenu();
+  filterSheet.classList.add("show");
+  filterSheet.setAttribute("aria-hidden", "false");
+}
+
+function renderFilterSheet() {
+  if (activeFilterSheet === "category") {
+    filterSheetTitle.textContent = "Filtrar por categoria";
+
+    const options = [
+      { value: "all", label: "Todas" },
+      { value: "fijos", label: CATEGORY_CONFIG.fijos.label },
+      { value: "variables", label: CATEGORY_CONFIG.variables.label },
+      { value: "semifijos", label: CATEGORY_CONFIG.semifijos.label }
+    ];
+
+    renderSheetOptions("category", options, categoryFilter.value);
+    return;
+  }
+
+  filterSheetTitle.textContent = "Filtrar por estado";
+  const options = [
+    { value: "all", label: "Todos" },
+    { value: "en-uso", label: "En uso" },
+    { value: "libre", label: "Libre" }
+  ];
+  renderSheetOptions("status", options, statusFilter.value);
+}
+
+function renderSheetOptions(type, options, selectedValue) {
+  filterSheetOptions.innerHTML = "";
+
+  for (const option of options) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "sheet-option-btn";
+    button.dataset.filterType = type;
+    button.dataset.filterValue = option.value;
+    button.textContent = option.label;
+
+    if (option.value === selectedValue) {
+      button.classList.add("active");
+    }
+
+    filterSheetOptions.appendChild(button);
+  }
 }
 
 function sanitizeItem(item) {
@@ -398,52 +504,77 @@ function renderExpenseTable() {
 
   for (const item of filteredItems) {
     const row = tableRowTemplate.content.firstElementChild.cloneNode(true);
-    const config = CATEGORY_CONFIG[item.category] || CATEGORY_CONFIG.variables;
-
-    row.querySelector(".item-name").textContent = item.name;
-
-    const chip = row.querySelector(".category-chip");
-    chip.textContent = config.label;
-    chip.dataset.category = item.category;
-
-    const infoBtn = row.querySelector(".info-btn");
-    infoBtn.title = config.help;
-
-    const statusPill = row.querySelector(".status-pill");
-    statusPill.dataset.status = item.status;
-    statusPill.innerHTML =
-      item.status === "en-uso"
-        ? '<i class="bi bi-check-circle-fill"></i> En uso'
-        : '<i class="bi bi-pause-circle"></i> Libre';
-
-    const amountInput = row.querySelector(".inline-amount");
-    amountInput.value = Number(item.amount || 0);
-    amountInput.addEventListener("change", () => {
-      item.amount = Math.max(0, Number(amountInput.value || 0));
-      saveState();
-      render();
-    });
-
-    const statusBtn = row.querySelector(".status-btn");
-    statusBtn.innerHTML =
-      item.status === "en-uso"
-        ? '<i class="bi bi-arrow-right-circle"></i> Pasar a Libre'
-        : '<i class="bi bi-arrow-left-circle"></i> Pasar a En uso';
-    statusBtn.addEventListener("click", () => {
-      item.status = item.status === "en-uso" ? "libre" : "en-uso";
-      saveState();
-      render();
-    });
-
-    const deleteBtn = row.querySelector(".delete-btn");
-    deleteBtn.addEventListener("click", () => {
-      state.items = state.items.filter((entry) => entry.id !== item.id);
-      saveState();
-      render();
-    });
-
+    populateItemNode(row, item);
     expenseTableBody.appendChild(row);
   }
+}
+
+function renderExpenseMobileList() {
+  const filteredItems = getFilteredItems();
+  expenseMobileList.innerHTML = "";
+
+  if (!filteredItems.length) {
+    const empty = document.createElement("article");
+    empty.className = "mobile-expense-card";
+    empty.innerHTML = '<p class="table-empty"><i class="bi bi-inbox"></i> No hay items para este filtro.</p>';
+    expenseMobileList.appendChild(empty);
+    return;
+  }
+
+  for (const item of filteredItems) {
+    const card = mobileItemTemplate.content.firstElementChild.cloneNode(true);
+    populateItemNode(card, item);
+    expenseMobileList.appendChild(card);
+  }
+}
+
+function populateItemNode(node, item) {
+  const config = CATEGORY_CONFIG[item.category] || CATEGORY_CONFIG.variables;
+
+  const nameNode = node.querySelector(".item-name") || node.querySelector(".mobile-item-name");
+  if (nameNode) {
+    nameNode.textContent = item.name;
+  }
+
+  const chip = node.querySelector(".category-chip");
+  chip.textContent = config.label;
+  chip.dataset.category = item.category;
+
+  const infoBtn = node.querySelector(".info-btn");
+  infoBtn.title = config.help;
+
+  const statusPill = node.querySelector(".status-pill");
+  statusPill.dataset.status = item.status;
+  statusPill.innerHTML =
+    item.status === "en-uso"
+      ? '<i class="bi bi-check-circle-fill"></i> En uso'
+      : '<i class="bi bi-pause-circle"></i> Libre';
+
+  const amountInput = node.querySelector(".inline-amount");
+  amountInput.value = Number(item.amount || 0);
+  amountInput.addEventListener("change", () => {
+    item.amount = Math.max(0, Number(amountInput.value || 0));
+    saveState();
+    render();
+  });
+
+  const statusBtn = node.querySelector(".status-btn");
+  statusBtn.innerHTML =
+    item.status === "en-uso"
+      ? '<i class="bi bi-arrow-right-circle"></i> Pasar a Libre'
+      : '<i class="bi bi-arrow-left-circle"></i> Pasar a En uso';
+  statusBtn.addEventListener("click", () => {
+    item.status = item.status === "en-uso" ? "libre" : "en-uso";
+    saveState();
+    render();
+  });
+
+  const deleteBtn = node.querySelector(".delete-btn");
+  deleteBtn.addEventListener("click", () => {
+    state.items = state.items.filter((entry) => entry.id !== item.id);
+    saveState();
+    render();
+  });
 }
 
 function renderDonut() {
@@ -511,6 +642,42 @@ function renderDonut() {
     li.appendChild(amount);
     donutLegend.appendChild(li);
   }
+}
+
+function getCategoryFilterLabel() {
+  const value = categoryFilter.value;
+  if (value === "fijos") {
+    return CATEGORY_CONFIG.fijos.label;
+  }
+  if (value === "variables") {
+    return CATEGORY_CONFIG.variables.label;
+  }
+  if (value === "semifijos") {
+    return CATEGORY_CONFIG.semifijos.label;
+  }
+  return "Todas";
+}
+
+function getStatusFilterLabel() {
+  const value = statusFilter.value;
+  if (value === "en-uso") {
+    return "En uso";
+  }
+  if (value === "libre") {
+    return "Libre";
+  }
+  return "Todos";
+}
+
+function updateMobileFilterButtonLabels() {
+  mobileCategoryFilterBtn.innerHTML = `<i class="bi bi-funnel"></i> Categoria: ${getCategoryFilterLabel()}`;
+  mobileStatusFilterBtn.innerHTML = `<i class="bi bi-sliders2"></i> Estado: ${getStatusFilterLabel()}`;
+}
+
+function renderByFilters() {
+  updateMobileFilterButtonLabels();
+  renderExpenseTable();
+  renderExpenseMobileList();
 }
 
 function dateStamp() {
@@ -671,7 +838,7 @@ function showToast(message, isError = false) {
 
 function render() {
   renderSummary();
-  renderExpenseTable();
+  renderByFilters();
   renderDonut();
 }
 
