@@ -31,6 +31,19 @@
           </p>
         </div>
         <div class="hero-actions">
+          <div class="download-menu">
+            <button id="downloadMenuBtn" class="ghost-btn icon-only" type="button" title="Descargar">
+              <i class="bi bi-download"></i>
+            </button>
+            <div id="downloadMenu" class="menu-list is-hidden" role="menu" aria-label="Opciones de descarga">
+              <button id="exportCsvBtn" class="menu-item" type="button" role="menuitem">
+                <i class="bi bi-filetype-csv"></i> Exportar CSV
+              </button>
+              <button id="exportPdfBtn" class="menu-item" type="button" role="menuitem">
+                <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
+              </button>
+            </div>
+          </div>
           <button id="installAppBtn" class="ghost-btn is-hidden"><i class="bi bi-download"></i> Instalar app</button>
           <button id="openExpenseModalBtn" class="primary-btn"><i class="bi bi-plus-circle"></i> Agregar gasto</button>
           <button id="resetDataBtn" class="ghost-btn"><i class="bi bi-arrow-counterclockwise"></i> Reiniciar datos</button>
@@ -70,23 +83,6 @@
           <p class="metric-label"><i class="bi bi-calendar-day"></i> Puedes gastar aprox. por dia</p>
           <p id="dailyBudget" class="metric-value">$ 0</p>
         </article>
-      </section>
-
-      <section class="card tools-bar">
-        <div class="tools-main">
-          <button id="exportJsonBtn" class="ghost-btn"><i class="bi bi-cloud-arrow-down"></i> Backup JSON</button>
-          <button id="importJsonBtn" class="ghost-btn"><i class="bi bi-cloud-arrow-up"></i> Restaurar JSON</button>
-          <input id="restoreFileInput" type="file" accept=".json,application/json" class="is-hidden" />
-          <button id="exportCsvBtn" class="ghost-btn"><i class="bi bi-filetype-csv"></i> Exportar CSV</button>
-          <button id="exportPdfBtn" class="ghost-btn"><i class="bi bi-file-earmark-pdf"></i> Exportar PDF</button>
-        </div>
-
-        <div class="tools-cloud">
-          <p id="cloudStatusText" class="cloud-status"><i class="bi bi-cloud-slash"></i> Cloud no configurada</p>
-          <button id="cloudPushBtn" class="ghost-btn"><i class="bi bi-cloud-upload"></i> Subir nube</button>
-          <button id="cloudPullBtn" class="ghost-btn"><i class="bi bi-cloud-download"></i> Bajar nube</button>
-          <button id="openCloudModalBtn" class="ghost-btn"><i class="bi bi-gear"></i> Configurar nube</button>
-        </div>
       </section>
 
       <section class="workspace-grid">
@@ -198,41 +194,6 @@
 
           <button type="submit" class="primary-btn full"><i class="bi bi-check2-circle"></i> Guardar item</button>
         </form>
-      </section>
-    </div>
-
-    <div id="cloudModal" class="modal" aria-hidden="true">
-      <div class="modal-backdrop" data-close-cloud="true"></div>
-      <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="cloudTitle">
-        <header class="modal-head">
-          <h2 id="cloudTitle"><i class="bi bi-cloud"></i> Configurar nube</h2>
-          <button id="closeCloudModalBtn" class="icon-btn" type="button" title="Cerrar">
-            <i class="bi bi-x-lg"></i>
-          </button>
-        </header>
-
-        <form id="cloudForm" class="cloud-form">
-          <label>
-            Supabase URL
-            <input id="cloudUrlInput" type="url" placeholder="https://tu-proyecto.supabase.co" required />
-          </label>
-
-          <label>
-            Supabase Anon Key
-            <input id="cloudKeyInput" type="password" placeholder="eyJ..." required />
-          </label>
-
-          <label>
-            ID de perfil
-            <input id="cloudProfileInput" type="text" placeholder="yair-main" required maxlength="60" />
-          </label>
-
-          <button type="submit" class="primary-btn full"><i class="bi bi-check2-circle"></i> Guardar configuracion</button>
-        </form>
-
-        <p class="cloud-help">
-          Requiere una tabla `expense_profiles` en Supabase con columnas: `id` (text, PK), `payload` (jsonb), `updated_at` (timestamptz).
-        </p>
       </section>
     </div>
 

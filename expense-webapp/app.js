@@ -1,5 +1,4 @@
 ﻿const STORAGE_KEY = "expense_webapp_state";
-const CLOUD_SETTINGS_KEY = "expense_webapp_cloud_settings_v1";
 
 const CATEGORY_CONFIG = {
   fijos: {
@@ -21,11 +20,9 @@ const CATEGORY_CONFIG = {
 
 const CATEGORY_KEYS = Object.keys(CATEGORY_CONFIG);
 const state = loadState();
-const cloudSettings = loadCloudSettings();
 
 let deferredInstallPrompt = null;
 let toastTimer = null;
-let cloudBusy = false;
 
 const salaryInput = document.getElementById("salaryInput");
 const toggleSalaryBtn = document.getElementById("toggleSalaryBtn");
@@ -46,28 +43,14 @@ const categoryDonut = document.getElementById("categoryDonut");
 const donutLegend = document.getElementById("donutLegend");
 const donutTotal = document.getElementById("donutTotal");
 const installAppBtn = document.getElementById("installAppBtn");
-const exportJsonBtn = document.getElementById("exportJsonBtn");
-const importJsonBtn = document.getElementById("importJsonBtn");
-const restoreFileInput = document.getElementById("restoreFileInput");
+const downloadMenuBtn = document.getElementById("downloadMenuBtn");
+const downloadMenu = document.getElementById("downloadMenu");
 const exportCsvBtn = document.getElementById("exportCsvBtn");
 const exportPdfBtn = document.getElementById("exportPdfBtn");
-const cloudStatusText = document.getElementById("cloudStatusText");
-const cloudPushBtn = document.getElementById("cloudPushBtn");
-const cloudPullBtn = document.getElementById("cloudPullBtn");
-const openCloudModalBtn = document.getElementById("openCloudModalBtn");
-const cloudModal = document.getElementById("cloudModal");
-const closeCloudModalBtn = document.getElementById("closeCloudModalBtn");
-const cloudForm = document.getElementById("cloudForm");
-const cloudUrlInput = document.getElementById("cloudUrlInput");
-const cloudKeyInput = document.getElementById("cloudKeyInput");
-const cloudProfileInput = document.getElementById("cloudProfileInput");
 const toast = document.getElementById("toast");
 
 salaryInput.value = state.salary;
 applySalaryVisibility();
-hydrateCloudForm();
-updateCloudStatus();
-setCloudBusy(false);
 
 salaryInput.addEventListener("input", () => {
   state.salary = Number(salaryInput.value || 0);
@@ -95,13 +78,6 @@ expenseModal.addEventListener("click", (event) => {
   }
 });
 
-cloudModal.addEventListener("click", (event) => {
-  const target = event.target;
-  if (target.dataset.closeCloud === "true") {
-    closeCloudModal();
-  }
-});
-
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") {
     return;
@@ -111,9 +87,7 @@ document.addEventListener("keydown", (event) => {
     closeModal();
   }
 
-  if (cloudModal.classList.contains("show")) {
-    closeCloudModal();
-  }
+  hideDownloadMenu();
 });
 
 expenseForm.addEventListener("submit", (event) => {
@@ -166,62 +140,27 @@ statusFilter.addEventListener("change", () => {
   renderExpenseTable();
 });
 
-exportJsonBtn.addEventListener("click", () => {
-  exportBackupJson();
+downloadMenuBtn.addEventListener("click", (event) => {
+  event.stopPropagation();
+  toggleDownloadMenu();
 });
 
-importJsonBtn.addEventListener("click", () => {
-  restoreFileInput.click();
+downloadMenu.addEventListener("click", (event) => {
+  event.stopPropagation();
 });
 
-restoreFileInput.addEventListener("change", async (event) => {
-  await importBackupJsonFromFile(event);
+document.addEventListener("click", () => {
+  hideDownloadMenu();
 });
 
 exportCsvBtn.addEventListener("click", () => {
+  hideDownloadMenu();
   exportCsv();
 });
 
 exportPdfBtn.addEventListener("click", () => {
+  hideDownloadMenu();
   exportPdf();
-});
-
-openCloudModalBtn.addEventListener("click", () => {
-  openCloudModal();
-});
-
-closeCloudModalBtn.addEventListener("click", () => {
-  closeCloudModal();
-});
-
-cloudForm.addEventListener("submit", (event) => {
-  event.preventDefault();
-
-  const nextUrl = String(cloudUrlInput.value || "").trim();
-  const nextKey = String(cloudKeyInput.value || "").trim();
-  const nextProfile = String(cloudProfileInput.value || "").trim();
-
-  if (!nextUrl || !nextKey || !nextProfile) {
-    showToast("Completa URL, key e ID de perfil.", true);
-    return;
-  }
-
-  cloudSettings.supabaseUrl = normalizeSupabaseUrl(nextUrl);
-  cloudSettings.supabaseAnonKey = nextKey;
-  cloudSettings.profileId = nextProfile;
-
-  saveCloudSettings();
-  updateCloudStatus("Cloud configurada.", "ok");
-  closeCloudModal();
-  showToast("Configuracion cloud guardada.");
-});
-
-cloudPushBtn.addEventListener("click", async () => {
-  await pushToCloud();
-});
-
-cloudPullBtn.addEventListener("click", async () => {
-  await pullFromCloud();
 });
 
 if (installAppBtn) {
@@ -273,19 +212,17 @@ function closeModal() {
   expenseModal.setAttribute("aria-hidden", "true");
 }
 
-function openCloudModal() {
-  cloudModal.classList.add("show");
-  cloudModal.setAttribute("aria-hidden", "false");
-}
-
-function closeCloudModal() {
-  cloudModal.classList.remove("show");
-  cloudModal.setAttribute("aria-hidden", "true");
-}
-
 function applySalaryVisibility() {
   salaryInput.type = state.hideSalary ? "password" : "number";
   toggleSalaryBtn.innerHTML = state.hideSalary ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
+}
+
+function hideDownloadMenu() {
+  downloadMenu.classList.add("is-hidden");
+}
+
+function toggleDownloadMenu() {
+  downloadMenu.classList.toggle("is-hidden");
 }
 
 function sanitizeItem(item) {
@@ -329,415 +266,6 @@ function loadState() {
 
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
-
-function loadCloudSettings() {
-  const raw = localStorage.getItem(CLOUD_SETTINGS_KEY);
-  if (!raw) {
-    return {
-      supabaseUrl: "",
-      supabaseAnonKey: "",
-      profileId: ""
-    };
-  }
-
-  try {
-    const parsed = JSON.parse(raw);
-    return {
-      supabaseUrl: normalizeSupabaseUrl(parsed.supabaseUrl || ""),
-      supabaseAnonKey: String(parsed.supabaseAnonKey || "").trim(),
-      profileId: String(parsed.profileId || "").trim()
-    };
-  } catch {
-    return {
-      supabaseUrl: "",
-      supabaseAnonKey: "",
-      profileId: ""
-    };
-  }
-}
-
-function saveCloudSettings() {
-  localStorage.setItem(CLOUD_SETTINGS_KEY, JSON.stringify(cloudSettings));
-}
-
-function hydrateCloudForm() {
-  cloudUrlInput.value = cloudSettings.supabaseUrl;
-  cloudKeyInput.value = cloudSettings.supabaseAnonKey;
-  cloudProfileInput.value = cloudSettings.profileId;
-}
-
-function normalizeSupabaseUrl(url) {
-  return String(url || "").trim().replace(/\/+$/, "");
-}
-
-function hasCloudConfig() {
-  return Boolean(cloudSettings.supabaseUrl && cloudSettings.supabaseAnonKey && cloudSettings.profileId);
-}
-
-function updateCloudStatus(message, kind = "neutral") {
-  cloudStatusText.classList.remove("ok", "error");
-
-  if (!message) {
-    if (hasCloudConfig()) {
-      cloudStatusText.innerHTML = `<i class="bi bi-cloud-check"></i> Cloud lista (${cloudSettings.profileId})`;
-      cloudStatusText.classList.add("ok");
-      return;
-    }
-
-    cloudStatusText.innerHTML = '<i class="bi bi-cloud-slash"></i> Cloud no configurada';
-    return;
-  }
-
-  if (kind === "ok") {
-    cloudStatusText.classList.add("ok");
-  }
-
-  if (kind === "error") {
-    cloudStatusText.classList.add("error");
-  }
-
-  const icon = kind === "error" ? "bi-cloud-slash" : "bi-cloud-check";
-  cloudStatusText.innerHTML = `<i class="bi ${icon}"></i> ${message}`;
-}
-
-function setCloudBusy(isBusy) {
-  cloudBusy = isBusy;
-  cloudPushBtn.disabled = isBusy;
-  cloudPullBtn.disabled = isBusy;
-}
-
-function collectSnapshot() {
-  return {
-    salary: Number(state.salary || 0),
-    hideSalary: Boolean(state.hideSalary),
-    items: state.items.map(sanitizeItem).filter(Boolean)
-  };
-}
-
-function normalizeImportedPayload(parsed) {
-  if (!parsed || typeof parsed !== "object") {
-    throw new Error("Archivo invalido.");
-  }
-
-  const source = parsed.snapshot && typeof parsed.snapshot === "object"
-    ? parsed.snapshot
-    : parsed.data && typeof parsed.data === "object"
-      ? parsed.data
-      : parsed;
-
-  const items = Array.isArray(source.items) ? source.items.map(sanitizeItem).filter(Boolean) : [];
-
-  return {
-    salary: Number(source.salary || 0),
-    hideSalary: Boolean(source.hideSalary),
-    items
-  };
-}
-
-function applySnapshot(snapshot) {
-  state.salary = Number(snapshot.salary || 0);
-  state.hideSalary = Boolean(snapshot.hideSalary);
-  state.items = Array.isArray(snapshot.items) ? snapshot.items.map(sanitizeItem).filter(Boolean) : [];
-
-  salaryInput.value = state.salary;
-  applySalaryVisibility();
-  saveState();
-  render();
-}
-
-function dateStamp() {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, "0");
-  const d = String(now.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
-
-function downloadBlob(content, filename, type) {
-  const blob = new Blob([content], { type });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = filename;
-  document.body.appendChild(anchor);
-  anchor.click();
-  document.body.removeChild(anchor);
-  URL.revokeObjectURL(url);
-}
-
-function exportBackupJson() {
-  const payload = {
-    version: 1,
-    exportedAt: new Date().toISOString(),
-    snapshot: collectSnapshot()
-  };
-
-  downloadBlob(JSON.stringify(payload, null, 2), `mis-gastos-backup-${dateStamp()}.json`, "application/json;charset=utf-8");
-  showToast("Backup JSON descargado.");
-}
-
-async function importBackupJsonFromFile(event) {
-  const file = event.target.files && event.target.files[0];
-  restoreFileInput.value = "";
-
-  if (!file) {
-    return;
-  }
-
-  try {
-    const text = await file.text();
-    const parsed = JSON.parse(text);
-    const snapshot = normalizeImportedPayload(parsed);
-    applySnapshot(snapshot);
-    showToast("Backup restaurado correctamente.");
-  } catch {
-    showToast("No pude restaurar ese JSON. Revisa el archivo.", true);
-  }
-}
-
-function csvEscape(value) {
-  const text = String(value ?? "");
-  return `"${text.replace(/"/g, '""')}"`;
-}
-
-function exportCsv() {
-  const rows = getFilteredItems();
-  const lines = [];
-  lines.push(["item", "categoria", "estado", "monto"].map(csvEscape).join(","));
-
-  for (const item of rows) {
-    lines.push(
-      [
-        csvEscape(item.name),
-        csvEscape((CATEGORY_CONFIG[item.category] || CATEGORY_CONFIG.variables).label),
-        csvEscape(item.status === "en-uso" ? "En uso" : "Libre"),
-        csvEscape(String(Number(item.amount || 0)))
-      ].join(",")
-    );
-  }
-
-  const csv = `\ufeff${lines.join("\r\n")}`;
-  downloadBlob(csv, `mis-gastos-${dateStamp()}.csv`, "text/csv;charset=utf-8");
-  showToast("CSV exportado.");
-}
-
-function cutText(text, max) {
-  const str = String(text || "");
-  if (str.length <= max) {
-    return str;
-  }
-  return `${str.slice(0, Math.max(0, max - 3))}...`;
-}
-
-function exportPdf() {
-  const jsPdf = window.jspdf && window.jspdf.jsPDF;
-  if (!jsPdf) {
-    showToast("No se pudo cargar el motor PDF.", true);
-    return;
-  }
-
-  const doc = new jsPdf({ unit: "pt", format: "a4" });
-  const rows = getFilteredItems();
-  const { monthlySpend } = getTotals();
-  const available = Number(state.salary || 0) - monthlySpend;
-
-  let y = 42;
-  const left = 40;
-
-  const drawHeader = () => {
-    doc.setFontSize(18);
-    doc.setFont("helvetica", "bold");
-    doc.text("Reporte de gastos", left, y);
-
-    y += 20;
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.text(`Fecha: ${new Date().toLocaleString("es-AR")}`, left, y);
-
-    y += 16;
-    doc.text(`Sueldo mensual: ${money(state.salary)}`, left, y);
-    y += 14;
-    doc.text(`Gasto mensual en uso: ${money(monthlySpend)}`, left, y);
-    y += 14;
-    doc.text(`Saldo disponible: ${money(available)}`, left, y);
-
-    y += 20;
-    doc.setFont("helvetica", "bold");
-    doc.text("Item", 40, y);
-    doc.text("Categoria", 235, y);
-    doc.text("Estado", 360, y);
-    doc.text("Monto", 540, y, { align: "right" });
-
-    y += 8;
-    doc.line(40, y, 555, y);
-    y += 14;
-  };
-
-  drawHeader();
-
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
-
-  if (!rows.length) {
-    doc.text("No hay items para el filtro actual.", left, y);
-  }
-
-  for (const item of rows) {
-    if (y > 780) {
-      doc.addPage();
-      y = 42;
-      drawHeader();
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
-    }
-
-    const categoryLabel = (CATEGORY_CONFIG[item.category] || CATEGORY_CONFIG.variables).label;
-
-    doc.text(cutText(item.name, 34), 40, y);
-    doc.text(cutText(categoryLabel, 20), 235, y);
-    doc.text(item.status === "en-uso" ? "En uso" : "Libre", 360, y);
-    doc.text(money(item.amount), 540, y, { align: "right" });
-
-    y += 14;
-  }
-
-  doc.save(`mis-gastos-${dateStamp()}.pdf`);
-  showToast("PDF exportado.");
-}
-
-function safeErrorSnippet(text) {
-  return String(text || "")
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, 220);
-}
-
-function supabaseHeaders() {
-  return {
-    apikey: cloudSettings.supabaseAnonKey,
-    Authorization: `Bearer ${cloudSettings.supabaseAnonKey}`,
-    "Content-Type": "application/json"
-  };
-}
-
-async function pushToCloud() {
-  if (cloudBusy) {
-    return;
-  }
-
-  if (!hasCloudConfig()) {
-    openCloudModal();
-    showToast("Configura la nube primero.", true);
-    return;
-  }
-
-  setCloudBusy(true);
-
-  try {
-    const endpoint = `${normalizeSupabaseUrl(cloudSettings.supabaseUrl)}/rest/v1/expense_profiles`;
-    const body = {
-      id: cloudSettings.profileId,
-      payload: collectSnapshot(),
-      updated_at: new Date().toISOString()
-    };
-
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        ...supabaseHeaders(),
-        Prefer: "resolution=merge-duplicates,return=minimal"
-      },
-      body: JSON.stringify(body)
-    });
-
-    if (!response.ok) {
-      const reason = safeErrorSnippet(await response.text());
-      throw new Error(reason || `HTTP ${response.status}`);
-    }
-
-    updateCloudStatus(`Subido (${cloudSettings.profileId})`, "ok");
-    showToast("Datos subidos a la nube.");
-  } catch (error) {
-    updateCloudStatus("Error de sincronizacion", "error");
-    showToast(`Fallo al subir: ${safeErrorSnippet(error.message)}`, true);
-  } finally {
-    setCloudBusy(false);
-  }
-}
-
-async function pullFromCloud() {
-  if (cloudBusy) {
-    return;
-  }
-
-  if (!hasCloudConfig()) {
-    openCloudModal();
-    showToast("Configura la nube primero.", true);
-    return;
-  }
-
-  setCloudBusy(true);
-
-  try {
-    const base = normalizeSupabaseUrl(cloudSettings.supabaseUrl);
-    const query = `${base}/rest/v1/expense_profiles?id=eq.${encodeURIComponent(
-      cloudSettings.profileId
-    )}&select=id,payload,updated_at&limit=1`;
-
-    const response = await fetch(query, {
-      method: "GET",
-      headers: supabaseHeaders()
-    });
-
-    if (!response.ok) {
-      const reason = safeErrorSnippet(await response.text());
-      throw new Error(reason || `HTTP ${response.status}`);
-    }
-
-    const rows = await response.json();
-    if (!Array.isArray(rows) || rows.length === 0) {
-      showToast("No hay backup cloud para ese perfil.", true);
-      return;
-    }
-
-    const rawPayload = rows[0]?.payload;
-    const snapshot = normalizeImportedPayload(rawPayload);
-    applySnapshot(snapshot);
-
-    updateCloudStatus(`Descargado (${cloudSettings.profileId})`, "ok");
-    showToast("Datos descargados desde la nube.");
-  } catch (error) {
-    updateCloudStatus("Error de sincronizacion", "error");
-    showToast(`Fallo al bajar: ${safeErrorSnippet(error.message)}`, true);
-  } finally {
-    setCloudBusy(false);
-  }
-}
-
-function showToast(message, isError = false) {
-  if (!toast) {
-    return;
-  }
-
-  toast.textContent = message;
-  toast.classList.remove("error", "show");
-
-  if (isError) {
-    toast.classList.add("error");
-  }
-
-  if (toastTimer) {
-    clearTimeout(toastTimer);
-  }
-
-  requestAnimationFrame(() => {
-    toast.classList.add("show");
-  });
-
-  toastTimer = window.setTimeout(() => {
-    toast.classList.remove("show");
-  }, 3000);
 }
 
 function money(value) {
@@ -956,6 +484,162 @@ function renderDonut() {
     li.appendChild(amount);
     donutLegend.appendChild(li);
   }
+}
+
+function dateStamp() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, "0");
+  const d = String(now.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+function downloadBlob(content, filename, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
+  URL.revokeObjectURL(url);
+}
+
+function csvEscape(value) {
+  const text = String(value ?? "");
+  return `"${text.replace(/"/g, '""')}"`;
+}
+
+function exportCsv() {
+  const rows = getFilteredItems();
+  const lines = [];
+  lines.push(["item", "categoria", "estado", "monto"].map(csvEscape).join(","));
+
+  for (const item of rows) {
+    lines.push(
+      [
+        csvEscape(item.name),
+        csvEscape((CATEGORY_CONFIG[item.category] || CATEGORY_CONFIG.variables).label),
+        csvEscape(item.status === "en-uso" ? "En uso" : "Libre"),
+        csvEscape(String(Number(item.amount || 0)))
+      ].join(",")
+    );
+  }
+
+  const csv = `\ufeff${lines.join("\r\n")}`;
+  downloadBlob(csv, `mis-gastos-${dateStamp()}.csv`, "text/csv;charset=utf-8");
+  showToast("CSV exportado.");
+}
+
+function cutText(text, max) {
+  const str = String(text || "");
+  if (str.length <= max) {
+    return str;
+  }
+
+  return `${str.slice(0, Math.max(0, max - 3))}...`;
+}
+
+function exportPdf() {
+  const jsPdf = window.jspdf && window.jspdf.jsPDF;
+  if (!jsPdf) {
+    showToast("No se pudo cargar el motor PDF.", true);
+    return;
+  }
+
+  const doc = new jsPdf({ unit: "pt", format: "a4" });
+  const rows = getFilteredItems();
+  const { monthlySpend } = getTotals();
+  const available = Number(state.salary || 0) - monthlySpend;
+
+  let y = 42;
+  const left = 40;
+
+  const drawHeader = () => {
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.text("Reporte de gastos", left, y);
+
+    y += 20;
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Fecha: ${new Date().toLocaleString("es-AR")}`, left, y);
+
+    y += 16;
+    doc.text(`Sueldo mensual: ${money(state.salary)}`, left, y);
+    y += 14;
+    doc.text(`Gasto mensual en uso: ${money(monthlySpend)}`, left, y);
+    y += 14;
+    doc.text(`Saldo disponible: ${money(available)}`, left, y);
+
+    y += 20;
+    doc.setFont("helvetica", "bold");
+    doc.text("Item", 40, y);
+    doc.text("Categoria", 235, y);
+    doc.text("Estado", 360, y);
+    doc.text("Monto", 540, y, { align: "right" });
+
+    y += 8;
+    doc.line(40, y, 555, y);
+    y += 14;
+  };
+
+  drawHeader();
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+
+  if (!rows.length) {
+    doc.text("No hay items para el filtro actual.", left, y);
+  }
+
+  for (const item of rows) {
+    if (y > 780) {
+      doc.addPage();
+      y = 42;
+      drawHeader();
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+    }
+
+    const categoryLabel = (CATEGORY_CONFIG[item.category] || CATEGORY_CONFIG.variables).label;
+
+    doc.text(cutText(item.name, 34), 40, y);
+    doc.text(cutText(categoryLabel, 20), 235, y);
+    doc.text(item.status === "en-uso" ? "En uso" : "Libre", 360, y);
+    doc.text(money(item.amount), 540, y, { align: "right" });
+
+    y += 14;
+  }
+
+  doc.save(`mis-gastos-${dateStamp()}.pdf`);
+  showToast("PDF exportado.");
+}
+
+function showToast(message, isError = false) {
+  if (!toast) {
+    return;
+  }
+
+  toast.textContent = message;
+  toast.classList.remove("error", "show");
+
+  if (isError) {
+    toast.classList.add("error");
+  }
+
+  if (toastTimer) {
+    clearTimeout(toastTimer);
+  }
+
+  requestAnimationFrame(() => {
+    toast.classList.add("show");
+  });
+
+  toastTimer = window.setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2500);
 }
 
 function render() {
