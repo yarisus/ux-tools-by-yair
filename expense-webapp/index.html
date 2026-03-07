@@ -72,6 +72,23 @@
         </article>
       </section>
 
+      <section class="card tools-bar">
+        <div class="tools-main">
+          <button id="exportJsonBtn" class="ghost-btn"><i class="bi bi-cloud-arrow-down"></i> Backup JSON</button>
+          <button id="importJsonBtn" class="ghost-btn"><i class="bi bi-cloud-arrow-up"></i> Restaurar JSON</button>
+          <input id="restoreFileInput" type="file" accept=".json,application/json" class="is-hidden" />
+          <button id="exportCsvBtn" class="ghost-btn"><i class="bi bi-filetype-csv"></i> Exportar CSV</button>
+          <button id="exportPdfBtn" class="ghost-btn"><i class="bi bi-file-earmark-pdf"></i> Exportar PDF</button>
+        </div>
+
+        <div class="tools-cloud">
+          <p id="cloudStatusText" class="cloud-status"><i class="bi bi-cloud-slash"></i> Cloud no configurada</p>
+          <button id="cloudPushBtn" class="ghost-btn"><i class="bi bi-cloud-upload"></i> Subir nube</button>
+          <button id="cloudPullBtn" class="ghost-btn"><i class="bi bi-cloud-download"></i> Bajar nube</button>
+          <button id="openCloudModalBtn" class="ghost-btn"><i class="bi bi-gear"></i> Configurar nube</button>
+        </div>
+      </section>
+
       <section class="workspace-grid">
         <article class="card table-card">
           <header class="table-head">
@@ -184,6 +201,43 @@
       </section>
     </div>
 
+    <div id="cloudModal" class="modal" aria-hidden="true">
+      <div class="modal-backdrop" data-close-cloud="true"></div>
+      <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="cloudTitle">
+        <header class="modal-head">
+          <h2 id="cloudTitle"><i class="bi bi-cloud"></i> Configurar nube</h2>
+          <button id="closeCloudModalBtn" class="icon-btn" type="button" title="Cerrar">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </header>
+
+        <form id="cloudForm" class="cloud-form">
+          <label>
+            Supabase URL
+            <input id="cloudUrlInput" type="url" placeholder="https://tu-proyecto.supabase.co" required />
+          </label>
+
+          <label>
+            Supabase Anon Key
+            <input id="cloudKeyInput" type="password" placeholder="eyJ..." required />
+          </label>
+
+          <label>
+            ID de perfil
+            <input id="cloudProfileInput" type="text" placeholder="yair-main" required maxlength="60" />
+          </label>
+
+          <button type="submit" class="primary-btn full"><i class="bi bi-check2-circle"></i> Guardar configuracion</button>
+        </form>
+
+        <p class="cloud-help">
+          Requiere una tabla `expense_profiles` en Supabase con columnas: `id` (text, PK), `payload` (jsonb), `updated_at` (timestamptz).
+        </p>
+      </section>
+    </div>
+
+    <div id="toast" class="toast" aria-live="polite" aria-atomic="true"></div>
+
     <template id="tableRowTemplate">
       <tr>
         <td class="item-name"></td>
@@ -207,6 +261,7 @@
       </tr>
     </template>
 
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

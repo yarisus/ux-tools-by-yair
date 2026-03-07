@@ -9,6 +9,9 @@ Aplicacion web para controlar gastos mensuales por categorias.
 - Resumen mensual: gasto total en uso, saldo disponible, estimado semanal y diario.
 - Donut chart por categoria.
 - Opcion para ocultar/mostrar sueldo mensual.
+- Backup y restore en JSON.
+- Exportacion de reporte a CSV y PDF.
+- Sincronizacion cloud opcional con Supabase (subir/bajar por perfil).
 - Datos guardados en `localStorage` del navegador.
 - Instalacion como app (PWA) en navegadores compatibles.
 
@@ -24,6 +27,21 @@ Tambien se puede abrir `index.html` directo, pero la instalacion PWA y service w
 - Los datos **no se borran al reiniciar la compu**.
 - Se guardan en el navegador del usuario (localStorage).
 - Se pierden si el usuario borra datos del sitio, usa modo incognito o cambia de dispositivo/navegador.
+
+## Cloud Sync (Supabase)
+1. Crear tabla:
+   - `id` (text, primary key)
+   - `payload` (jsonb, not null)
+   - `updated_at` (timestamptz, default now())
+2. Configurar RLS/politicas para permitir `select` y `insert/upsert` al rol `anon` segun tu modelo de seguridad.
+3. En la app:
+   - `Configurar nube`
+   - Cargar `Supabase URL`
+   - Cargar `Supabase Anon Key`
+   - Definir `ID de perfil` (ej: `usuario-1`)
+4. Usar:
+   - `Subir nube` para guardar snapshot actual.
+   - `Bajar nube` para recuperar snapshot del perfil.
 
 ## Publicar en GitHub Pages
 1. Subir esta carpeta al repositorio.
