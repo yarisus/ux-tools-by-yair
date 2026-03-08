@@ -52,6 +52,7 @@ const categoryDonut = document.getElementById("categoryDonut");
 const donutLegend = document.getElementById("donutLegend");
 const donutTotal = document.getElementById("donutTotal");
 const installAppBtn = document.getElementById("installAppBtn");
+const themeToggleBtn = document.getElementById("themeToggleBtn");
 const downloadMenuBtn = document.getElementById("downloadMenuBtn");
 const downloadMenu = document.getElementById("downloadMenu");
 const exportCsvBtn = document.getElementById("exportCsvBtn");
@@ -67,6 +68,7 @@ let sheetTrigger = null;
 
 salaryInput.value = state.salary;
 applySalaryVisibility();
+applyTheme();
 updateMobileFilterButtonLabels();
 downloadMenuBtn.setAttribute("aria-expanded", "false");
 
@@ -81,6 +83,14 @@ toggleSalaryBtn.addEventListener("click", () => {
   saveState();
   applySalaryVisibility();
 });
+
+if (themeToggleBtn) {
+  themeToggleBtn.addEventListener("click", () => {
+    state.theme = state.theme === "dark" ? "light" : "dark";
+    saveState();
+    applyTheme();
+  });
+}
 
 openExpenseModalBtn.addEventListener("click", () => {
   modalTrigger = document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -314,6 +324,23 @@ function applySalaryVisibility() {
   toggleSalaryBtn.innerHTML = state.hideSalary ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
 }
 
+function applyTheme() {
+  const isDark = state.theme === "dark";
+  document.body.classList.toggle("theme-dark", isDark);
+
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+  if (themeMeta) {
+    themeMeta.setAttribute("content", isDark ? "#0b1220" : "#16697a");
+  }
+
+  if (themeToggleBtn) {
+    themeToggleBtn.setAttribute("aria-pressed", String(isDark));
+    themeToggleBtn.innerHTML = isDark
+      ? '<i class="bi bi-sun"></i><span class="hidden sm:inline">Modo claro</span>'
+      : '<i class="bi bi-moon-stars"></i><span class="hidden sm:inline">Modo oscuro</span>';
+  }
+}
+
 function hideDownloadMenu() {
   downloadMenu.classList.add("is-hidden");
   downloadMenuBtn.setAttribute("aria-expanded", "false");
@@ -429,7 +456,7 @@ function sanitizeItem(item) {
 function loadState() {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) {
-    return { salary: 0, items: [], hideSalary: false };
+    return { salary: 0, items: [], hideSalary: false, theme: "light" };
   }
 
   try {
@@ -439,10 +466,11 @@ function loadState() {
     return {
       salary: Number(parsed.salary || 0),
       items,
-      hideSalary: Boolean(parsed.hideSalary)
+      hideSalary: Boolean(parsed.hideSalary),
+      theme: parsed.theme === "dark" ? "dark" : "light"
     };
   } catch {
-    return { salary: 0, items: [], hideSalary: false };
+    return { salary: 0, items: [], hideSalary: false, theme: "light" };
   }
 }
 
