@@ -52,8 +52,8 @@
           <h1 class="font-space text-4xl font-bold leading-[1.05] text-slate-900 sm:text-5xl">
             Control mensual simple, claro y rapido
           </h1>
-          <p class="subtitle mt-3 max-w-3xl text-base text-slate-600">
-            Registra gastos fijos, variables y semi-fijos; visualiza saldo disponible y cuanto puedes gastar por semana y por dia.
+          <p class="subtitle mt-3 max-w-3xl text-base text-slate-700">
+            Registra gastos fijos, variables y fijos variables; visualiza saldo disponible y cuanto puedes gastar por semana y por dia.
           </p>
         </div>
 
@@ -64,6 +64,9 @@
               class="icon-only h-11 w-11 rounded-xl border border-slate-200 bg-white text-lg text-slate-700 shadow-sm transition hover:bg-slate-50"
               type="button"
               title="Descargar"
+              aria-label="Abrir opciones de descarga"
+              aria-expanded="false"
+              aria-controls="downloadMenu"
             >
               <i class="bi bi-download"></i>
             </button>
@@ -75,7 +78,7 @@
             >
               <button
                 id="exportCsvBtn"
-                class="menu-item inline-flex items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-slate-700 transition hover:bg-slate-100"
+                class="menu-item inline-flex items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm text-slate-700 transition hover:bg-slate-100"
                 type="button"
                 role="menuitem"
               >
@@ -83,7 +86,7 @@
               </button>
               <button
                 id="exportPdfBtn"
-                class="menu-item inline-flex items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-slate-700 transition hover:bg-slate-100"
+                class="menu-item inline-flex items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm text-slate-700 transition hover:bg-slate-100"
                 type="button"
                 role="menuitem"
               >
@@ -94,21 +97,23 @@
 
           <button
             id="installAppBtn"
-            class="ghost-btn is-hidden inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-700 shadow-sm transition hover:bg-slate-50"
+            class="ghost-btn is-hidden inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-700 shadow-sm transition hover:bg-slate-50"
           >
             <i class="bi bi-download"></i> Instalar app
           </button>
 
           <button
             id="openExpenseModalBtn"
-            class="primary-btn inline-flex items-center gap-2 rounded-xl border border-brand-500 bg-brand-500 px-4 py-2.5 font-semibold text-white shadow-sm transition hover:bg-brand-700 hover:border-brand-700"
+            class="primary-btn inline-flex min-h-11 items-center gap-2 rounded-xl border border-brand-500 bg-brand-500 px-4 py-2.5 font-semibold text-white shadow-sm transition hover:bg-brand-700 hover:border-brand-700"
+            aria-controls="expenseModal"
+            aria-haspopup="dialog"
           >
             <i class="bi bi-plus-circle"></i> Agregar gasto
           </button>
 
           <button
             id="resetDataBtn"
-            class="ghost-btn inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-700 shadow-sm transition hover:bg-slate-50"
+            class="ghost-btn inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-700 shadow-sm transition hover:bg-slate-50"
           >
             <i class="bi bi-arrow-counterclockwise"></i> Reiniciar datos
           </button>
@@ -118,14 +123,15 @@
       <section class="metrics-grid grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <article class="card metric rounded-2xl border border-slate-200/80 bg-white/85 p-4 shadow-[0_18px_40px_rgba(15,38,42,0.12)] backdrop-blur">
           <div class="metric-head mb-3 flex items-center justify-between gap-2">
-            <p class="metric-label inline-flex items-center gap-1.5 text-xs font-medium text-slate-500">
+            <p class="metric-label inline-flex items-center gap-1.5 text-xs font-medium text-slate-600">
               <i class="bi bi-cash-stack"></i> Sueldo mensual
             </p>
             <button
               id="toggleSalaryBtn"
-              class="icon-btn inline-grid h-9 w-9 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+              class="icon-btn inline-grid h-11 w-11 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
               type="button"
               title="Mostrar/Ocultar sueldo"
+              aria-label="Mostrar u ocultar sueldo mensual"
             >
               <i class="bi bi-eye"></i>
             </button>
@@ -144,31 +150,31 @@
         </article>
 
         <article class="card metric rounded-2xl border border-slate-200/80 bg-white/85 p-4 shadow-[0_18px_40px_rgba(15,38,42,0.12)] backdrop-blur">
-          <p class="metric-label inline-flex items-center gap-1.5 text-xs font-medium text-slate-500">
+          <p class="metric-label inline-flex items-center gap-1.5 text-xs font-medium text-slate-600">
             <i class="bi bi-receipt-cutoff"></i> Gasto mensual en uso
           </p>
-          <p id="monthlySpend" class="metric-value mt-2 font-space text-3xl font-bold">$ 0</p>
+          <p id="monthlySpend" class="metric-value mt-2 break-words font-space text-3xl font-bold">$ 0</p>
         </article>
 
         <article class="card metric balance rounded-2xl border border-slate-200/80 bg-white/85 p-4 shadow-[0_18px_40px_rgba(15,38,42,0.12)] backdrop-blur">
-          <p class="metric-label inline-flex items-center gap-1.5 text-xs font-medium text-slate-500">
+          <p class="metric-label inline-flex items-center gap-1.5 text-xs font-medium text-slate-600">
             <i class="bi bi-piggy-bank"></i> Saldo disponible
           </p>
-          <p id="availableBalance" class="metric-value mt-2 font-space text-3xl font-bold text-emerald-700">$ 0</p>
+          <p id="availableBalance" class="metric-value mt-2 break-words font-space text-3xl font-bold text-emerald-700">$ 0</p>
         </article>
 
         <article class="card metric rounded-2xl border border-slate-200/80 bg-white/85 p-4 shadow-[0_18px_40px_rgba(15,38,42,0.12)] backdrop-blur">
-          <p class="metric-label inline-flex items-center gap-1.5 text-xs font-medium text-slate-500">
+          <p class="metric-label inline-flex items-center gap-1.5 text-xs font-medium text-slate-600">
             <i class="bi bi-calendar-week"></i> Puedes gastar aprox. por semana
           </p>
-          <p id="weeklyBudget" class="metric-value mt-2 font-space text-3xl font-bold">$ 0</p>
+          <p id="weeklyBudget" class="metric-value mt-2 break-words font-space text-3xl font-bold">$ 0</p>
         </article>
 
         <article class="card metric rounded-2xl border border-slate-200/80 bg-white/85 p-4 shadow-[0_18px_40px_rgba(15,38,42,0.12)] backdrop-blur">
-          <p class="metric-label inline-flex items-center gap-1.5 text-xs font-medium text-slate-500">
+          <p class="metric-label inline-flex items-center gap-1.5 text-xs font-medium text-slate-600">
             <i class="bi bi-calendar-day"></i> Puedes gastar aprox. por dia
           </p>
-          <p id="dailyBudget" class="metric-value mt-2 font-space text-3xl font-bold">$ 0</p>
+          <p id="dailyBudget" class="metric-value mt-2 break-words font-space text-3xl font-bold">$ 0</p>
         </article>
       </section>
 
@@ -181,13 +187,13 @@
               <h2 class="section-title font-space text-2xl font-bold text-slate-900">
                 <i class="bi bi-table mr-1.5"></i> Detalle de gastos
               </h2>
-              <p class="section-subtitle mt-1 text-sm text-slate-600">
+              <p class="section-subtitle mt-1 text-sm text-slate-700">
                 Todos tus items en una tabla, con filtros por categoria y estado.
               </p>
             </div>
 
             <div class="filters desktop-filters hidden items-center gap-2 md:flex">
-              <label class="filter-label flex flex-col gap-1 text-xs text-slate-500">
+              <label class="filter-label flex flex-col gap-1 text-xs text-slate-600">
                 <span class="inline-flex items-center gap-1.5"><i class="bi bi-funnel"></i> Categoria</span>
                 <select
                   id="categoryFilter"
@@ -200,7 +206,7 @@
                 </select>
               </label>
 
-              <label class="filter-label flex flex-col gap-1 text-xs text-slate-500">
+              <label class="filter-label flex flex-col gap-1 text-xs text-slate-600">
                 <span class="inline-flex items-center gap-1.5"><i class="bi bi-sliders2"></i> Estado</span>
                 <select
                   id="statusFilter"
@@ -216,14 +222,14 @@
             <div class="mobile-filters grid w-full grid-cols-2 gap-2 md:hidden">
               <button
                 id="mobileCategoryFilterBtn"
-                class="ghost-btn mobile-filter-btn inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
+                class="ghost-btn mobile-filter-btn inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
                 type="button"
               >
                 <i class="bi bi-funnel"></i> Categoria: Todas
               </button>
               <button
                 id="mobileStatusFilterBtn"
-                class="ghost-btn mobile-filter-btn inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
+                class="ghost-btn mobile-filter-btn inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
                 type="button"
               >
                 <i class="bi bi-sliders2"></i> Estado: Todos
@@ -254,7 +260,7 @@
         >
           <header class="chart-head">
             <h3 class="font-space text-xl font-bold text-slate-900"><i class="bi bi-pie-chart mr-1.5"></i> Donut por categoria</h3>
-            <p class="mt-1 text-sm text-slate-600">Distribucion del gasto mensual en uso.</p>
+            <p class="mt-1 text-sm text-slate-700">Distribucion del gasto mensual en uso.</p>
           </header>
 
           <div class="donut-wrap mt-4 grid place-items-center">
@@ -285,16 +291,17 @@
           </h2>
           <button
             id="closeExpenseModalBtn"
-            class="icon-btn inline-grid h-9 w-9 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+            class="icon-btn inline-grid h-11 w-11 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
             type="button"
             title="Cerrar"
+            aria-label="Cerrar modal de agregar gasto"
           >
             <i class="bi bi-x-lg"></i>
           </button>
         </header>
 
         <form id="expenseForm" class="expense-form grid grid-cols-1 gap-3 md:grid-cols-2 md:items-end">
-          <label class="grid gap-1 text-xs text-slate-500">
+          <label class="grid gap-1 text-xs text-slate-600">
             Categoria
             <select
               id="categoryInput"
@@ -307,7 +314,7 @@
             </select>
           </label>
 
-          <label class="grid gap-1 text-xs text-slate-500">
+          <label class="grid gap-1 text-xs text-slate-600">
             Item
             <input
               id="nameInput"
@@ -319,7 +326,7 @@
             />
           </label>
 
-          <label class="grid gap-1 text-xs text-slate-500">
+          <label class="grid gap-1 text-xs text-slate-600">
             Monto
             <div class="input-with-prefix flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3">
               <span class="text-slate-500">$</span>
@@ -335,7 +342,7 @@
             </div>
           </label>
 
-          <label class="grid gap-1 text-xs text-slate-500">
+          <label class="grid gap-1 text-xs text-slate-600">
             Estado
             <select
               id="statusInput"
@@ -349,7 +356,7 @@
 
           <button
             type="submit"
-            class="primary-btn full inline-flex w-full items-center justify-center gap-2 rounded-xl border border-brand-500 bg-brand-500 px-4 py-2.5 font-semibold text-white transition hover:bg-brand-700 hover:border-brand-700 md:col-span-2"
+            class="primary-btn full inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-brand-500 bg-brand-500 px-4 py-2.5 font-semibold text-white transition hover:bg-brand-700 hover:border-brand-700 md:col-span-2"
           >
             <i class="bi bi-check2-circle"></i> Guardar item
           </button>
@@ -369,9 +376,10 @@
           <h3 id="filterSheetTitle" class="font-space text-2xl font-bold text-slate-900"></h3>
           <button
             id="closeFilterSheetBtn"
-            class="icon-btn inline-grid h-9 w-9 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+            class="icon-btn inline-grid h-11 w-11 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
             type="button"
             title="Cerrar"
+            aria-label="Cerrar filtros"
           >
             <i class="bi bi-x-lg"></i>
           </button>
@@ -395,16 +403,21 @@
         <td class="px-3 py-2.5">
           <div class="input-with-prefix mini flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3">
             <span class="text-slate-500">$</span>
-            <input class="inline-amount w-full border-0 bg-transparent py-1.5 text-sm font-semibold outline-none" type="number" min="0" step="0.01" />
+            <input
+              class="inline-amount w-full border-0 bg-transparent py-1.5 text-sm font-semibold outline-none"
+              type="number"
+              min="0"
+              step="0.01"
+            />
           </div>
         </td>
         <td class="row-actions rounded-r-xl px-3 py-2.5">
           <button
-            class="mini-btn status-btn inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700"
+            class="mini-btn status-btn inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700"
             type="button"
           ></button>
           <button
-            class="mini-btn danger delete-btn ml-1 inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-white px-2.5 py-1.5 text-xs text-rose-700"
+            class="mini-btn danger delete-btn ml-1 inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-rose-200 bg-white px-3 py-2 text-xs text-rose-700"
             type="button"
           >
             <i class="bi bi-trash3"></i>
@@ -418,7 +431,7 @@
         <header class="mobile-item-head flex items-start justify-between gap-2">
           <p class="mobile-item-name text-base font-semibold text-slate-800"></p>
           <button
-            class="mini-btn danger delete-btn inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-white px-2.5 py-1.5 text-xs text-rose-700"
+            class="mini-btn danger delete-btn inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-rose-200 bg-white px-3 py-2 text-xs text-rose-700"
             type="button"
           >
             <i class="bi bi-trash3"></i>
@@ -436,7 +449,7 @@
         </div>
 
         <div class="mobile-item-controls mt-3 flex items-end justify-between gap-2">
-          <label class="mobile-control grid flex-1 gap-1 text-xs text-slate-500">
+          <label class="mobile-control grid flex-1 gap-1 text-xs text-slate-600">
             <span>Monto</span>
             <div class="input-with-prefix mini flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3">
               <span class="text-slate-500">$</span>
@@ -449,7 +462,7 @@
             </div>
           </label>
           <button
-            class="mini-btn status-btn inline-flex min-w-[130px] items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700"
+            class="mini-btn status-btn inline-flex min-h-10 min-w-[138px] items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700"
             type="button"
           ></button>
         </div>
@@ -460,3 +473,4 @@
     <script src="app.js"></script>
   </body>
 </html>
+

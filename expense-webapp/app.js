@@ -1,4 +1,4 @@
-﻿const STORAGE_KEY = "expense_webapp_state";
+const STORAGE_KEY = "expense_webapp_state";
 
 const CATEGORY_CONFIG = {
   fijos: {
@@ -32,6 +32,10 @@ const availableBalanceEl = document.getElementById("availableBalance");
 const weeklyBudgetEl = document.getElementById("weeklyBudget");
 const dailyBudgetEl = document.getElementById("dailyBudget");
 const expenseForm = document.getElementById("expenseForm");
+const categoryInput = document.getElementById("categoryInput");
+const nameInput = document.getElementById("nameInput");
+const amountInput = document.getElementById("amountInput");
+const statusInput = document.getElementById("statusInput");
 const resetDataBtn = document.getElementById("resetDataBtn");
 const expenseModal = document.getElementById("expenseModal");
 const openExpenseModalBtn = document.getElementById("openExpenseModalBtn");
@@ -58,9 +62,13 @@ const filterSheetTitle = document.getElementById("filterSheetTitle");
 const filterSheetOptions = document.getElementById("filterSheetOptions");
 const toast = document.getElementById("toast");
 
+let modalTrigger = null;
+let sheetTrigger = null;
+
 salaryInput.value = state.salary;
 applySalaryVisibility();
 updateMobileFilterButtonLabels();
+downloadMenuBtn.setAttribute("aria-expanded", "false");
 
 salaryInput.addEventListener("input", () => {
   state.salary = Number(salaryInput.value || 0);
@@ -75,8 +83,13 @@ toggleSalaryBtn.addEventListener("click", () => {
 });
 
 openExpenseModalBtn.addEventListener("click", () => {
+  modalTrigger = document.activeElement instanceof HTMLElement ? document.activeElement : null;
   expenseModal.classList.add("show");
   expenseModal.setAttribute("aria-hidden", "false");
+  updateOverlayScrollLock();
+  requestAnimationFrame(() => {
+    nameInput.focus();
+  });
 });
 
 closeExpenseModalBtn.addEventListener("click", closeModal);
@@ -91,10 +104,10 @@ expenseModal.addEventListener("click", (event) => {
 expenseForm.addEventListener("submit", (event) => {
   event.preventDefault();
 
-  const category = document.getElementById("categoryInput").value;
-  const name = document.getElementById("nameInput").value.trim();
-  const amount = Number(document.getElementById("amountInput").value || 0);
-  const status = document.getElementById("statusInput").value;
+  const category = categoryInput.value;
+  const name = nameInput.value.trim();
+  const amount = Number(amountInput.value || 0);
+  const status = statusInput.value;
 
   if (!name || amount < 0 || !CATEGORY_CONFIG[category]) {
     return;
@@ -109,7 +122,7 @@ expenseForm.addEventListener("submit", (event) => {
   });
 
   expenseForm.reset();
-  document.getElementById("statusInput").value = "en-uso";
+  statusInput.value = "en-uso";
 
   saveState();
   render();
@@ -139,11 +152,11 @@ statusFilter.addEventListener("change", () => {
 });
 
 mobileCategoryFilterBtn.addEventListener("click", () => {
-  openFilterSheet("category");
+  openFilterSheet("category", mobileCategoryFilterBtn);
 });
 
 mobileStatusFilterBtn.addEventListener("click", () => {
-  openFilterSheet("status");
+  openFilterSheet("status", mobileStatusFilterBtn);
 });
 
 closeFilterSheetBtn.addEventListener("click", closeFilterSheet);
@@ -284,8 +297,16 @@ function createItemId() {
 }
 
 function closeModal() {
+  const wasOpen = expenseModal.classList.contains("show");
   expenseModal.classList.remove("show");
   expenseModal.setAttribute("aria-hidden", "true");
+  updateOverlayScrollLock();
+
+  if (wasOpen && modalTrigger) {
+    modalTrigger.focus();
+  }
+
+  modalTrigger = null;
 }
 
 function applySalaryVisibility() {
@@ -295,24 +316,47 @@ function applySalaryVisibility() {
 
 function hideDownloadMenu() {
   downloadMenu.classList.add("is-hidden");
+  downloadMenuBtn.setAttribute("aria-expanded", "false");
 }
 
 function toggleDownloadMenu() {
+  const willOpen = downloadMenu.classList.contains("is-hidden");
   downloadMenu.classList.toggle("is-hidden");
+  downloadMenuBtn.setAttribute("aria-expanded", String(willOpen));
 }
 
 function closeFilterSheet() {
+  const wasOpen = filterSheet.classList.contains("show");
   filterSheet.classList.remove("show");
   filterSheet.setAttribute("aria-hidden", "true");
   activeFilterSheet = "";
+  updateOverlayScrollLock();
+
+  if (wasOpen && sheetTrigger) {
+    sheetTrigger.focus();
+  }
+
+  sheetTrigger = null;
 }
 
-function openFilterSheet(type) {
+function openFilterSheet(type, trigger = null) {
+  sheetTrigger = trigger;
   activeFilterSheet = type;
   renderFilterSheet();
   hideDownloadMenu();
   filterSheet.classList.add("show");
   filterSheet.setAttribute("aria-hidden", "false");
+  updateOverlayScrollLock();
+
+  requestAnimationFrame(() => {
+    const selected = filterSheetOptions.querySelector(".sheet-option-btn.active");
+    const first = filterSheetOptions.querySelector(".sheet-option-btn");
+    const target = selected || first;
+
+    if (target instanceof HTMLElement) {
+      target.focus();
+    }
+  });
 }
 
 function renderFilterSheet() {
@@ -356,6 +400,11 @@ function renderSheetOptions(type, options, selectedValue) {
 
     filterSheetOptions.appendChild(button);
   }
+}
+
+function updateOverlayScrollLock() {
+  const hasOpenOverlay = expenseModal.classList.contains("show") || filterSheet.classList.contains("show");
+  document.body.classList.toggle("overflow-hidden", hasOpenOverlay);
 }
 
 function sanitizeItem(item) {
