@@ -1,11 +1,11 @@
-const CACHE_NAME = "expense-webapp-v4";
+const CACHE_NAME = "expense-webapp-v5";
 const ASSETS = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
-  "./styles.css?v=20260308-2",
-  "./app.js?v=20260308-2",
+  "./styles.css?v=20260308-3",
+  "./app.js?v=20260308-3",
   "./manifest.webmanifest",
   "./icon-192.svg",
   "./icon-512.svg"

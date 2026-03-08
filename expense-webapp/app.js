@@ -36,7 +36,6 @@ const expenseForm = document.getElementById("expenseForm");
 const categoryInput = document.getElementById("categoryInput");
 const nameInput = document.getElementById("nameInput");
 const amountInput = document.getElementById("amountInput");
-const statusInput = document.getElementById("statusInput");
 const resetDataBtn = document.getElementById("resetDataBtn");
 const expenseModal = document.getElementById("expenseModal");
 const openExpenseModalBtn = document.getElementById("openExpenseModalBtn");
@@ -129,7 +128,6 @@ expenseForm.addEventListener("submit", (event) => {
   const category = categoryInput.value;
   const name = nameInput.value.trim();
   const amount = Number(amountInput.value || 0);
-  const status = statusInput ? statusInput.value : "en-uso";
 
   if (!name || amount < 0 || !CATEGORY_CONFIG[category]) {
     return;
@@ -140,13 +138,10 @@ expenseForm.addEventListener("submit", (event) => {
     category,
     name,
     amount,
-    status: status === "libre" ? "libre" : "en-uso"
+    status: "en-uso"
   });
 
   expenseForm.reset();
-  if (statusInput) {
-    statusInput.value = "en-uso";
-  }
 
   saveState();
   render();
@@ -773,6 +768,7 @@ function renderExpenseMobileList() {
 
 function populateItemNode(node, item) {
   const config = CATEGORY_CONFIG[item.category] || CATEGORY_CONFIG.variables;
+  const inUse = item.status !== "libre";
 
   const nameNode = node.querySelector(".item-name") || node.querySelector(".mobile-item-name");
   if (nameNode) {
@@ -785,11 +781,18 @@ function populateItemNode(node, item) {
     chip.dataset.category = item.category;
   }
 
+  const statusPill = node.querySelector(".status-pill");
+  if (statusPill) {
+    statusPill.dataset.status = inUse ? "en-uso" : "libre";
+    statusPill.textContent = inUse ? "En uso" : "Libre";
+  }
+
   const amountText = node.querySelector(".amount-text");
   const amountDisplayWrap = node.querySelector(".amount-display-wrap");
   const amountEditWrap = node.querySelector(".amount-edit-wrap");
   const amountInput = node.querySelector(".inline-amount");
   const editAmountBtn = node.querySelector(".edit-amount-btn");
+  const deleteItemBtn = node.querySelector(".delete-item-btn");
 
   if (!amountText || !amountDisplayWrap || !amountEditWrap || !amountInput || !editAmountBtn) {
     return;
@@ -851,6 +854,20 @@ function populateItemNode(node, item) {
   amountInput.addEventListener("blur", () => {
     closeEditor(true);
   });
+
+  if (deleteItemBtn) {
+    deleteItemBtn.addEventListener("click", () => {
+      const confirmed = window.confirm(`Eliminar "${item.name}"?`);
+      if (!confirmed) {
+        return;
+      }
+
+      state.items = state.items.filter((entry) => entry.id !== item.id);
+      saveState();
+      render();
+      showToast("Item eliminado.");
+    });
+  }
 }
 
 function renderDonut() {
