@@ -35,7 +35,7 @@
       };
     </script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
-    <link rel="stylesheet" href="styles.css?v=20260308-3" />
+    <link rel="stylesheet" href="styles.css?v=20260308-4" />
   </head>
   <body class="min-h-screen bg-[#eef2ee] text-slate-900 antialiased">
 
@@ -245,6 +245,7 @@
                   <th class="px-3 py-1">Item</th>
                   <th class="px-3 py-1">Categoria</th>
                   <th class="px-3 py-1">Monto</th>
+                  <th class="px-3 py-1">Acciones</th>
                 </tr>
               </thead>
               <tbody id="expenseTableBody"></tbody>
@@ -342,6 +343,7 @@
           </label>
 
           <button
+            id="expenseSubmitBtn"
             type="submit"
             class="primary-btn full inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-brand-500 bg-brand-500 px-4 py-2.5 font-semibold text-white transition hover:bg-brand-700 hover:border-brand-700 md:col-span-2"
           >
@@ -506,22 +508,26 @@
           <span class="category-chip"></span>
         </td>
         <td class="px-3 py-2.5">
-          <div class="amount-display-wrap inline-flex items-center gap-2">
-            <strong class="amount-text text-slate-800"></strong>
-            <button class="edit-amount-btn mini-btn inline-flex min-h-10 items-center rounded-lg border border-slate-200 bg-white px-2.5 text-slate-700" type="button">
+          <strong class="amount-text text-slate-800"></strong>
+        </td>
+        <td class="table-actions rounded-r-xl px-3 py-2.5">
+          <div class="inline-flex items-center gap-2">
+            <button
+              class="edit-item-btn mini-btn inline-grid h-9 w-9 place-items-center rounded-lg border border-slate-200 bg-white text-slate-700"
+              type="button"
+              title="Editar item"
+              aria-label="Editar item"
+            >
               <i class="bi bi-pencil"></i>
             </button>
-          </div>
-          <div class="amount-edit-wrap is-hidden">
-            <div class="input-with-prefix mini flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3">
-              <span class="text-slate-500">$</span>
-              <input
-                class="inline-amount w-full border-0 bg-transparent py-1.5 text-sm font-semibold outline-none"
-                type="number"
-                min="0"
-                step="0.01"
-              />
-            </div>
+            <button
+              class="delete-item-btn mini-btn danger inline-grid h-9 w-9 place-items-center rounded-lg border border-rose-200 bg-white text-rose-700"
+              type="button"
+              title="Eliminar item"
+              aria-label="Eliminar item"
+            >
+              <i class="bi bi-trash3"></i>
+            </button>
           </div>
         </td>
       </tr>
@@ -579,7 +585,7 @@
     </template>
 
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-    <script src="app.js?v=20260308-3"></script>
+    <script src="app.js?v=20260308-4"></script>
   </body>
 </html>
 

@@ -38,6 +38,8 @@ const nameInput = document.getElementById("nameInput");
 const amountInput = document.getElementById("amountInput");
 const resetDataBtn = document.getElementById("resetDataBtn");
 const expenseModal = document.getElementById("expenseModal");
+const modalTitle = document.getElementById("modalTitle");
+const expenseSubmitBtn = document.getElementById("expenseSubmitBtn");
 const openExpenseModalBtn = document.getElementById("openExpenseModalBtn");
 const closeExpenseModalBtn = document.getElementById("closeExpenseModalBtn");
 const categoryFilter = document.getElementById("categoryFilter");
@@ -76,6 +78,7 @@ let modalTrigger = null;
 let sheetTrigger = null;
 let onboardingTrigger = null;
 let onboardingStep = 0;
+let editingItemId = null;
 
 salaryInput.value = state.salary;
 applySalaryVisibility();
@@ -104,13 +107,7 @@ if (themeToggleBtn) {
 }
 
 openExpenseModalBtn.addEventListener("click", () => {
-  modalTrigger = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-  expenseModal.classList.add("show");
-  expenseModal.setAttribute("aria-hidden", "false");
-  updateOverlayScrollLock();
-  requestAnimationFrame(() => {
-    nameInput.focus();
-  });
+  openExpenseModalForCreate(openExpenseModalBtn);
 });
 
 closeExpenseModalBtn.addEventListener("click", closeModal);
@@ -133,15 +130,27 @@ expenseForm.addEventListener("submit", (event) => {
     return;
   }
 
-  state.items.push({
-    id: createItemId(),
-    category,
-    name,
-    amount,
-    status: "en-uso"
-  });
-
-  expenseForm.reset();
+  if (editingItemId) {
+    const item = state.items.find((entry) => entry.id === editingItemId);
+    if (item) {
+      item.category = category;
+      item.name = name;
+      item.amount = amount;
+      if (!item.status) {
+        item.status = "en-uso";
+      }
+      showToast("Item actualizado.");
+    }
+  } else {
+    state.items.push({
+      id: createItemId(),
+      category,
+      name,
+      amount,
+      status: "en-uso"
+    });
+    showToast("Item guardado.");
+  }
 
   saveState();
   render();
@@ -376,6 +385,9 @@ function closeModal() {
   const wasOpen = expenseModal.classList.contains("show");
   expenseModal.classList.remove("show");
   expenseModal.setAttribute("aria-hidden", "true");
+  editingItemId = null;
+  expenseForm.reset();
+  setExpenseFormMode("create");
   updateOverlayScrollLock();
 
   if (wasOpen && modalTrigger) {
@@ -383,6 +395,49 @@ function closeModal() {
   }
 
   modalTrigger = null;
+}
+
+function setExpenseFormMode(mode) {
+  const isEdit = mode === "edit";
+
+  if (modalTitle) {
+    modalTitle.innerHTML = isEdit
+      ? '<i class="bi bi-pencil-square mr-1.5"></i> Editar gasto'
+      : '<i class="bi bi-plus-circle mr-1.5"></i> Agregar gasto';
+  }
+
+  if (expenseSubmitBtn) {
+    expenseSubmitBtn.innerHTML = isEdit
+      ? '<i class="bi bi-check2-circle"></i> Guardar cambios'
+      : '<i class="bi bi-check2-circle"></i> Guardar item';
+  }
+}
+
+function openExpenseModal(trigger = null) {
+  modalTrigger = trigger instanceof HTMLElement ? trigger : document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  expenseModal.classList.add("show");
+  expenseModal.setAttribute("aria-hidden", "false");
+  updateOverlayScrollLock();
+
+  requestAnimationFrame(() => {
+    nameInput.focus();
+  });
+}
+
+function openExpenseModalForCreate(trigger = null) {
+  editingItemId = null;
+  expenseForm.reset();
+  setExpenseFormMode("create");
+  openExpenseModal(trigger);
+}
+
+function openExpenseModalForEdit(item, trigger = null) {
+  editingItemId = item.id;
+  setExpenseFormMode("edit");
+  categoryInput.value = CATEGORY_CONFIG[item.category] ? item.category : "variables";
+  nameInput.value = item.name;
+  amountInput.value = Number(item.amount || 0);
+  openExpenseModal(trigger);
 }
 
 function setOnboardingStep(nextStep) {
@@ -732,7 +787,7 @@ function renderExpenseTable() {
   if (!filteredItems.length) {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
-    cell.colSpan = 3;
+    cell.colSpan = 4;
     cell.className = "table-empty";
     cell.innerHTML = '<i class="bi bi-inbox"></i> No hay items para este filtro.';
     row.appendChild(cell);
@@ -788,18 +843,43 @@ function populateItemNode(node, item) {
   }
 
   const amountText = node.querySelector(".amount-text");
+  if (amountText) {
+    amountText.textContent = money(item.amount);
+  }
+
+  const editItemBtn = node.querySelector(".edit-item-btn");
+  const deleteItemBtn = node.querySelector(".delete-item-btn");
+
+  if (editItemBtn) {
+    editItemBtn.addEventListener("click", () => {
+      openExpenseModalForEdit(item, editItemBtn);
+    });
+  }
+
+  if (deleteItemBtn) {
+    deleteItemBtn.addEventListener("click", () => {
+      const confirmed = window.confirm(`Eliminar "${item.name}"?`);
+      if (!confirmed) {
+        return;
+      }
+
+      state.items = state.items.filter((entry) => entry.id !== item.id);
+      saveState();
+      render();
+      showToast("Item eliminado.");
+    });
+  }
+
   const amountDisplayWrap = node.querySelector(".amount-display-wrap");
   const amountEditWrap = node.querySelector(".amount-edit-wrap");
   const amountInput = node.querySelector(".inline-amount");
   const editAmountBtn = node.querySelector(".edit-amount-btn");
-  const deleteItemBtn = node.querySelector(".delete-item-btn");
 
   if (!amountText || !amountDisplayWrap || !amountEditWrap || !amountInput || !editAmountBtn) {
     return;
   }
 
   const currentAmount = Number(item.amount || 0);
-  amountText.textContent = money(currentAmount);
   amountInput.value = currentAmount;
 
   let editClosed = true;
@@ -854,20 +934,6 @@ function populateItemNode(node, item) {
   amountInput.addEventListener("blur", () => {
     closeEditor(true);
   });
-
-  if (deleteItemBtn) {
-    deleteItemBtn.addEventListener("click", () => {
-      const confirmed = window.confirm(`Eliminar "${item.name}"?`);
-      if (!confirmed) {
-        return;
-      }
-
-      state.items = state.items.filter((entry) => entry.id !== item.id);
-      saveState();
-      render();
-      showToast("Item eliminado.");
-    });
-  }
 }
 
 function renderDonut() {

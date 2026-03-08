@@ -143,6 +143,25 @@ h3,
   gap: 6px;
 }
 
+.table-actions {
+  text-align: right;
+}
+
+.table-actions .mini-btn {
+  min-width: 36px;
+  min-height: 36px;
+  padding: 0;
+}
+
+.table-actions .danger {
+  border-color: #fecdd3;
+  color: #be123c;
+}
+
+.table-actions .danger:hover {
+  background: #fff1f2;
+}
+
 .mobile-expense-card {
   border: 1px solid #e2e8f0;
   border-radius: 12px;
@@ -485,6 +504,15 @@ body.theme-dark .mobile-action-btn.danger {
 }
 
 body.theme-dark .mobile-action-btn.danger:hover {
+  background: rgba(127, 29, 29, 0.28) !important;
+}
+
+body.theme-dark .table-actions .danger {
+  border-color: rgba(251, 113, 133, 0.55) !important;
+  color: #fda4af !important;
+}
+
+body.theme-dark .table-actions .danger:hover {
   background: rgba(127, 29, 29, 0.28) !important;
 }
 
