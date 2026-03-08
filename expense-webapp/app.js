@@ -19,6 +19,7 @@ const CATEGORY_CONFIG = {
 };
 
 const CATEGORY_KEYS = Object.keys(CATEGORY_CONFIG);
+const ONBOARDING_STEPS = 3;
 const state = loadState();
 
 let deferredInstallPrompt = null;
@@ -61,10 +62,21 @@ const filterSheet = document.getElementById("filterSheet");
 const closeFilterSheetBtn = document.getElementById("closeFilterSheetBtn");
 const filterSheetTitle = document.getElementById("filterSheetTitle");
 const filterSheetOptions = document.getElementById("filterSheetOptions");
+const openOnboardingBtn = document.getElementById("openOnboardingBtn");
+const onboardingModal = document.getElementById("onboardingModal");
+const closeOnboardingBtn = document.getElementById("closeOnboardingBtn");
+const onboardingPrevBtn = document.getElementById("onboardingPrevBtn");
+const onboardingNextBtn = document.getElementById("onboardingNextBtn");
+const onboardingDoneBtn = document.getElementById("onboardingDoneBtn");
+const onboardingSkipBtn = document.getElementById("onboardingSkipBtn");
+const onboardingStepDots = Array.from(document.querySelectorAll("[data-step-jump]"));
+const onboardingStepCards = Array.from(document.querySelectorAll(".onboarding-step"));
 const toast = document.getElementById("toast");
 
 let modalTrigger = null;
 let sheetTrigger = null;
+let onboardingTrigger = null;
+let onboardingStep = 0;
 
 salaryInput.value = state.salary;
 applySalaryVisibility();
@@ -193,6 +205,58 @@ downloadMenu.addEventListener("click", (event) => {
   event.stopPropagation();
 });
 
+if (openOnboardingBtn) {
+  openOnboardingBtn.addEventListener("click", () => {
+    openOnboarding({ force: true, trigger: openOnboardingBtn });
+  });
+}
+
+if (closeOnboardingBtn) {
+  closeOnboardingBtn.addEventListener("click", () => {
+    closeOnboarding(true);
+  });
+}
+
+if (onboardingModal) {
+  onboardingModal.addEventListener("click", (event) => {
+    const target = event.target;
+    if (target instanceof HTMLElement && target.dataset.closeOnboarding === "true") {
+      closeOnboarding(true);
+    }
+  });
+}
+
+if (onboardingPrevBtn) {
+  onboardingPrevBtn.addEventListener("click", () => {
+    setOnboardingStep(onboardingStep - 1);
+  });
+}
+
+if (onboardingNextBtn) {
+  onboardingNextBtn.addEventListener("click", () => {
+    setOnboardingStep(onboardingStep + 1);
+  });
+}
+
+if (onboardingDoneBtn) {
+  onboardingDoneBtn.addEventListener("click", () => {
+    closeOnboarding(true);
+  });
+}
+
+if (onboardingSkipBtn) {
+  onboardingSkipBtn.addEventListener("click", () => {
+    closeOnboarding(true);
+  });
+}
+
+for (const dot of onboardingStepDots) {
+  dot.addEventListener("click", () => {
+    const index = Number(dot.dataset.stepJump || 0);
+    setOnboardingStep(index);
+  });
+}
+
 filterSheetOptions.addEventListener("click", (event) => {
   const target = event.target;
   if (!(target instanceof HTMLElement)) {
@@ -301,6 +365,7 @@ document.addEventListener("keydown", (event) => {
 
   closeModal();
   closeFilterSheet();
+  closeOnboarding(false);
   hideDownloadMenu();
 });
 
@@ -323,6 +388,83 @@ function closeModal() {
   }
 
   modalTrigger = null;
+}
+
+function setOnboardingStep(nextStep) {
+  if (!onboardingStepCards.length) {
+    return;
+  }
+
+  const clamped = Math.max(0, Math.min(ONBOARDING_STEPS - 1, Number(nextStep) || 0));
+  onboardingStep = clamped;
+
+  for (const card of onboardingStepCards) {
+    const cardStep = Number(card.dataset.step || 0);
+    const isActive = cardStep === onboardingStep;
+    card.classList.toggle("is-active", isActive);
+    card.hidden = !isActive;
+  }
+
+  for (const dot of onboardingStepDots) {
+    const dotStep = Number(dot.dataset.stepJump || 0);
+    const isActive = dotStep === onboardingStep;
+    dot.classList.toggle("is-active", isActive);
+    dot.setAttribute("aria-selected", String(isActive));
+  }
+
+  if (onboardingPrevBtn) {
+    onboardingPrevBtn.disabled = onboardingStep === 0;
+  }
+
+  if (onboardingNextBtn && onboardingDoneBtn) {
+    const isLast = onboardingStep === ONBOARDING_STEPS - 1;
+    onboardingNextBtn.classList.toggle("is-hidden", isLast);
+    onboardingDoneBtn.classList.toggle("is-hidden", !isLast);
+  }
+}
+
+function openOnboarding({ force = false, trigger = null } = {}) {
+  if (!onboardingModal) {
+    return;
+  }
+
+  if (!force && state.onboardingSeen) {
+    return;
+  }
+
+  onboardingTrigger = trigger instanceof HTMLElement ? trigger : null;
+  onboardingModal.classList.add("show");
+  onboardingModal.setAttribute("aria-hidden", "false");
+  setOnboardingStep(0);
+  updateOverlayScrollLock();
+
+  requestAnimationFrame(() => {
+    if (onboardingNextBtn) {
+      onboardingNextBtn.focus();
+    }
+  });
+}
+
+function closeOnboarding(markAsSeen) {
+  if (!onboardingModal) {
+    return;
+  }
+
+  const wasOpen = onboardingModal.classList.contains("show");
+  onboardingModal.classList.remove("show");
+  onboardingModal.setAttribute("aria-hidden", "true");
+  updateOverlayScrollLock();
+
+  if (wasOpen && markAsSeen && !state.onboardingSeen) {
+    state.onboardingSeen = true;
+    saveState();
+  }
+
+  if (wasOpen && onboardingTrigger) {
+    onboardingTrigger.focus();
+  }
+
+  onboardingTrigger = null;
 }
 
 function applySalaryVisibility() {
@@ -451,7 +593,9 @@ function renderSheetOptions(type, options, selectedValue) {
 }
 
 function updateOverlayScrollLock() {
-  const hasOpenOverlay = expenseModal.classList.contains("show") || filterSheet.classList.contains("show");
+  const onboardingIsOpen = onboardingModal ? onboardingModal.classList.contains("show") : false;
+  const hasOpenOverlay =
+    expenseModal.classList.contains("show") || filterSheet.classList.contains("show") || onboardingIsOpen;
   document.body.classList.toggle("overflow-hidden", hasOpenOverlay);
 }
 
@@ -477,7 +621,7 @@ function sanitizeItem(item) {
 function loadState() {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) {
-    return { salary: 0, items: [], hideSalary: false, theme: "light" };
+    return { salary: 0, items: [], hideSalary: false, theme: "light", onboardingSeen: false };
   }
 
   try {
@@ -488,10 +632,11 @@ function loadState() {
       salary: Number(parsed.salary || 0),
       items,
       hideSalary: Boolean(parsed.hideSalary),
-      theme: parsed.theme === "dark" ? "dark" : "light"
+      theme: parsed.theme === "dark" ? "dark" : "light",
+      onboardingSeen: Boolean(parsed.onboardingSeen)
     };
   } catch {
-    return { salary: 0, items: [], hideSalary: false, theme: "light" };
+    return { salary: 0, items: [], hideSalary: false, theme: "light", onboardingSeen: false };
   }
 }
 
@@ -980,3 +1125,4 @@ function render() {
 }
 
 render();
+openOnboarding({ force: false });

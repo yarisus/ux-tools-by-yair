@@ -282,6 +282,10 @@ h3,
   z-index: 50;
 }
 
+.onboarding-modal {
+  z-index: 55;
+}
+
 .modal.show,
 .sheet.show {
   display: block;
@@ -312,6 +316,58 @@ h3,
   background: #ecf7f8;
   color: #0f4f5d;
   font-weight: 700;
+}
+
+.onboarding-card {
+  max-height: 92vh;
+  overflow: auto;
+}
+
+.onboarding-step {
+  display: none;
+  gap: 12px;
+}
+
+.onboarding-step.is-active {
+  display: grid;
+}
+
+.onboarding-illustration {
+  border: 1px solid #d9e5ee;
+  border-radius: 14px;
+  background: #f8fbff;
+  overflow: hidden;
+}
+
+.onboarding-illustration svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.onboarding-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.onboarding-dot {
+  width: 12px;
+  height: 12px;
+  border: 0;
+  border-radius: 999px;
+  background: #cbd5e1;
+  padding: 0;
+}
+
+.onboarding-dot.is-active {
+  width: 30px;
+  background: #16697a;
+}
+
+.onboarding-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
 .toast {
@@ -356,6 +412,7 @@ body.theme-dark .card,
 body.theme-dark .menu-list,
 body.theme-dark .modal-card,
 body.theme-dark .sheet-card,
+body.theme-dark .onboarding-card,
 body.theme-dark .mobile-expense-card,
 body.theme-dark .donut-legend li {
   background: rgba(15, 23, 42, 0.88) !important;
@@ -407,6 +464,10 @@ body.theme-dark .amount-text {
   color: #f8fafc !important;
 }
 
+body.theme-dark .onboarding-step p {
+  color: #cbd5e1;
+}
+
 body.theme-dark .expense-table thead tr {
   color: #94a3b8 !important;
 }
@@ -455,6 +516,19 @@ body.theme-dark .category-chip {
   background: #1e293b;
 }
 
+body.theme-dark .onboarding-illustration {
+  border-color: #334155;
+  background: #0f172a;
+}
+
+body.theme-dark .onboarding-dot {
+  background: #475569;
+}
+
+body.theme-dark .onboarding-dot.is-active {
+  background: #38bdf8;
+}
+
 body.theme-dark .eyebrow {
   border-color: rgba(52, 211, 153, 0.5) !important;
   background: rgba(16, 185, 129, 0.15) !important;
@@ -478,5 +552,19 @@ body.theme-dark .toast.error {
 
   .legend-amount {
     font-size: 12px;
+  }
+
+  .onboarding-card {
+    margin-top: 2vh;
+    padding: 12px;
+  }
+
+  .onboarding-actions {
+    justify-content: stretch;
+  }
+
+  .onboarding-actions button {
+    flex: 1;
+    justify-content: center;
   }
 }
