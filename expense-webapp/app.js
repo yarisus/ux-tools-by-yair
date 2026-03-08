@@ -262,7 +262,7 @@ window.addEventListener("appinstalled", () => {
 if ("serviceWorker" in navigator && window.location.protocol !== "file:") {
   window.addEventListener("load", async () => {
     try {
-      const registration = await navigator.serviceWorker.register("./sw.js");
+      const registration = await navigator.serviceWorker.register("./sw.js", { updateViaCache: "none" });
 
       if (registration.waiting) {
         registration.waiting.postMessage({ type: "SKIP_WAITING" });

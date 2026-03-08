@@ -1,9 +1,11 @@
-﻿const CACHE_NAME = "expense-webapp-v2";
+const CACHE_NAME = "expense-webapp-v3";
 const ASSETS = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
+  "./styles.css?v=20260308-1",
+  "./app.js?v=20260308-1",
   "./manifest.webmanifest",
   "./icon-192.svg",
   "./icon-512.svg"
@@ -86,6 +88,12 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (sameOrigin) {
+    const staticDestinations = new Set(["script", "style", "image", "font", "manifest", "worker"]);
+    if (staticDestinations.has(request.destination)) {
+      event.respondWith(cacheFirst(request));
+      return;
+    }
+
     event.respondWith(networkFirst(request));
     return;
   }
