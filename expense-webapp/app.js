@@ -117,7 +117,7 @@ expenseForm.addEventListener("submit", (event) => {
   const category = categoryInput.value;
   const name = nameInput.value.trim();
   const amount = Number(amountInput.value || 0);
-  const status = statusInput.value;
+  const status = statusInput ? statusInput.value : "en-uso";
 
   if (!name || amount < 0 || !CATEGORY_CONFIG[category]) {
     return;
@@ -132,7 +132,9 @@ expenseForm.addEventListener("submit", (event) => {
   });
 
   expenseForm.reset();
-  statusInput.value = "en-uso";
+  if (statusInput) {
+    statusInput.value = "en-uso";
+  }
 
   saveState();
   render();
@@ -157,17 +159,21 @@ categoryFilter.addEventListener("change", () => {
   renderByFilters();
 });
 
-statusFilter.addEventListener("change", () => {
-  renderByFilters();
-});
+if (statusFilter) {
+  statusFilter.addEventListener("change", () => {
+    renderByFilters();
+  });
+}
 
 mobileCategoryFilterBtn.addEventListener("click", () => {
   openFilterSheet("category", mobileCategoryFilterBtn);
 });
 
-mobileStatusFilterBtn.addEventListener("click", () => {
-  openFilterSheet("status", mobileStatusFilterBtn);
-});
+if (mobileStatusFilterBtn) {
+  mobileStatusFilterBtn.addEventListener("click", () => {
+    openFilterSheet("status", mobileStatusFilterBtn);
+  });
+}
 
 closeFilterSheetBtn.addEventListener("click", closeFilterSheet);
 
@@ -203,7 +209,7 @@ filterSheetOptions.addEventListener("click", (event) => {
 
   if (filterType === "category") {
     categoryFilter.value = filterValue;
-  } else if (filterType === "status") {
+  } else if (filterType === "status" && statusFilter) {
     statusFilter.value = filterValue;
   }
 
@@ -401,6 +407,21 @@ function renderFilterSheet() {
     return;
   }
 
+  if (!statusFilter) {
+    filterSheetTitle.textContent = "Filtrar por categoria";
+    renderSheetOptions(
+      "category",
+      [
+        { value: "all", label: "Todas" },
+        { value: "fijos", label: CATEGORY_CONFIG.fijos.label },
+        { value: "variables", label: CATEGORY_CONFIG.variables.label },
+        { value: "semifijos", label: CATEGORY_CONFIG.semifijos.label }
+      ],
+      categoryFilter.value
+    );
+    return;
+  }
+
   filterSheetTitle.textContent = "Filtrar por estado";
   const options = [
     { value: "all", label: "Todos" },
@@ -546,7 +567,7 @@ function renderSummary() {
 
 function getFilteredItems() {
   const selectedCategory = categoryFilter.value;
-  const selectedStatus = statusFilter.value;
+  const selectedStatus = statusFilter ? statusFilter.value : "all";
 
   return state.items
     .filter((item) => {
@@ -571,7 +592,7 @@ function renderExpenseTable() {
   if (!filteredItems.length) {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
-    cell.colSpan = 5;
+    cell.colSpan = 3;
     cell.className = "table-empty";
     cell.innerHTML = '<i class="bi bi-inbox"></i> No hay items para este filtro.';
     row.appendChild(cell);
@@ -614,43 +635,76 @@ function populateItemNode(node, item) {
   }
 
   const chip = node.querySelector(".category-chip");
-  chip.textContent = config.label;
-  chip.dataset.category = item.category;
+  if (chip) {
+    chip.textContent = config.label;
+    chip.dataset.category = item.category;
+  }
 
-  const infoBtn = node.querySelector(".info-btn");
-  infoBtn.title = config.help;
-
-  const statusPill = node.querySelector(".status-pill");
-  statusPill.dataset.status = item.status;
-  statusPill.innerHTML =
-    item.status === "en-uso"
-      ? '<i class="bi bi-check-circle-fill"></i> En uso'
-      : '<i class="bi bi-pause-circle"></i> Libre';
-
+  const amountText = node.querySelector(".amount-text");
+  const amountDisplayWrap = node.querySelector(".amount-display-wrap");
+  const amountEditWrap = node.querySelector(".amount-edit-wrap");
   const amountInput = node.querySelector(".inline-amount");
-  amountInput.value = Number(item.amount || 0);
-  amountInput.addEventListener("change", () => {
-    item.amount = Math.max(0, Number(amountInput.value || 0));
-    saveState();
-    render();
+  const editAmountBtn = node.querySelector(".edit-amount-btn");
+
+  if (!amountText || !amountDisplayWrap || !amountEditWrap || !amountInput || !editAmountBtn) {
+    return;
+  }
+
+  const currentAmount = Number(item.amount || 0);
+  amountText.textContent = money(currentAmount);
+  amountInput.value = currentAmount;
+
+  let editClosed = true;
+
+  const closeEditor = (saveChanges) => {
+    if (editClosed) {
+      return;
+    }
+
+    editClosed = true;
+
+    if (saveChanges) {
+      const nextAmount = Math.max(0, Number(amountInput.value || 0));
+      if (nextAmount !== Number(item.amount || 0)) {
+        item.amount = nextAmount;
+        saveState();
+        render();
+        return;
+      }
+    }
+
+    amountInput.value = Number(item.amount || 0);
+    amountText.textContent = money(item.amount);
+    amountEditWrap.classList.add("is-hidden");
+    amountDisplayWrap.classList.remove("is-hidden");
+  };
+
+  editAmountBtn.addEventListener("click", () => {
+    editClosed = false;
+    amountDisplayWrap.classList.add("is-hidden");
+    amountEditWrap.classList.remove("is-hidden");
+
+    requestAnimationFrame(() => {
+      amountInput.focus();
+      amountInput.select();
+    });
   });
 
-  const statusBtn = node.querySelector(".status-btn");
-  statusBtn.innerHTML =
-    item.status === "en-uso"
-      ? '<i class="bi bi-arrow-right-circle"></i> Pasar a Libre'
-      : '<i class="bi bi-arrow-left-circle"></i> Pasar a En uso';
-  statusBtn.addEventListener("click", () => {
-    item.status = item.status === "en-uso" ? "libre" : "en-uso";
-    saveState();
-    render();
+  amountInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      closeEditor(true);
+      return;
+    }
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeEditor(false);
+    }
   });
 
-  const deleteBtn = node.querySelector(".delete-btn");
-  deleteBtn.addEventListener("click", () => {
-    state.items = state.items.filter((entry) => entry.id !== item.id);
-    saveState();
-    render();
+  amountInput.addEventListener("blur", () => {
+    closeEditor(true);
   });
 }
 
@@ -736,6 +790,10 @@ function getCategoryFilterLabel() {
 }
 
 function getStatusFilterLabel() {
+  if (!statusFilter) {
+    return "Todos";
+  }
+
   const value = statusFilter.value;
   if (value === "en-uso") {
     return "En uso";
@@ -748,7 +806,9 @@ function getStatusFilterLabel() {
 
 function updateMobileFilterButtonLabels() {
   mobileCategoryFilterBtn.innerHTML = `<i class="bi bi-funnel"></i> Categoria: ${getCategoryFilterLabel()}`;
-  mobileStatusFilterBtn.innerHTML = `<i class="bi bi-sliders2"></i> Estado: ${getStatusFilterLabel()}`;
+  if (mobileStatusFilterBtn) {
+    mobileStatusFilterBtn.innerHTML = `<i class="bi bi-sliders2"></i> Estado: ${getStatusFilterLabel()}`;
+  }
 }
 
 function renderByFilters() {

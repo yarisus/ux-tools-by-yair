@@ -15,8 +15,7 @@
 
 body {
   margin: 0;
-  background: radial-gradient(circle at 12% 10%, #eef7ff, transparent 38%),
-    radial-gradient(circle at 90% 24%, #f2fbe8, transparent 33%), #f5f7f2;
+  background: #eef2ee;
   font-family: "Manrope", sans-serif;
 }
 
@@ -50,28 +49,11 @@ h3,
   font-family: "Space Grotesk", sans-serif;
 }
 
-.bg-shape {
-  position: fixed;
-  z-index: -1;
-  border-radius: 9999px;
-  filter: blur(64px);
-  opacity: 0.45;
-}
-
-.bg-a {
-  left: -80px;
-  top: 90px;
-  width: 320px;
-  height: 320px;
-  background: #a8dadc;
-}
-
-.bg-b {
-  right: -120px;
-  top: 260px;
-  width: 380px;
-  height: 380px;
-  background: #ffe8b6;
+.eyebrow {
+  border-color: #34d399 !important;
+  background: #dcfce7 !important;
+  color: #065f46 !important;
+  font-weight: 700;
 }
 
 .is-hidden {
@@ -191,6 +173,23 @@ h3,
 
 .input-with-prefix.mini {
   width: 128px;
+}
+
+.amount-display-wrap {
+  align-items: center;
+}
+
+.amount-text {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.amount-edit-wrap {
+  width: min(180px, 100%);
+}
+
+.edit-amount-btn {
+  min-width: 40px;
 }
 
 .donut-chart {
@@ -350,18 +349,7 @@ body.theme-dark {
   --focus: #38bdf8;
   --focus-shadow: rgba(56, 189, 248, 0.28);
   color: #e2e8f0;
-  background: radial-gradient(circle at 12% 10%, rgba(30, 41, 59, 0.45), transparent 36%),
-    radial-gradient(circle at 90% 24%, rgba(20, 83, 45, 0.22), transparent 30%), #0b1220;
-}
-
-body.theme-dark .bg-a {
-  background: #1e3a5f;
-  opacity: 0.3;
-}
-
-body.theme-dark .bg-b {
-  background: #264653;
-  opacity: 0.28;
+  background: #0b1220;
 }
 
 body.theme-dark .card,
@@ -414,7 +402,8 @@ body.theme-dark h2,
 body.theme-dark h3,
 body.theme-dark .item-name,
 body.theme-dark .mobile-item-name,
-body.theme-dark .legend-amount {
+body.theme-dark .legend-amount,
+body.theme-dark .amount-text {
   color: #f8fafc !important;
 }
 
@@ -464,6 +453,12 @@ body.theme-dark .status-pill[data-status="libre"] {
 body.theme-dark .category-chip {
   border-color: #475569;
   background: #1e293b;
+}
+
+body.theme-dark .eyebrow {
+  border-color: rgba(52, 211, 153, 0.5) !important;
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #6ee7b7 !important;
 }
 
 body.theme-dark .toast {
