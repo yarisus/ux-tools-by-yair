@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
@@ -14,89 +14,185 @@
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
       rel="stylesheet"
     />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Manrope", "sans-serif"],
+              space: ["Space Grotesk", "sans-serif"]
+            },
+            colors: {
+              brand: {
+                50: "#eaf5f7",
+                500: "#16697a",
+                700: "#0f4f5d"
+              }
+            }
+          }
+        }
+      };
+    </script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
+  <body class="min-h-screen bg-[#f5f7f2] text-slate-900 antialiased">
     <div class="bg-shape bg-a"></div>
     <div class="bg-shape bg-b"></div>
 
-    <main class="app-shell">
-      <header class="hero">
+    <main class="app-shell mx-auto w-full max-w-[1260px] px-4 pb-10 pt-7 sm:px-5">
+      <header class="hero mb-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <p class="eyebrow"><i class="bi bi-wallet2"></i> Finanzas Personales</p>
-          <h1>Control mensual simple, claro y rapido</h1>
-          <p class="subtitle">
+          <p
+            class="eyebrow mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-100/80 px-3 py-1.5 text-[11px] uppercase tracking-[0.12em] text-emerald-700"
+          >
+            <i class="bi bi-wallet2"></i> Finanzas Personales
+          </p>
+          <h1 class="font-space text-4xl font-bold leading-[1.05] text-slate-900 sm:text-5xl">
+            Control mensual simple, claro y rapido
+          </h1>
+          <p class="subtitle mt-3 max-w-3xl text-base text-slate-600">
             Registra gastos fijos, variables y semi-fijos; visualiza saldo disponible y cuanto puedes gastar por semana y por dia.
           </p>
         </div>
-        <div class="hero-actions">
-          <div class="download-menu">
-            <button id="downloadMenuBtn" class="ghost-btn icon-only" type="button" title="Descargar">
+
+        <div class="hero-actions flex w-full flex-wrap items-center gap-2 lg:w-auto lg:justify-end">
+          <div class="download-menu relative">
+            <button
+              id="downloadMenuBtn"
+              class="icon-only h-11 w-11 rounded-xl border border-slate-200 bg-white text-lg text-slate-700 shadow-sm transition hover:bg-slate-50"
+              type="button"
+              title="Descargar"
+            >
               <i class="bi bi-download"></i>
             </button>
-            <div id="downloadMenu" class="menu-list is-hidden" role="menu" aria-label="Opciones de descarga">
-              <button id="exportCsvBtn" class="menu-item" type="button" role="menuitem">
+            <div
+              id="downloadMenu"
+              class="menu-list is-hidden absolute right-0 top-[calc(100%+8px)] z-20 grid min-w-[190px] gap-1 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg"
+              role="menu"
+              aria-label="Opciones de descarga"
+            >
+              <button
+                id="exportCsvBtn"
+                class="menu-item inline-flex items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-slate-700 transition hover:bg-slate-100"
+                type="button"
+                role="menuitem"
+              >
                 <i class="bi bi-filetype-csv"></i> Exportar CSV
               </button>
-              <button id="exportPdfBtn" class="menu-item" type="button" role="menuitem">
+              <button
+                id="exportPdfBtn"
+                class="menu-item inline-flex items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-slate-700 transition hover:bg-slate-100"
+                type="button"
+                role="menuitem"
+              >
                 <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
               </button>
             </div>
           </div>
-          <button id="installAppBtn" class="ghost-btn is-hidden"><i class="bi bi-download"></i> Instalar app</button>
-          <button id="openExpenseModalBtn" class="primary-btn"><i class="bi bi-plus-circle"></i> Agregar gasto</button>
-          <button id="resetDataBtn" class="ghost-btn"><i class="bi bi-arrow-counterclockwise"></i> Reiniciar datos</button>
+
+          <button
+            id="installAppBtn"
+            class="ghost-btn is-hidden inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-700 shadow-sm transition hover:bg-slate-50"
+          >
+            <i class="bi bi-download"></i> Instalar app
+          </button>
+
+          <button
+            id="openExpenseModalBtn"
+            class="primary-btn inline-flex items-center gap-2 rounded-xl border border-brand-500 bg-brand-500 px-4 py-2.5 font-semibold text-white shadow-sm transition hover:bg-brand-700 hover:border-brand-700"
+          >
+            <i class="bi bi-plus-circle"></i> Agregar gasto
+          </button>
+
+          <button
+            id="resetDataBtn"
+            class="ghost-btn inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-700 shadow-sm transition hover:bg-slate-50"
+          >
+            <i class="bi bi-arrow-counterclockwise"></i> Reiniciar datos
+          </button>
         </div>
       </header>
 
-      <section class="metrics-grid">
-        <article class="card metric income">
-          <div class="metric-head">
-            <p class="metric-label"><i class="bi bi-cash-stack"></i> Sueldo mensual</p>
-            <button id="toggleSalaryBtn" class="icon-btn" type="button" title="Mostrar/Ocultar sueldo">
+      <section class="metrics-grid grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        <article class="card metric rounded-2xl border border-slate-200/80 bg-white/85 p-4 shadow-[0_18px_40px_rgba(15,38,42,0.12)] backdrop-blur">
+          <div class="metric-head mb-3 flex items-center justify-between gap-2">
+            <p class="metric-label inline-flex items-center gap-1.5 text-xs font-medium text-slate-500">
+              <i class="bi bi-cash-stack"></i> Sueldo mensual
+            </p>
+            <button
+              id="toggleSalaryBtn"
+              class="icon-btn inline-grid h-9 w-9 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+              type="button"
+              title="Mostrar/Ocultar sueldo"
+            >
               <i class="bi bi-eye"></i>
             </button>
           </div>
-          <div class="input-with-prefix">
-            <span>$</span>
-            <input id="salaryInput" type="number" min="0" step="0.01" placeholder="0" />
+          <div class="input-with-prefix flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3">
+            <span class="text-slate-500">$</span>
+            <input
+              id="salaryInput"
+              class="w-full border-0 bg-transparent py-2.5 text-base font-semibold outline-none"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="0"
+            />
           </div>
         </article>
 
-        <article class="card metric">
-          <p class="metric-label"><i class="bi bi-receipt-cutoff"></i> Gasto mensual en uso</p>
-          <p id="monthlySpend" class="metric-value">$ 0</p>
+        <article class="card metric rounded-2xl border border-slate-200/80 bg-white/85 p-4 shadow-[0_18px_40px_rgba(15,38,42,0.12)] backdrop-blur">
+          <p class="metric-label inline-flex items-center gap-1.5 text-xs font-medium text-slate-500">
+            <i class="bi bi-receipt-cutoff"></i> Gasto mensual en uso
+          </p>
+          <p id="monthlySpend" class="metric-value mt-2 font-space text-3xl font-bold">$ 0</p>
         </article>
 
-        <article class="card metric balance">
-          <p class="metric-label"><i class="bi bi-piggy-bank"></i> Saldo disponible</p>
-          <p id="availableBalance" class="metric-value">$ 0</p>
+        <article class="card metric balance rounded-2xl border border-slate-200/80 bg-white/85 p-4 shadow-[0_18px_40px_rgba(15,38,42,0.12)] backdrop-blur">
+          <p class="metric-label inline-flex items-center gap-1.5 text-xs font-medium text-slate-500">
+            <i class="bi bi-piggy-bank"></i> Saldo disponible
+          </p>
+          <p id="availableBalance" class="metric-value mt-2 font-space text-3xl font-bold text-emerald-700">$ 0</p>
         </article>
 
-        <article class="card metric">
-          <p class="metric-label"><i class="bi bi-calendar-week"></i> Puedes gastar aprox. por semana</p>
-          <p id="weeklyBudget" class="metric-value">$ 0</p>
+        <article class="card metric rounded-2xl border border-slate-200/80 bg-white/85 p-4 shadow-[0_18px_40px_rgba(15,38,42,0.12)] backdrop-blur">
+          <p class="metric-label inline-flex items-center gap-1.5 text-xs font-medium text-slate-500">
+            <i class="bi bi-calendar-week"></i> Puedes gastar aprox. por semana
+          </p>
+          <p id="weeklyBudget" class="metric-value mt-2 font-space text-3xl font-bold">$ 0</p>
         </article>
 
-        <article class="card metric">
-          <p class="metric-label"><i class="bi bi-calendar-day"></i> Puedes gastar aprox. por dia</p>
-          <p id="dailyBudget" class="metric-value">$ 0</p>
+        <article class="card metric rounded-2xl border border-slate-200/80 bg-white/85 p-4 shadow-[0_18px_40px_rgba(15,38,42,0.12)] backdrop-blur">
+          <p class="metric-label inline-flex items-center gap-1.5 text-xs font-medium text-slate-500">
+            <i class="bi bi-calendar-day"></i> Puedes gastar aprox. por dia
+          </p>
+          <p id="dailyBudget" class="metric-value mt-2 font-space text-3xl font-bold">$ 0</p>
         </article>
       </section>
 
-      <section class="workspace-grid">
-        <article class="card table-card">
-          <header class="table-head">
+      <section class="workspace-grid mt-4 grid grid-cols-1 gap-3 xl:grid-cols-12">
+        <article
+          class="card table-card rounded-2xl border border-slate-200/80 bg-white/85 p-4 shadow-[0_18px_40px_rgba(15,38,42,0.12)] backdrop-blur xl:col-span-8"
+        >
+          <header class="table-head mb-3 flex flex-wrap items-end justify-between gap-3">
             <div>
-              <h2 class="section-title"><i class="bi bi-table"></i> Detalle de gastos</h2>
-              <p class="section-subtitle">Todos tus items en una tabla, con filtros por categoria y estado.</p>
+              <h2 class="section-title font-space text-2xl font-bold text-slate-900">
+                <i class="bi bi-table mr-1.5"></i> Detalle de gastos
+              </h2>
+              <p class="section-subtitle mt-1 text-sm text-slate-600">
+                Todos tus items en una tabla, con filtros por categoria y estado.
+              </p>
             </div>
 
-            <div class="filters desktop-filters">
-              <label class="filter-label">
-                <span><i class="bi bi-funnel"></i> Categoria</span>
-                <select id="categoryFilter">
+            <div class="filters desktop-filters hidden items-center gap-2 md:flex">
+              <label class="filter-label flex flex-col gap-1 text-xs text-slate-500">
+                <span class="inline-flex items-center gap-1.5"><i class="bi bi-funnel"></i> Categoria</span>
+                <select
+                  id="categoryFilter"
+                  class="min-w-[170px] rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none focus:border-brand-500"
+                >
                   <option value="all">Todas</option>
                   <option value="fijos">Gastos fijos</option>
                   <option value="variables">Gastos variables</option>
@@ -104,9 +200,12 @@
                 </select>
               </label>
 
-              <label class="filter-label">
-                <span><i class="bi bi-sliders2"></i> Estado</span>
-                <select id="statusFilter">
+              <label class="filter-label flex flex-col gap-1 text-xs text-slate-500">
+                <span class="inline-flex items-center gap-1.5"><i class="bi bi-sliders2"></i> Estado</span>
+                <select
+                  id="statusFilter"
+                  class="min-w-[170px] rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none focus:border-brand-500"
+                >
                   <option value="all">Todos</option>
                   <option value="en-uso">En uso</option>
                   <option value="libre">Libre</option>
@@ -114,41 +213,51 @@
               </label>
             </div>
 
-            <div class="mobile-filters">
-              <button id="mobileCategoryFilterBtn" class="ghost-btn mobile-filter-btn" type="button">
+            <div class="mobile-filters grid w-full grid-cols-2 gap-2 md:hidden">
+              <button
+                id="mobileCategoryFilterBtn"
+                class="ghost-btn mobile-filter-btn inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
+                type="button"
+              >
                 <i class="bi bi-funnel"></i> Categoria: Todas
               </button>
-              <button id="mobileStatusFilterBtn" class="ghost-btn mobile-filter-btn" type="button">
+              <button
+                id="mobileStatusFilterBtn"
+                class="ghost-btn mobile-filter-btn inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
+                type="button"
+              >
                 <i class="bi bi-sliders2"></i> Estado: Todos
               </button>
             </div>
           </header>
 
-          <div class="table-wrap">
-            <table class="expense-table">
+          <div class="table-wrap hidden overflow-x-auto md:block">
+            <table class="expense-table min-w-full border-separate border-spacing-y-2 text-sm">
               <thead>
-                <tr>
-                  <th><i class="bi bi-tag"></i> Item</th>
-                  <th><i class="bi bi-grid-3x3-gap"></i> Categoria</th>
-                  <th><i class="bi bi-activity"></i> Estado</th>
-                  <th><i class="bi bi-currency-dollar"></i> Monto</th>
-                  <th><i class="bi bi-gear"></i> Acciones</th>
+                <tr class="text-left text-xs font-semibold uppercase tracking-[0.06em] text-slate-500">
+                  <th class="px-3 py-1"><i class="bi bi-tag mr-1"></i> Item</th>
+                  <th class="px-3 py-1"><i class="bi bi-grid-3x3-gap mr-1"></i> Categoria</th>
+                  <th class="px-3 py-1"><i class="bi bi-activity mr-1"></i> Estado</th>
+                  <th class="px-3 py-1"><i class="bi bi-currency-dollar mr-1"></i> Monto</th>
+                  <th class="px-3 py-1"><i class="bi bi-gear mr-1"></i> Acciones</th>
                 </tr>
               </thead>
               <tbody id="expenseTableBody"></tbody>
             </table>
           </div>
 
-          <div id="expenseMobileList" class="expense-mobile-list"></div>
+          <div id="expenseMobileList" class="expense-mobile-list grid gap-2 md:hidden"></div>
         </article>
 
-        <aside class="card chart-card">
+        <aside
+          class="card chart-card rounded-2xl border border-slate-200/80 bg-white/85 p-4 shadow-[0_18px_40px_rgba(15,38,42,0.12)] backdrop-blur xl:col-span-4"
+        >
           <header class="chart-head">
-            <h3><i class="bi bi-pie-chart"></i> Donut por categoria</h3>
-            <p>Distribucion del gasto mensual en uso.</p>
+            <h3 class="font-space text-xl font-bold text-slate-900"><i class="bi bi-pie-chart mr-1.5"></i> Donut por categoria</h3>
+            <p class="mt-1 text-sm text-slate-600">Distribucion del gasto mensual en uso.</p>
           </header>
 
-          <div class="donut-wrap">
+          <div class="donut-wrap mt-4 grid place-items-center">
             <div id="categoryDonut" class="donut-chart" role="img" aria-label="Grafico donut de categorias">
               <div class="donut-center">
                 <p>Total</p>
@@ -157,104 +266,167 @@
             </div>
           </div>
 
-          <ul id="donutLegend" class="donut-legend"></ul>
+          <ul id="donutLegend" class="donut-legend mt-4"></ul>
         </aside>
       </section>
     </main>
 
     <div id="expenseModal" class="modal" aria-hidden="true">
       <div class="modal-backdrop" data-close-modal="true"></div>
-      <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-        <header class="modal-head">
-          <h2 id="modalTitle"><i class="bi bi-plus-circle"></i> Agregar gasto</h2>
-          <button id="closeExpenseModalBtn" class="icon-btn" type="button" title="Cerrar">
+      <section
+        class="modal-card relative mx-auto mt-[6vh] w-[min(760px,calc(100%-20px))] rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalTitle"
+      >
+        <header class="modal-head mb-3 flex items-center justify-between gap-2">
+          <h2 id="modalTitle" class="font-space text-2xl font-bold text-slate-900">
+            <i class="bi bi-plus-circle mr-1.5"></i> Agregar gasto
+          </h2>
+          <button
+            id="closeExpenseModalBtn"
+            class="icon-btn inline-grid h-9 w-9 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+            type="button"
+            title="Cerrar"
+          >
             <i class="bi bi-x-lg"></i>
           </button>
         </header>
 
-        <form id="expenseForm" class="expense-form">
-          <label>
+        <form id="expenseForm" class="expense-form grid grid-cols-1 gap-3 md:grid-cols-2 md:items-end">
+          <label class="grid gap-1 text-xs text-slate-500">
             Categoria
-            <select id="categoryInput" required>
+            <select
+              id="categoryInput"
+              class="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-brand-500"
+              required
+            >
               <option value="fijos">Gastos fijos</option>
               <option value="variables">Gastos variables</option>
               <option value="semifijos">Fijos variables</option>
             </select>
           </label>
 
-          <label>
+          <label class="grid gap-1 text-xs text-slate-500">
             Item
-            <input id="nameInput" type="text" placeholder="Ej: Luz" required maxlength="60" />
+            <input
+              id="nameInput"
+              class="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-brand-500"
+              type="text"
+              placeholder="Ej: Luz"
+              required
+              maxlength="60"
+            />
           </label>
 
-          <label>
+          <label class="grid gap-1 text-xs text-slate-500">
             Monto
-            <div class="input-with-prefix">
-              <span>$</span>
-              <input id="amountInput" type="number" min="0" step="0.01" placeholder="0" required />
+            <div class="input-with-prefix flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3">
+              <span class="text-slate-500">$</span>
+              <input
+                id="amountInput"
+                class="w-full border-0 bg-transparent py-2.5 text-sm font-semibold outline-none"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0"
+                required
+              />
             </div>
           </label>
 
-          <label>
+          <label class="grid gap-1 text-xs text-slate-500">
             Estado
-            <select id="statusInput" required>
+            <select
+              id="statusInput"
+              class="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-brand-500"
+              required
+            >
               <option value="en-uso">En uso</option>
               <option value="libre">Libre</option>
             </select>
           </label>
 
-          <button type="submit" class="primary-btn full"><i class="bi bi-check2-circle"></i> Guardar item</button>
+          <button
+            type="submit"
+            class="primary-btn full inline-flex w-full items-center justify-center gap-2 rounded-xl border border-brand-500 bg-brand-500 px-4 py-2.5 font-semibold text-white transition hover:bg-brand-700 hover:border-brand-700 md:col-span-2"
+          >
+            <i class="bi bi-check2-circle"></i> Guardar item
+          </button>
         </form>
       </section>
     </div>
 
     <div id="filterSheet" class="sheet" aria-hidden="true">
       <div class="sheet-backdrop" data-close-sheet="true"></div>
-      <section class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="filterSheetTitle">
-        <header class="sheet-head">
-          <h3 id="filterSheetTitle"></h3>
-          <button id="closeFilterSheetBtn" class="icon-btn" type="button" title="Cerrar">
+      <section
+        class="sheet-card absolute bottom-0 left-0 right-0 max-h-[72vh] overflow-auto rounded-t-2xl border border-slate-200 bg-white p-3 shadow-2xl"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="filterSheetTitle"
+      >
+        <header class="sheet-head mb-2 flex items-center justify-between gap-2">
+          <h3 id="filterSheetTitle" class="font-space text-2xl font-bold text-slate-900"></h3>
+          <button
+            id="closeFilterSheetBtn"
+            class="icon-btn inline-grid h-9 w-9 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+            type="button"
+            title="Cerrar"
+          >
             <i class="bi bi-x-lg"></i>
           </button>
         </header>
-        <div id="filterSheetOptions" class="sheet-options"></div>
+        <div id="filterSheetOptions" class="sheet-options grid gap-2"></div>
       </section>
     </div>
 
     <div id="toast" class="toast" aria-live="polite" aria-atomic="true"></div>
 
     <template id="tableRowTemplate">
-      <tr>
-        <td class="item-name"></td>
-        <td class="category-cell">
+      <tr class="rounded-xl bg-white shadow-[0_6px_18px_rgba(15,38,42,0.08)]">
+        <td class="item-name rounded-l-xl px-3 py-2.5 font-semibold text-slate-800"></td>
+        <td class="category-cell px-3 py-2.5">
           <span class="category-chip"></span>
-          <button class="info-btn" type="button" title="">
+          <button class="info-btn ml-1.5" type="button" title="">
             <i class="bi bi-exclamation-circle-fill"></i>
           </button>
         </td>
-        <td><span class="status-pill"></span></td>
-        <td>
-          <div class="input-with-prefix mini">
-            <span>$</span>
-            <input class="inline-amount" type="number" min="0" step="0.01" />
+        <td class="px-3 py-2.5"><span class="status-pill"></span></td>
+        <td class="px-3 py-2.5">
+          <div class="input-with-prefix mini flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3">
+            <span class="text-slate-500">$</span>
+            <input class="inline-amount w-full border-0 bg-transparent py-1.5 text-sm font-semibold outline-none" type="number" min="0" step="0.01" />
           </div>
         </td>
-        <td class="row-actions">
-          <button class="mini-btn status-btn" type="button"></button>
-          <button class="mini-btn danger delete-btn" type="button"><i class="bi bi-trash3"></i></button>
+        <td class="row-actions rounded-r-xl px-3 py-2.5">
+          <button
+            class="mini-btn status-btn inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700"
+            type="button"
+          ></button>
+          <button
+            class="mini-btn danger delete-btn ml-1 inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-white px-2.5 py-1.5 text-xs text-rose-700"
+            type="button"
+          >
+            <i class="bi bi-trash3"></i>
+          </button>
         </td>
       </tr>
     </template>
 
     <template id="mobileItemTemplate">
-      <article class="mobile-expense-card">
-        <header class="mobile-item-head">
-          <p class="mobile-item-name"></p>
-          <button class="mini-btn danger delete-btn" type="button"><i class="bi bi-trash3"></i></button>
+      <article class="mobile-expense-card rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+        <header class="mobile-item-head flex items-start justify-between gap-2">
+          <p class="mobile-item-name text-base font-semibold text-slate-800"></p>
+          <button
+            class="mini-btn danger delete-btn inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-white px-2.5 py-1.5 text-xs text-rose-700"
+            type="button"
+          >
+            <i class="bi bi-trash3"></i>
+          </button>
         </header>
 
-        <div class="mobile-item-meta">
-          <div class="mobile-chip-wrap">
+        <div class="mobile-item-meta mt-2 flex items-center justify-between gap-2">
+          <div class="mobile-chip-wrap inline-flex items-center gap-1.5">
             <span class="category-chip"></span>
             <button class="info-btn" type="button" title="">
               <i class="bi bi-exclamation-circle-fill"></i>
@@ -263,15 +435,23 @@
           <span class="status-pill"></span>
         </div>
 
-        <div class="mobile-item-controls">
-          <label class="mobile-control">
+        <div class="mobile-item-controls mt-3 flex items-end justify-between gap-2">
+          <label class="mobile-control grid flex-1 gap-1 text-xs text-slate-500">
             <span>Monto</span>
-            <div class="input-with-prefix mini">
-              <span>$</span>
-              <input class="inline-amount" type="number" min="0" step="0.01" />
+            <div class="input-with-prefix mini flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3">
+              <span class="text-slate-500">$</span>
+              <input
+                class="inline-amount w-full border-0 bg-transparent py-1.5 text-sm font-semibold outline-none"
+                type="number"
+                min="0"
+                step="0.01"
+              />
             </div>
           </label>
-          <button class="mini-btn status-btn" type="button"></button>
+          <button
+            class="mini-btn status-btn inline-flex min-w-[130px] items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700"
+            type="button"
+          ></button>
         </div>
       </article>
     </template>
