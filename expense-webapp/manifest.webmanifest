@@ -1,7 +1,7 @@
 ﻿{
   "name": "Control de Gastos Mensuales",
   "short_name": "Mis Gastos",
-  "description": "Web app para registrar gastos personales por categorias y controlar saldo disponible.",
+  "description": "Web app para registrar gastos personales por categorias y controlar presupuesto disponible.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

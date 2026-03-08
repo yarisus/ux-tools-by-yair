@@ -35,7 +35,7 @@
       };
     </script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
-    <link rel="stylesheet" href="styles.css?v=20260308-4" />
+    <link rel="stylesheet" href="styles.css?v=20260308-5" />
   </head>
   <body class="min-h-screen bg-[#eef2ee] text-slate-900 antialiased">
 
@@ -51,7 +51,7 @@
             Control mensual simple, claro y rapido
           </h1>
           <p class="subtitle mt-3 max-w-3xl text-base text-slate-700">
-            Registra gastos fijos, variables y fijos variables; visualiza saldo disponible y cuanto puedes gastar por semana y por dia.
+            Registra gastos fijos, variables y semifijos; visualiza tu saldo disponible y cuanto puedes gastar por semana y por dia.
           </p>
         </div>
 
@@ -136,7 +136,7 @@
             id="resetDataBtn"
             class="ghost-btn inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-700 shadow-sm transition hover:bg-slate-50"
           >
-            <i class="bi bi-arrow-counterclockwise"></i> Reiniciar datos
+            <i class="bi bi-arrow-counterclockwise"></i> Borrar todos los datos
           </button>
         </div>
       </header>
@@ -172,7 +172,7 @@
 
         <article class="card metric rounded-2xl border border-slate-200/80 bg-white/85 p-4 shadow-[0_18px_40px_rgba(15,38,42,0.12)] backdrop-blur">
           <p class="metric-label inline-flex items-center gap-1.5 text-xs font-medium text-slate-600">
-            <i class="bi bi-receipt-cutoff"></i> Gasto mensual en uso
+            <i class="bi bi-receipt-cutoff"></i> Gasto mensual (en uso)
           </p>
           <p id="monthlySpend" class="metric-value mt-2 break-words font-space text-3xl font-bold">$ 0</p>
         </article>
@@ -186,14 +186,14 @@
 
         <article class="card metric rounded-2xl border border-slate-200/80 bg-white/85 p-4 shadow-[0_18px_40px_rgba(15,38,42,0.12)] backdrop-blur">
           <p class="metric-label inline-flex items-center gap-1.5 text-xs font-medium text-slate-600">
-            <i class="bi bi-calendar-week"></i> Puedes gastar aprox. por semana
+            <i class="bi bi-calendar-week"></i> Presupuesto disponible por semana (estimado)
           </p>
           <p id="weeklyBudget" class="metric-value mt-2 break-words font-space text-3xl font-bold">$ 0</p>
         </article>
 
         <article class="card metric rounded-2xl border border-slate-200/80 bg-white/85 p-4 shadow-[0_18px_40px_rgba(15,38,42,0.12)] backdrop-blur">
           <p class="metric-label inline-flex items-center gap-1.5 text-xs font-medium text-slate-600">
-            <i class="bi bi-calendar-day"></i> Puedes gastar aprox. por dia
+            <i class="bi bi-calendar-day"></i> Presupuesto disponible por dia (estimado)
           </p>
           <p id="dailyBudget" class="metric-value mt-2 break-words font-space text-3xl font-bold">$ 0</p>
         </article>
@@ -207,7 +207,7 @@
             <div>
               <h2 class="section-title font-space text-2xl font-bold text-slate-900">Detalle de gastos</h2>
               <p class="section-subtitle mt-1 text-sm text-slate-700">
-                Todos tus items en una tabla, con filtro por categoria.
+                Todos tus gastos en una tabla, con filtro por categoria.
               </p>
             </div>
 
@@ -221,7 +221,7 @@
                   <option value="all">Todas</option>
                   <option value="fijos">Gastos fijos</option>
                   <option value="variables">Gastos variables</option>
-                  <option value="semifijos">Fijos variables</option>
+                  <option value="semifijos">Gastos semifijos</option>
                 </select>
               </label>
 
@@ -242,7 +242,7 @@
             <table class="expense-table min-w-full border-separate border-spacing-y-2 text-sm">
               <thead>
                 <tr class="text-left text-xs font-semibold uppercase tracking-[0.06em] text-slate-500">
-                  <th class="px-3 py-1">Item</th>
+                  <th class="px-3 py-1">Gasto</th>
                   <th class="px-3 py-1">Categoria</th>
                   <th class="px-3 py-1">Monto</th>
                   <th class="px-3 py-1">Acciones</th>
@@ -259,12 +259,12 @@
           class="card chart-card rounded-2xl border border-slate-200/80 bg-white/85 p-4 shadow-[0_18px_40px_rgba(15,38,42,0.12)] backdrop-blur xl:col-span-4"
         >
           <header class="chart-head">
-            <h3 class="font-space text-xl font-bold text-slate-900">Donut por categoria</h3>
-            <p class="mt-1 text-sm text-slate-700">Distribucion del gasto mensual en uso.</p>
+            <h3 class="font-space text-xl font-bold text-slate-900">Gastos por categoria</h3>
+            <p class="mt-1 text-sm text-slate-700">Distribucion del gasto mensual (en uso).</p>
           </header>
 
           <div class="donut-wrap mt-4 grid place-items-center">
-            <div id="categoryDonut" class="donut-chart" role="img" aria-label="Grafico donut de categorias">
+            <div id="categoryDonut" class="donut-chart" role="img" aria-label="Grafico de gastos por categorias">
               <div class="donut-center">
                 <p>Total</p>
                 <strong id="donutTotal">$ 0</strong>
@@ -310,12 +310,12 @@
             >
               <option value="fijos">Gastos fijos</option>
               <option value="variables">Gastos variables</option>
-              <option value="semifijos">Fijos variables</option>
+              <option value="semifijos">Gastos semifijos</option>
             </select>
           </label>
 
           <label class="grid gap-1 text-xs text-slate-600">
-            Item
+            Gasto
             <input
               id="nameInput"
               class="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-brand-500"
@@ -347,7 +347,7 @@
             type="submit"
             class="primary-btn full inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-brand-500 bg-brand-500 px-4 py-2.5 font-semibold text-white transition hover:bg-brand-700 hover:border-brand-700 md:col-span-2"
           >
-            <i class="bi bi-check2-circle"></i> Guardar item
+            <i class="bi bi-check2-circle"></i> Guardar gasto
           </button>
         </form>
       </section>
@@ -417,7 +417,7 @@
             </div>
             <h3 class="font-space text-xl font-bold text-slate-900">1. Carga tus gastos rapido</h3>
             <p class="text-slate-700">
-              Usa <strong>Agregar gasto</strong> para registrar cada item con categoria y monto. En segundos tienes tu foto mensual.
+              Usa <strong>Agregar gasto</strong> para registrar cada gasto con categoria y monto. En segundos tienes tu foto mensual.
             </p>
           </article>
 
@@ -436,7 +436,7 @@
             </div>
             <h3 class="font-space text-xl font-bold text-slate-900">2. Mira tu balance al instante</h3>
             <p class="text-slate-700">
-              Las tarjetas KPI y la donut te muestran gasto mensual, saldo disponible y distribucion por categoria.
+              Las tarjetas KPI y el grafico te muestran gasto mensual, saldo disponible y distribucion por categoria.
             </p>
           </article>
 
@@ -515,16 +515,16 @@
             <button
               class="edit-item-btn mini-btn inline-grid h-9 w-9 place-items-center rounded-lg border border-slate-200 bg-white text-slate-700"
               type="button"
-              title="Editar item"
-              aria-label="Editar item"
+              title="Editar gasto"
+              aria-label="Editar gasto"
             >
               <i class="bi bi-pencil"></i>
             </button>
             <button
               class="delete-item-btn mini-btn danger inline-grid h-9 w-9 place-items-center rounded-lg border border-rose-200 bg-white text-rose-700"
               type="button"
-              title="Eliminar item"
-              aria-label="Eliminar item"
+              title="Eliminar gasto"
+              aria-label="Eliminar gasto"
             >
               <i class="bi bi-trash3"></i>
             </button>
@@ -574,8 +574,8 @@
             <button
               class="delete-item-btn mini-btn mobile-action-btn danger inline-grid place-items-center rounded-lg border border-rose-200 bg-white text-rose-700"
               type="button"
-              aria-label="Eliminar item"
-              title="Eliminar item"
+              aria-label="Eliminar gasto"
+              title="Eliminar gasto"
             >
               <i class="bi bi-trash3"></i>
             </button>
@@ -585,7 +585,7 @@
     </template>
 
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-    <script src="app.js?v=20260308-4"></script>
+    <script src="app.js?v=20260308-5"></script>
   </body>
 </html>
 

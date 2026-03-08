@@ -3,11 +3,11 @@
 Aplicacion web para controlar gastos mensuales por categorias.
 
 ## Funcionalidades
-- Alta, edicion y eliminacion de items.
-- Categorias: gastos fijos, fijos variables y gastos variables.
-- Filtros por categoria y estado.
-- Resumen mensual: gasto total en uso, saldo disponible, estimado semanal y diario.
-- Donut chart por categoria.
+- Alta, edicion y eliminacion de gastos.
+- Categorias: gastos fijos, gastos semifijos y gastos variables.
+- Filtro por categoria.
+- Resumen mensual: gasto total en uso, saldo disponible y presupuesto estimado semanal y diario.
+- Grafico de gastos por categoria.
 - Opcion para ocultar/mostrar sueldo mensual.
 - Boton de descarga con exportacion de reporte a CSV o PDF.
 - Datos guardados en `localStorage` del navegador.

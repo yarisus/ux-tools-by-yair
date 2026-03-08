@@ -12,7 +12,7 @@ const CATEGORY_CONFIG = {
     color: "var(--cat-variables)"
   },
   semifijos: {
-    label: "Fijos variables",
+    label: "Gastos semifijos",
     help: "Pagos recurrentes, pero no siempre iguales (ej: tarjeta o servicios con consumo).",
     color: "var(--cat-semifijos)"
   }
@@ -127,6 +127,7 @@ expenseForm.addEventListener("submit", (event) => {
   const amount = Number(amountInput.value || 0);
 
   if (!name || amount < 0 || !CATEGORY_CONFIG[category]) {
+    showToast("Revisa los campos: nombre obligatorio y monto mayor o igual a 0.", true);
     return;
   }
 
@@ -139,7 +140,7 @@ expenseForm.addEventListener("submit", (event) => {
       if (!item.status) {
         item.status = "en-uso";
       }
-      showToast("Item actualizado.");
+      showToast("Gasto actualizado correctamente.");
     }
   } else {
     state.items.push({
@@ -149,7 +150,7 @@ expenseForm.addEventListener("submit", (event) => {
       amount,
       status: "en-uso"
     });
-    showToast("Item guardado.");
+    showToast("Gasto guardado correctamente.");
   }
 
   saveState();
@@ -158,7 +159,9 @@ expenseForm.addEventListener("submit", (event) => {
 });
 
 resetDataBtn.addEventListener("click", () => {
-  const confirmReset = window.confirm("Seguro que quieres reiniciar todos los datos?");
+  const confirmReset = window.confirm(
+    "Se eliminaran sueldo y gastos guardados en este dispositivo. Esta accion no se puede deshacer. Quieres continuar?"
+  );
   if (!confirmReset) {
     return;
   }
@@ -168,7 +171,7 @@ resetDataBtn.addEventListener("click", () => {
   salaryInput.value = 0;
   saveState();
   render();
-  showToast("Datos reiniciados.");
+  showToast("Datos borrados.");
 });
 
 categoryFilter.addEventListener("change", () => {
@@ -409,7 +412,7 @@ function setExpenseFormMode(mode) {
   if (expenseSubmitBtn) {
     expenseSubmitBtn.innerHTML = isEdit
       ? '<i class="bi bi-check2-circle"></i> Guardar cambios'
-      : '<i class="bi bi-check2-circle"></i> Guardar item';
+      : '<i class="bi bi-check2-circle"></i> Guardar gasto';
   }
 }
 
@@ -789,7 +792,7 @@ function renderExpenseTable() {
     const cell = document.createElement("td");
     cell.colSpan = 4;
     cell.className = "table-empty";
-    cell.innerHTML = '<i class="bi bi-inbox"></i> No hay items para este filtro.';
+    cell.innerHTML = '<i class="bi bi-inbox"></i> No hay gastos para este filtro. Prueba otra categoria o agrega un gasto.';
     row.appendChild(cell);
     expenseTableBody.appendChild(row);
     return;
@@ -809,7 +812,8 @@ function renderExpenseMobileList() {
   if (!filteredItems.length) {
     const empty = document.createElement("article");
     empty.className = "mobile-expense-card";
-    empty.innerHTML = '<p class="table-empty"><i class="bi bi-inbox"></i> No hay items para este filtro.</p>';
+    empty.innerHTML =
+      '<p class="table-empty"><i class="bi bi-inbox"></i> No hay gastos para este filtro. Prueba otra categoria o agrega un gasto.</p>';
     expenseMobileList.appendChild(empty);
     return;
   }
@@ -858,7 +862,7 @@ function populateItemNode(node, item) {
 
   if (deleteItemBtn) {
     deleteItemBtn.addEventListener("click", () => {
-      const confirmed = window.confirm(`Eliminar "${item.name}"?`);
+      const confirmed = window.confirm(`Eliminar "${item.name}"? Esta accion no se puede deshacer.`);
       if (!confirmed) {
         return;
       }
@@ -866,7 +870,7 @@ function populateItemNode(node, item) {
       state.items = state.items.filter((entry) => entry.id !== item.id);
       saveState();
       render();
-      showToast("Item eliminado.");
+      showToast("Gasto eliminado.");
     });
   }
 
@@ -1073,7 +1077,7 @@ function csvEscape(value) {
 function exportCsv() {
   const rows = getFilteredItems();
   const lines = [];
-  lines.push(["item", "categoria", "estado", "monto"].map(csvEscape).join(","));
+  lines.push(["gasto", "categoria", "estado", "monto"].map(csvEscape).join(","));
 
   for (const item of rows) {
     lines.push(
@@ -1088,7 +1092,7 @@ function exportCsv() {
 
   const csv = `\ufeff${lines.join("\r\n")}`;
   downloadBlob(csv, `mis-gastos-${dateStamp()}.csv`, "text/csv;charset=utf-8");
-  showToast("CSV exportado.");
+  showToast("Archivo CSV descargado.");
 }
 
 function cutText(text, max) {
@@ -1103,9 +1107,11 @@ function cutText(text, max) {
 function exportPdf() {
   const jsPdf = window.jspdf && window.jspdf.jsPDF;
   if (!jsPdf) {
-    showToast("No se pudo cargar el motor PDF.", true);
+    showToast("No pudimos generar el PDF. Intenta de nuevo.", true);
     return;
   }
+
+  showToast("Generando archivo...");
 
   const doc = new jsPdf({ unit: "pt", format: "a4" });
   const rows = getFilteredItems();
@@ -1128,13 +1134,13 @@ function exportPdf() {
     y += 16;
     doc.text(`Sueldo mensual: ${money(state.salary)}`, left, y);
     y += 14;
-    doc.text(`Gasto mensual en uso: ${money(monthlySpend)}`, left, y);
+    doc.text(`Gasto mensual (en uso): ${money(monthlySpend)}`, left, y);
     y += 14;
     doc.text(`Saldo disponible: ${money(available)}`, left, y);
 
     y += 20;
     doc.setFont("helvetica", "bold");
-    doc.text("Item", 40, y);
+    doc.text("Gasto", 40, y);
     doc.text("Categoria", 235, y);
     doc.text("Estado", 360, y);
     doc.text("Monto", 540, y, { align: "right" });
@@ -1150,7 +1156,7 @@ function exportPdf() {
   doc.setFontSize(10);
 
   if (!rows.length) {
-    doc.text("No hay items para el filtro actual.", left, y);
+    doc.text("No hay gastos para el filtro actual.", left, y);
   }
 
   for (const item of rows) {
@@ -1173,7 +1179,7 @@ function exportPdf() {
   }
 
   doc.save(`mis-gastos-${dateStamp()}.pdf`);
-  showToast("PDF exportado.");
+  showToast("Archivo PDF descargado.");
 }
 
 function showToast(message, isError = false) {
