@@ -1,0 +1,15 @@
+﻿<svg width="1200" height="400" viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <rect width="1200" height="400" rx="36" fill="#F8FAFF"/>
+  <g transform="translate(72 76)">
+    <rect x="0" y="0" width="248" height="248" rx="60" fill="#3C499D"/>
+    <circle cx="124" cy="124" r="72" fill="#FFFFFF"/>
+    <circle cx="124" cy="124" r="52" fill="#3C499D"/>
+    <circle cx="124" cy="124" r="32" fill="#FFFFFF"/>
+    <path d="M124 46v-22M202 124h22M124 224v22M46 124H24" stroke="#A8B4FF" stroke-width="10" stroke-linecap="round"/>
+    <path d="M170 78l16-16M170 170l16 16M78 170l-16 16M78 78L62 62" stroke="#A8B4FF" stroke-width="10" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(370 118)">
+    <text x="0" y="92" font-family="Montserrat, Poppins, Segoe UI, Arial, sans-serif" font-size="108" font-weight="800" fill="#16213F">Dinaria</text>
+    <text x="2" y="146" font-family="Montserrat, Poppins, Segoe UI, Arial, sans-serif" font-size="34" font-weight="500" fill="#5C6788">Orden claro para cada peso</text>
+  </g>
+</svg>

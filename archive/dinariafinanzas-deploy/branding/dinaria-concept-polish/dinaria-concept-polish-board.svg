@@ -1,0 +1,55 @@
+
+<svg width="1320" height="1120" viewBox="0 0 1320 1120" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <rect width="1320" height="1120" fill="#EEF2FF"/>
+  <text x="20" y="58" font-family="Poppins, Montserrat, Segoe UI, Arial, sans-serif" font-size="44" font-weight="700" fill="#0F172A">Dinaria - 3 variantes pulidas del concepto</text>
+  <text x="20" y="95" font-family="Poppins, Montserrat, Segoe UI, Arial, sans-serif" font-size="22" fill="#475569">Misma idea (flechas + D), con mejor equilibrio, legibilidad y escalabilidad</text>
+  
+    <g transform="translate(20 140)">
+      <rect width="1280" height="280" rx="24" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <g transform="translate(40 80)"><svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" fill="none">
+      <defs>
+        <linearGradient id="g-P1" x1="18" y1="20" x2="100" y2="104" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#2563EB"/>
+          <stop offset="100%" stop-color="#1D4ED8"/>
+        </linearGradient>
+      </defs>
+      <path d="M34 18h53l16 16-12 12-10-10H45l-8 40 12 12-16 16-20-20z" fill="url(#g-P1)"/>
+      <path d="M31 102h53c19 0 32-12 36-28 3-11 1-23-7-33l-12 12c2 4 2 9 1 14-2 8-9 16-18 16H50l-10-10-16 16z" fill="url(#g-P1)"/>
+      <path d="M44 42h29c10 0 16 6 16 15 0 4-2 8-4 11l-24 24H40l16-16h9l12-12c1-1 2-3 2-4 0-4-2-7-8-7H44z" fill="#FFFFFF"/>
+    </svg></g>
+      <text x="210" y="146" font-family="Poppins, Montserrat, Segoe UI, Arial, sans-serif" font-size="84" font-weight="700" fill="#1E3A8A">Dinaria</text>
+      <text x="214" y="186" font-family="Poppins, Montserrat, Segoe UI, Arial, sans-serif" font-size="26" fill="#475569">P1 - Balanced Flow</text>
+      <text x="214" y="220" font-family="Poppins, Montserrat, Segoe UI, Arial, sans-serif" font-size="20" fill="#64748B">Primary #1D4ED8 | Secondary #2563EB</text>
+    </g>
+  
+    <g transform="translate(20 450)">
+      <rect width="1280" height="280" rx="24" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <g transform="translate(40 80)"><svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" fill="none">
+      <path d="M35 18h52l16 16-12 12-10-10H46l-8 39 11 11-16 16-20-20z" fill="#1E40AF"/>
+      <path d="M30 101h54c18 0 30-11 34-27 3-11 1-23-7-32L99 54c2 3 2 8 1 13-2 8-8 15-17 15H50l-10-10-16 16z" fill="#3B82F6"/>
+      <path d="M45 42h28c10 0 16 6 16 15 0 4-2 8-4 11L61 92H41l15-15h8l12-12c2-2 3-3 3-5 0-4-3-7-9-7H45z" fill="#FFFFFF"/>
+    </svg></g>
+      <text x="210" y="146" font-family="Poppins, Montserrat, Segoe UI, Arial, sans-serif" font-size="84" font-weight="700" fill="#1E3A8A">Dinaria</text>
+      <text x="214" y="186" font-family="Poppins, Montserrat, Segoe UI, Arial, sans-serif" font-size="26" fill="#475569">P2 - Flat Precision</text>
+      <text x="214" y="220" font-family="Poppins, Montserrat, Segoe UI, Arial, sans-serif" font-size="20" fill="#64748B">Primary #1E40AF | Secondary #3B82F6</text>
+    </g>
+  
+    <g transform="translate(20 760)">
+      <rect width="1280" height="280" rx="24" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <g transform="translate(40 80)"><svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" fill="none">
+    <defs>
+      <linearGradient id="g-P3" x1="14" y1="16" x2="106" y2="106" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#38BDF8"/>
+        <stop offset="100%" stop-color="#2563EB"/>
+      </linearGradient>
+    </defs>
+    <path d="M35 18h50c2 0 4 1 6 2l14 14c2 2 2 5 0 7L95 51c-2 2-5 2-7 0l-7-7H47l-7 33 9 9c2 2 2 5 0 7L38 104c-2 2-5 2-7 0L13 86c-2-2-2-4-2-7l11-54c1-4 4-7 8-7z" fill="url(#g-P3)"/>
+    <path d="M30 102h54c19 0 32-12 36-28 3-10 1-22-6-31-2-3-6-3-9 0L95 53c-2 2-2 4-1 6 2 3 2 7 1 11-2 8-9 15-17 15H51l-8-8c-2-2-5-2-7 0L20 92c-3 3-2 8 1 10 3 1 6 0 9 0z" fill="url(#g-P3)"/>
+    <path d="M45 43h28c10 0 16 6 16 15 0 5-2 9-5 12L61 93H41l16-16h9l11-11c2-2 3-4 3-6 0-4-3-8-10-8H45z" fill="#FFFFFF"/>
+  </svg></g>
+      <text x="210" y="146" font-family="Poppins, Montserrat, Segoe UI, Arial, sans-serif" font-size="84" font-weight="700" fill="#1E3A8A">Dinaria</text>
+      <text x="214" y="186" font-family="Poppins, Montserrat, Segoe UI, Arial, sans-serif" font-size="26" fill="#475569">P3 - Friendly Rounded</text>
+      <text x="214" y="220" font-family="Poppins, Montserrat, Segoe UI, Arial, sans-serif" font-size="20" fill="#64748B">Primary #2563EB | Secondary #38BDF8</text>
+    </g>
+  
+</svg>

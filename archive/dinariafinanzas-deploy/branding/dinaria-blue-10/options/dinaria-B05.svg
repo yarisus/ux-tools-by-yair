@@ -1,0 +1,27 @@
+
+<svg width="1280" height="430" viewBox="0 0 1280 430" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <rect width="1280" height="430" rx="28" fill="#F8FAFC"/>
+  <g transform="translate(78 155)">
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <circle cx="60" cy="60" r="54" fill="#EAF2FF"/>
+  <path d="M 30.09 46.05 A 33 33 0 0 1 91.01 71.29" stroke="#0EA5E9" stroke-width="18" stroke-linecap="round"/>
+  <path d="M 87.99 77.49 A 33 33 0 0 1 28.12 51.46" stroke="#2563EB" stroke-width="18" stroke-linecap="round"/>
+  <path d="M 91.01 71.29 L 81.71 73.17 L 85.09 63.86 Z" fill="#0EA5E9"/>
+  <path d="M 28.12 51.46 L 37.23 48.77 L 34.67 58.34 Z" fill="#2563EB"/>
+  <path d="
+    M 40 30
+    H 52
+    C 69 30, 81 41, 81 60
+    C 81 79, 69 90, 52 90
+    H 40
+    V 74
+    H 50
+    C 60 74, 66 68, 66 60
+    C 66 52, 60 46, 50 46
+    H 40
+    Z" fill="#FFFFFF"/>
+</svg></g>
+  <text x="245" y="246" font-family="Poppins, Montserrat, Segoe UI, Arial, sans-serif" font-size="112" font-weight="700" fill="#0EA5E9">Dinaria</text>
+  <text x="248" y="292" font-family="Poppins, Montserrat, Segoe UI, Arial, sans-serif" font-size="30" font-weight="500" fill="#475569">Finanzas claras para todos</text>
+  <text x="248" y="334" font-family="Poppins, Montserrat, Segoe UI, Arial, sans-serif" font-size="24" font-weight="600" fill="#64748B">B05 - Sky Ledger</text>
+</svg>

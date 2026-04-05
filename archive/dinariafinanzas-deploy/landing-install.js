@@ -1,15 +1,11 @@
 (() => {
   const installButton = document.getElementById("installCtaBtn");
-  const viewDemoLink = document.getElementById("viewDemoLink");
   const installNote = document.getElementById("installNote");
   const installHelp = document.getElementById("installHelp");
   const installHelpTitle = document.getElementById("installHelpTitle");
   const installHelpBody = document.getElementById("installHelpBody");
   const installHelpSteps = document.getElementById("installHelpSteps");
-  const funnelConfig = window.DinariaFunnelConfig;
-  const appUrl = funnelConfig?.getAppPageUrl("/index.html") || new URL("./index.html", window.location.href).toString();
-  const demoUrl = funnelConfig?.getFunnelPageUrl("/demo.html") || new URL("./demo.html", window.location.href).toString();
-  const usesSplitOrigins = Boolean(funnelConfig?.usesSplitOrigins);
+  const appUrl = new URL("./index.html", window.location.href).toString();
 
   let deferredPrompt = null;
 
@@ -54,69 +50,53 @@
   }
 
   function syncInstallCopy() {
-    if (viewDemoLink) {
-      viewDemoLink.href = demoUrl;
-    }
-
     if (!installButton) {
       return;
     }
 
     if (isStandaloneDisplayMode()) {
-      installButton.textContent = "Abrir app";
-      setInstallMessage("Dinaria ya está instalada. Abrí la app real.");
-      hideInstallHelp();
-      return;
-    }
-
-    if (usesSplitOrigins) {
-      installButton.textContent = "Abrir app";
-      setInstallMessage("Abrí la app de Dinaria para instalarla desde ahí.");
+      installButton.textContent = "Open App";
+      setInstallMessage("Dinaria is already installed. Open the real app.");
       hideInstallHelp();
       return;
     }
 
     if (deferredPrompt) {
-      installButton.textContent = "Instalar app";
-      setInstallMessage("Instalá Dinaria y usá la app completa en tu celular.");
+      installButton.textContent = "Install App";
+      setInstallMessage("Install Dinaria and use the full app on your phone.");
       hideInstallHelp();
       return;
     }
 
     if (isIOS && isSafari) {
-      installButton.textContent = "Agregar a inicio";
-      setInstallMessage("Usá el menú Compartir de Safari para instalar la app completa.");
+      installButton.textContent = "Add to Home Screen";
+      setInstallMessage("Use Safari's Share menu to install the full app.");
       return;
     }
 
     if (isIOS) {
-      installButton.textContent = "Abrir en Safari";
-      setInstallMessage("Para instalar Dinaria en iPhone, primero abrí esta página en Safari.", true);
+      installButton.textContent = "Open in Safari";
+      setInstallMessage("To install Dinaria on iPhone, first open this page in Safari.", true);
       return;
     }
 
     if (isInAppBrowser) {
-      installButton.textContent = "Abrir en navegador";
-      setInstallMessage("Abrí esta página en Chrome o Safari para instalar Dinaria.", true);
+      installButton.textContent = "Open in Browser";
+      setInstallMessage("Open this page in Chrome or Safari to install Dinaria.", true);
       return;
     }
 
     if (isAndroid) {
-      installButton.textContent = "Instalar app";
-      setInstallMessage("Si Chrome no muestra el aviso, usá el menú del navegador y elegí 'Instalar app'.");
+      installButton.textContent = "Install App";
+      setInstallMessage("If Chrome does not show a prompt, use the browser menu and choose 'Install app'.");
       return;
     }
 
-    installButton.textContent = "Abrir app";
-    setInstallMessage("Dinaria está pensada principalmente para usarla en el celular.");
+    installButton.textContent = "Open App";
+    setInstallMessage("Dinaria is designed mainly for mobile devices.");
   }
 
   window.addEventListener("beforeinstallprompt", (event) => {
-    if (usesSplitOrigins) {
-      event.preventDefault();
-      return;
-    }
-
     event.preventDefault();
     deferredPrompt = event;
     syncInstallCopy();
@@ -126,19 +106,14 @@
     deferredPrompt = null;
     syncInstallCopy();
     showInstallHelp(
-      "Dinaria ya está instalada",
-      "Ahora podés abrir Dinaria desde tu pantalla de inicio.",
+      "Dinaria installed",
+      "You can now open Dinaria from your home screen.",
       []
     );
   });
 
   installButton?.addEventListener("click", async () => {
     if (isStandaloneDisplayMode()) {
-      window.location.href = appUrl;
-      return;
-    }
-
-    if (usesSplitOrigins) {
       window.location.href = appUrl;
       return;
     }
@@ -150,22 +125,22 @@
       syncInstallCopy();
 
       if (choice?.outcome === "accepted") {
-        setInstallMessage("Instalando Dinaria...");
+        setInstallMessage("Installing Dinaria...");
         hideInstallHelp();
       } else {
-        setInstallMessage("Podés instalar Dinaria en cualquier momento desde esta página.");
+        setInstallMessage("You can install Dinaria anytime from this page.");
       }
       return;
     }
 
     if (isIOS && isSafari) {
       showInstallHelp(
-        "Agregá Dinaria a tu pantalla de inicio",
-        "Safari no muestra el aviso de instalación automático.",
+        "Add Dinaria to your Home Screen",
+        "Safari does not show the standard install prompt for PWAs.",
         [
-          "Tocá el botón Compartir en Safari.",
-          "Bajá y elegí 'Agregar a pantalla de inicio'.",
-          "Confirmá para guardar Dinaria en tu celular."
+          "Tap the Share button in Safari.",
+          "Scroll down and choose 'Add to Home Screen'.",
+          "Confirm to save Dinaria on your phone."
         ]
       );
       return;
@@ -173,12 +148,12 @@
 
     if (isIOS) {
       showInstallHelp(
-        "Abrí esta página en Safari",
-        "La instalación en iPhone funciona desde Safari.",
+        "Open this page in Safari",
+        "Installation on iPhone works through Safari.",
         [
-          "Abrí el menú del navegador de esta app.",
-          "Elegí 'Abrir en Safari'.",
-          "Después elegí 'Agregar a pantalla de inicio'."
+          "Open the browser menu for this app.",
+          "Choose 'Open in Safari'.",
+          "Then choose 'Add to Home Screen'."
         ]
       );
       return;
@@ -186,12 +161,12 @@
 
     if (isInAppBrowser) {
       showInstallHelp(
-        "Abrí en tu navegador",
-        "Los navegadores integrados suelen bloquear la instalación.",
+        "Open in your browser",
+        "Embedded browsers usually block the install flow.",
         [
-          "Abrí esta página en Chrome o Safari.",
-          "Volvé ahí a Dinaria.",
-          "Después usá de nuevo el botón para instalar."
+          "Open this page in Chrome or Safari.",
+          "Return to Dinaria there.",
+          "Then use the install button again."
         ]
       );
       return;
@@ -199,12 +174,12 @@
 
     if (isAndroid) {
       showInstallHelp(
-        "Instalá Dinaria desde Chrome",
-        "Algunos navegadores en Android no muestran el aviso automáticamente.",
+        "Install Dinaria from Chrome",
+        "Some Android browsers do not show the prompt automatically.",
         [
-          "Abrí el menú del navegador.",
-          "Elegí 'Instalar app' o 'Agregar a pantalla de inicio'.",
-          "Confirmá la instalación."
+          "Open the browser menu.",
+          "Choose 'Install app' or 'Add to Home screen'.",
+          "Confirm the installation."
         ]
       );
       return;

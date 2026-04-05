@@ -1,0 +1,27 @@
+
+<svg width="1280" height="430" viewBox="0 0 1280 430" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <rect width="1280" height="430" rx="28" fill="#F8FAFC"/>
+  <g transform="translate(78 155)">
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <circle cx="60" cy="60" r="54" fill="#EAF2FF"/>
+  <path d="M 30.09 46.05 A 33 33 0 0 1 90.60 72.36" stroke="#1E40AF" stroke-width="19" stroke-linecap="round"/>
+  <path d="M 87.99 77.49 A 33 33 0 0 1 27.72 53.14" stroke="#38BDF8" stroke-width="19" stroke-linecap="round"/>
+  <path d="M 90.60 72.36 L 81.23 73.92 L 84.94 64.74 Z" fill="#1E40AF"/>
+  <path d="M 27.72 53.14 L 36.67 49.98 L 34.61 59.66 Z" fill="#38BDF8"/>
+  <path d="
+    M 40 30
+    H 52
+    C 69 30, 81 41, 81 60
+    C 81 79, 69 90, 52 90
+    H 40
+    V 74
+    H 50
+    C 60 74, 66 68, 66 60
+    C 66 52, 60 46, 50 46
+    H 40
+    Z" fill="#FFFFFF"/>
+</svg></g>
+  <text x="245" y="246" font-family="Poppins, Montserrat, Segoe UI, Arial, sans-serif" font-size="112" font-weight="700" fill="#1E40AF">Dinaria</text>
+  <text x="248" y="292" font-family="Poppins, Montserrat, Segoe UI, Arial, sans-serif" font-size="30" font-weight="500" fill="#475569">Finanzas claras para todos</text>
+  <text x="248" y="334" font-family="Poppins, Montserrat, Segoe UI, Arial, sans-serif" font-size="24" font-weight="600" fill="#64748B">B09 - Deep Horizon</text>
+</svg>

@@ -1,0 +1,15 @@
+{
+  "name": "dinaria-expense-webapp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dinaria - Storybook local para design system y componentes",
+  "scripts": {
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "devDependencies": {
+    "@storybook/html-vite": "10.2.17",
+    "storybook": "10.2.17",
+    "vite": "7.3.1"
+  }
+}

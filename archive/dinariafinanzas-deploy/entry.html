@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#213196" />
+    <title>Dinaria | Entry</title>
+    <link rel="stylesheet" href="./assets/fonts/fonts.css?v=20260313-02" />
+    <link rel="stylesheet" href="./design-system/tokens.css?v=20260403-03" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+      }
+
+      body {
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        font-family: var(--ds-font-body);
+        background:
+          radial-gradient(circle at top, rgba(33, 49, 150, 0.12), transparent 30%),
+          linear-gradient(180deg, #f7f9ff 0%, #eef3ff 100%);
+        color: var(--ds-text-primary);
+      }
+
+      .entry-status {
+        width: min(100%, 360px);
+        padding: 28px 24px;
+        border: 1px solid rgba(33, 49, 150, 0.1);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.92);
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+        text-align: center;
+      }
+
+      .entry-logo {
+        width: 48px;
+        height: 48px;
+        margin: 0 auto 16px;
+        display: block;
+      }
+
+      .entry-title {
+        margin: 0;
+        font-size: 24px;
+        line-height: 1.1;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+      }
+
+      .entry-copy {
+        margin: 12px 0 0;
+        color: var(--ds-text-secondary);
+        font-size: 15px;
+        line-height: 1.5;
+      }
+
+      .entry-links {
+        margin-top: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .entry-link {
+        min-height: 42px;
+        padding: 0 14px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(33, 49, 150, 0.12);
+        background: rgba(33, 49, 150, 0.06);
+        color: var(--ds-brand-600);
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+    </style>
+    <script src="./entry-funnel-tracking.js"></script>
+    <script src="./entry-router.js"></script>
+  </head>
+  <body>
+    <main class="entry-status" aria-label="Dinaria entry page">
+      <img class="entry-logo" src="./assets/brand/dinaria-isotipo.svg?v=20260313-02" alt="Dinaria" />
+      <h1 class="entry-title">Opening Dinaria</h1>
+      <p class="entry-copy">
+        We are sending you to the best Dinaria entry for this device.
+      </p>
+      <noscript>
+        <div class="entry-links">
+          <a class="entry-link" href="./landing.html">Mobile landing</a>
+          <a class="entry-link" href="./desktop.html">Desktop page</a>
+          <a class="entry-link" href="./index.html">Open app</a>
+        </div>
+      </noscript>
+    </main>
+  </body>
+</html>

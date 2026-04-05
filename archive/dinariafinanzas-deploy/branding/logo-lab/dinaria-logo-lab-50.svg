@@ -1,0 +1,962 @@
+<svg width="1624" height="2614" viewBox="0 0 1624 2614" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <rect width="1624" height="2614" fill="#EEF2FF"/>
+  <text x="24" y="56" font-family="Inter,Segoe UI,Arial" font-size="42" font-weight="800" fill="#0F172A">Dinaria - Logo Lab (50 exploraciones)</text>
+  <text x="24" y="92" font-family="Inter,Segoe UI,Arial" font-size="20" fill="#475569">Base cromatica #3C499D | objetivo: confianza + cercania + reproducibilidad</text>
+  <text x="24" y="122" font-family="Inter,Segoe UI,Arial" font-size="16" fill="#64748B">Metodologia: 10 familias de simbolo x 5 estilos = 50 variantes</text>
+  
+    <g transform="translate(24 174)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C01</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">D + check | Solido</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#3C499D"/>
+      
+        <path d="M30 22h17c20 0 32 13 32 34 0 21-12 34-32 34H30V22zm15 9H40v38h5c12 0 20-7 20-18S57 31 45 31z" fill="#FFFFFF"/>
+        <path d="M27 71l9 9 16-16" stroke="#3eb7ed" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 9 | Dist 8 | Repro 9</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 8.7</text>
+    </g>
+  
+    <g transform="translate(344 174)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C02</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">D + check | Outline</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#FFFFFF" stroke="#3C499D" stroke-width="4"/>
+      
+        <path d="M30 22h17c20 0 32 13 32 34 0 21-12 34-32 34H30V22zm15 9H40v36h5c12 0 20-7 20-19S57 32 45 31z" fill="#3C499D"/>
+        <path d="M27 71l9 9 16-16" stroke="#16A34A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 9 | Dist 8 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 8.4</text>
+    </g>
+  
+    <g transform="translate(664 174)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C03</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">D + check | Duo</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#e8e9f3"/>
+      
+        <path d="M30 22h17c20 0 32 13 32 34 0 21-12 34-32 34H30V22zm15 10H40v38h5c12 0 20-7 20-19S57 31 45 32z" fill="#3C499D"/>
+        <path d="M27 71l9 9 16-16" stroke="#F59E0B" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 9 | Dist 8 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 8.4</text>
+    </g>
+  
+    <g transform="translate(984 174)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C04</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">D + check | Badge</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <circle cx="48" cy="48" r="46" fill="#3C499D"/>
+      
+        <path d="M30 22h17c20 0 32 13 32 34 0 21-12 34-32 34H30V22zm15 9H40v38h5c12 0 20-7 20-18S57 31 45 31z" fill="#FFFFFF"/>
+        <path d="M27 71l9 9 16-16" stroke="#38c5dd" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 9 | Dist 8 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 8.4</text>
+    </g>
+  
+    <g transform="translate(1304 174)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C05</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">D + check | Redondeado</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="30" fill="#e8e9f3" stroke="#303a7e" stroke-width="2"/>
+      
+        <path d="M30 22h17c20 0 32 13 32 34 0 21-12 34-32 34H30V22zm15 9H40v36h5c12 0 20-7 20-19S57 32 45 31z" fill="#36428d"/>
+        <path d="M27 71l9 9 16-16" stroke="#8B5CF6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 9 | Dist 8 | Repro 9</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 8.7</text>
+    </g>
+  
+    <g transform="translate(24 418)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C06</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Escudo | Solido</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#3C499D"/>
+      
+        <path d="M48 17l26 8v22c0 20-11 34-26 40-15-6-26-20-26-40V25l26-8z" fill="#FFFFFF"/>
+        <rect x="36" y="40" width="24" height="6" rx="3" fill="#f26969"/>
+        <rect x="36" y="51" width="16" height="6" rx="3" fill="#f26969"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 10 | Dist 7 | Repro 9</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 8.7</text>
+    </g>
+  
+    <g transform="translate(344 418)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C07</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Escudo | Outline</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#FFFFFF" stroke="#3C499D" stroke-width="4"/>
+      
+        <path d="M48 17l26 8v22c0 20-11 34-26 40-15-6-26-20-26-40V25l26-8z" fill="#3C499D"/>
+        <rect x="36" y="40" width="24" height="6" rx="3" fill="#10B981"/>
+        <rect x="36" y="51" width="18" height="6" rx="3" fill="#10B981"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 10 | Dist 7 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 8.5</text>
+    </g>
+  
+    <g transform="translate(664 418)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C08</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Escudo | Duo</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#e8e9f3"/>
+      
+        <path d="M48 17l26 8v22c0 20-11 34-26 40-15-6-26-20-26-40V25l26-8z" fill="#3C499D"/>
+        <rect x="36" y="40" width="24" height="6" rx="3" fill="#6366F1"/>
+        <rect x="36" y="51" width="14" height="6" rx="3" fill="#6366F1"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 10 | Dist 7 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 8.5</text>
+    </g>
+  
+    <g transform="translate(984 418)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C09</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Escudo | Badge</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <circle cx="48" cy="48" r="46" fill="#3C499D"/>
+      
+        <path d="M48 17l26 8v22c0 20-11 34-26 40-15-6-26-20-26-40V25l26-8z" fill="#FFFFFF"/>
+        <rect x="36" y="40" width="24" height="6" rx="3" fill="#43c6b8"/>
+        <rect x="36" y="51" width="16" height="6" rx="3" fill="#43c6b8"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 10 | Dist 7 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 8.5</text>
+    </g>
+  
+    <g transform="translate(1304 418)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C10</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Escudo | Redondeado</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="30" fill="#e8e9f3" stroke="#303a7e" stroke-width="2"/>
+      
+        <path d="M48 17l26 8v22c0 20-11 34-26 40-15-6-26-20-26-40V25l26-8z" fill="#36428d"/>
+        <rect x="36" y="40" width="24" height="6" rx="3" fill="#2563EB"/>
+        <rect x="36" y="51" width="18" height="6" rx="3" fill="#2563EB"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 10 | Dist 7 | Repro 9</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 8.7</text>
+    </g>
+  
+    <g transform="translate(24 662)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C11</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Moneda | Solido</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#3C499D"/>
+      
+        <circle cx="48" cy="48" r="26" stroke="#FFFFFF" stroke-width="9" fill="none"/>
+        <path d="M48 22a26 26 0 0 1 22 12" stroke="#3eb7ed" stroke-width="9" stroke-linecap="round" fill="none"/>
+        <path d="M48 74a26 26 0 0 1-22-12" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" fill="none"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 8 | Dist 7 | Repro 9</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.9</text>
+    </g>
+  
+    <g transform="translate(344 662)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C12</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Moneda | Outline</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#FFFFFF" stroke="#3C499D" stroke-width="4"/>
+      
+        <circle cx="48" cy="48" r="26" stroke="#3C499D" stroke-width="10" fill="none"/>
+        <path d="M48 22a26 26 0 0 1 22 12" stroke="#16A34A" stroke-width="10" stroke-linecap="round" fill="none"/>
+        <path d="M48 74a26 26 0 0 1-22-12" stroke="#303a7e" stroke-width="10" stroke-linecap="round" fill="none"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 8 | Dist 7 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.7</text>
+    </g>
+  
+    <g transform="translate(664 662)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C13</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Moneda | Duo</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#e8e9f3"/>
+      
+        <circle cx="48" cy="48" r="26" stroke="#3C499D" stroke-width="9" fill="none"/>
+        <path d="M48 22a26 26 0 0 1 22 12" stroke="#F59E0B" stroke-width="9" stroke-linecap="round" fill="none"/>
+        <path d="M48 74a26 26 0 0 1-22-12" stroke="#333e85" stroke-width="9" stroke-linecap="round" fill="none"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 8 | Dist 7 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.7</text>
+    </g>
+  
+    <g transform="translate(984 662)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C14</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Moneda | Badge</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <circle cx="48" cy="48" r="46" fill="#3C499D"/>
+      
+        <circle cx="48" cy="48" r="26" stroke="#FFFFFF" stroke-width="9" fill="none"/>
+        <path d="M48 22a26 26 0 0 1 22 12" stroke="#38c5dd" stroke-width="9" stroke-linecap="round" fill="none"/>
+        <path d="M48 74a26 26 0 0 1-22-12" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" fill="none"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 8 | Dist 7 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.7</text>
+    </g>
+  
+    <g transform="translate(1304 662)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C15</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Moneda | Redondeado</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="30" fill="#e8e9f3" stroke="#303a7e" stroke-width="2"/>
+      
+        <circle cx="48" cy="48" r="26" stroke="#36428d" stroke-width="10" fill="none"/>
+        <path d="M48 22a26 26 0 0 1 22 12" stroke="#8B5CF6" stroke-width="10" stroke-linecap="round" fill="none"/>
+        <path d="M48 74a26 26 0 0 1-22-12" stroke="#6845b9" stroke-width="10" stroke-linecap="round" fill="none"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 8 | Dist 7 | Repro 9</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.9</text>
+    </g>
+  
+    <g transform="translate(24 906)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C16</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Billetera | Solido</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#3C499D"/>
+      
+        <rect x="20" y="30" width="56" height="38" rx="10" fill="#FFFFFF"/>
+        <rect x="30" y="25" width="44" height="14" rx="7" fill="#f26969"/>
+        <circle cx="62" cy="49" r="4" fill="#FFFFFF"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 8 | Dist 6 | Repro 9</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.6</text>
+    </g>
+  
+    <g transform="translate(344 906)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C17</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Billetera | Outline</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#FFFFFF" stroke="#3C499D" stroke-width="4"/>
+      
+        <rect x="20" y="30" width="56" height="38" rx="10" fill="#3C499D"/>
+        <rect x="30" y="25" width="44" height="14" rx="7" fill="#10B981"/>
+        <circle cx="62" cy="49" r="4" fill="#303a7e"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 8 | Dist 6 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.3</text>
+    </g>
+  
+    <g transform="translate(664 906)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C18</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Billetera | Duo</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#e8e9f3"/>
+      
+        <rect x="20" y="30" width="56" height="38" rx="10" fill="#3C499D"/>
+        <rect x="30" y="25" width="44" height="14" rx="7" fill="#6366F1"/>
+        <circle cx="62" cy="49" r="4" fill="#333e85"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 8 | Dist 6 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.3</text>
+    </g>
+  
+    <g transform="translate(984 906)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C19</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Billetera | Badge</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <circle cx="48" cy="48" r="46" fill="#3C499D"/>
+      
+        <rect x="20" y="30" width="56" height="38" rx="10" fill="#FFFFFF"/>
+        <rect x="30" y="25" width="44" height="14" rx="7" fill="#43c6b8"/>
+        <circle cx="62" cy="49" r="4" fill="#FFFFFF"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 8 | Dist 6 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.3</text>
+    </g>
+  
+    <g transform="translate(1304 906)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C20</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Billetera | Redondeado</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="30" fill="#e8e9f3" stroke="#303a7e" stroke-width="2"/>
+      
+        <rect x="20" y="30" width="56" height="38" rx="10" fill="#36428d"/>
+        <rect x="30" y="25" width="44" height="14" rx="7" fill="#2563EB"/>
+        <circle cx="62" cy="49" r="4" fill="#1c4ab0"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 8 | Dist 6 | Repro 9</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.6</text>
+    </g>
+  
+    <g transform="translate(24 1150)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C21</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Casa + barras | Solido</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#3C499D"/>
+      
+        <path d="M24 46l24-20 24 20v27H24V46z" fill="#FFFFFF"/>
+        <rect x="35" y="52" width="6" height="14" rx="2" fill="#3eb7ed"/>
+        <rect x="44" y="47" width="6" height="19" rx="2" fill="#3eb7ed"/>
+        <rect x="53" y="42" width="6" height="24" rx="2" fill="#3eb7ed"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 8 | Dist 6 | Repro 9</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.6</text>
+    </g>
+  
+    <g transform="translate(344 1150)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C22</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Casa + barras | Outline</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#FFFFFF" stroke="#3C499D" stroke-width="4"/>
+      
+        <path d="M24 46l24-20 24 20v27H24V46z" fill="#3C499D"/>
+        <rect x="35" y="52" width="6" height="14" rx="2" fill="#16A34A"/>
+        <rect x="44" y="47" width="6" height="19" rx="2" fill="#16A34A"/>
+        <rect x="53" y="42" width="6" height="24" rx="2" fill="#16A34A"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 8 | Dist 6 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.3</text>
+    </g>
+  
+    <g transform="translate(664 1150)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C23</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Casa + barras | Duo</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#e8e9f3"/>
+      
+        <path d="M24 46l24-20 24 20v27H24V46z" fill="#3C499D"/>
+        <rect x="35" y="52" width="6" height="14" rx="2" fill="#F59E0B"/>
+        <rect x="44" y="47" width="6" height="19" rx="2" fill="#F59E0B"/>
+        <rect x="53" y="42" width="6" height="24" rx="2" fill="#F59E0B"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 8 | Dist 6 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.3</text>
+    </g>
+  
+    <g transform="translate(984 1150)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C24</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Casa + barras | Badge</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <circle cx="48" cy="48" r="46" fill="#3C499D"/>
+      
+        <path d="M24 46l24-20 24 20v27H24V46z" fill="#FFFFFF"/>
+        <rect x="35" y="52" width="6" height="14" rx="2" fill="#38c5dd"/>
+        <rect x="44" y="47" width="6" height="19" rx="2" fill="#38c5dd"/>
+        <rect x="53" y="42" width="6" height="24" rx="2" fill="#38c5dd"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 8 | Dist 6 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.3</text>
+    </g>
+  
+    <g transform="translate(1304 1150)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C25</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Casa + barras | Redondeado</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="30" fill="#e8e9f3" stroke="#303a7e" stroke-width="2"/>
+      
+        <path d="M24 46l24-20 24 20v27H24V46z" fill="#36428d"/>
+        <rect x="35" y="52" width="6" height="14" rx="2" fill="#8B5CF6"/>
+        <rect x="44" y="47" width="6" height="19" rx="2" fill="#8B5CF6"/>
+        <rect x="53" y="42" width="6" height="24" rx="2" fill="#8B5CF6"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 8 | Dist 6 | Repro 9</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.6</text>
+    </g>
+  
+    <g transform="translate(24 1394)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C26</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Mano + moneda | Solido</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#3C499D"/>
+      
+        <circle cx="56" cy="31" r="11" fill="#f26969"/>
+        <path d="M21 59c8-8 18-9 27-9h22c4 0 7 2 7 6s-3 7-7 7H50" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+        <path d="M21 65h38c7 0 12 2 18 6" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 9 | Dist 8 | Repro 9</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 8.7</text>
+    </g>
+  
+    <g transform="translate(344 1394)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C27</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Mano + moneda | Outline</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#FFFFFF" stroke="#3C499D" stroke-width="4"/>
+      
+        <circle cx="56" cy="31" r="11" fill="#10B981"/>
+        <path d="M21 59c8-8 18-9 27-9h22c4 0 7 2 7 6s-3 7-7 7H50" stroke="#3C499D" stroke-width="3.5" stroke-linecap="round"/>
+        <path d="M21 65h38c7 0 12 2 18 6" stroke="#3C499D" stroke-width="3.5" stroke-linecap="round"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 9 | Dist 8 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 8.4</text>
+    </g>
+  
+    <g transform="translate(664 1394)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C28</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Mano + moneda | Duo</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#e8e9f3"/>
+      
+        <circle cx="56" cy="31" r="11" fill="#6366F1"/>
+        <path d="M21 59c8-8 18-9 27-9h22c4 0 7 2 7 6s-3 7-7 7H50" stroke="#3C499D" stroke-width="4" stroke-linecap="round"/>
+        <path d="M21 65h38c7 0 12 2 18 6" stroke="#3C499D" stroke-width="4" stroke-linecap="round"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 9 | Dist 8 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 8.4</text>
+    </g>
+  
+    <g transform="translate(984 1394)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C29</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Mano + moneda | Badge</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <circle cx="48" cy="48" r="46" fill="#3C499D"/>
+      
+        <circle cx="56" cy="31" r="11" fill="#43c6b8"/>
+        <path d="M21 59c8-8 18-9 27-9h22c4 0 7 2 7 6s-3 7-7 7H50" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+        <path d="M21 65h38c7 0 12 2 18 6" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 9 | Dist 8 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 8.4</text>
+    </g>
+  
+    <g transform="translate(1304 1394)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C30</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Mano + moneda | Redondeado</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="30" fill="#e8e9f3" stroke="#303a7e" stroke-width="2"/>
+      
+        <circle cx="56" cy="31" r="11" fill="#2563EB"/>
+        <path d="M21 59c8-8 18-9 27-9h22c4 0 7 2 7 6s-3 7-7 7H50" stroke="#36428d" stroke-width="4" stroke-linecap="round"/>
+        <path d="M21 65h38c7 0 12 2 18 6" stroke="#36428d" stroke-width="4" stroke-linecap="round"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 9 | Dist 8 | Repro 9</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 8.7</text>
+    </g>
+  
+    <g transform="translate(24 1638)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C31</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Vinculo | Solido</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#3C499D"/>
+      
+        <rect x="24" y="34" width="26" height="24" rx="12" stroke="#FFFFFF" stroke-width="4" fill="none"/>
+        <rect x="46" y="34" width="26" height="24" rx="12" stroke="#3eb7ed" stroke-width="4" fill="none"/>
+        <path d="M44 46h8" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 7 | Dist 8 | Repro 9</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.9</text>
+    </g>
+  
+    <g transform="translate(344 1638)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C32</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Vinculo | Outline</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#FFFFFF" stroke="#3C499D" stroke-width="4"/>
+      
+        <rect x="24" y="34" width="26" height="24" rx="12" stroke="#3C499D" stroke-width="3.5" fill="none"/>
+        <rect x="46" y="34" width="26" height="24" rx="12" stroke="#16A34A" stroke-width="3.5" fill="none"/>
+        <path d="M44 46h8" stroke="#303a7e" stroke-width="3.5" stroke-linecap="round"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 7 | Dist 8 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.6</text>
+    </g>
+  
+    <g transform="translate(664 1638)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C33</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Vinculo | Duo</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#e8e9f3"/>
+      
+        <rect x="24" y="34" width="26" height="24" rx="12" stroke="#3C499D" stroke-width="4" fill="none"/>
+        <rect x="46" y="34" width="26" height="24" rx="12" stroke="#F59E0B" stroke-width="4" fill="none"/>
+        <path d="M44 46h8" stroke="#333e85" stroke-width="4" stroke-linecap="round"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 7 | Dist 8 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.6</text>
+    </g>
+  
+    <g transform="translate(984 1638)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C34</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Vinculo | Badge</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <circle cx="48" cy="48" r="46" fill="#3C499D"/>
+      
+        <rect x="24" y="34" width="26" height="24" rx="12" stroke="#FFFFFF" stroke-width="4" fill="none"/>
+        <rect x="46" y="34" width="26" height="24" rx="12" stroke="#38c5dd" stroke-width="4" fill="none"/>
+        <path d="M44 46h8" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 7 | Dist 8 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.6</text>
+    </g>
+  
+    <g transform="translate(1304 1638)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C35</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Vinculo | Redondeado</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="30" fill="#e8e9f3" stroke="#303a7e" stroke-width="2"/>
+      
+        <rect x="24" y="34" width="26" height="24" rx="12" stroke="#36428d" stroke-width="4" fill="none"/>
+        <rect x="46" y="34" width="26" height="24" rx="12" stroke="#8B5CF6" stroke-width="4" fill="none"/>
+        <path d="M44 46h8" stroke="#6845b9" stroke-width="4" stroke-linecap="round"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 7 | Dist 8 | Repro 9</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.9</text>
+    </g>
+  
+    <g transform="translate(24 1882)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C36</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Calendario $ | Solido</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#3C499D"/>
+      
+        <rect x="23" y="26" width="50" height="46" rx="9" fill="#FFFFFF"/>
+        <rect x="23" y="26" width="50" height="12" rx="8" fill="#f26969"/>
+        <path d="M48 61c4 0 7-2 7-5 0-2-2-4-5-4h-4c-3 0-5-2-5-4 0-3 3-5 7-5" stroke="#FFFFFF" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M48 45v20" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 7 | Dist 7 | Repro 9</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.5</text>
+    </g>
+  
+    <g transform="translate(344 1882)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C37</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Calendario $ | Outline</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#FFFFFF" stroke="#3C499D" stroke-width="4"/>
+      
+        <rect x="23" y="26" width="50" height="46" rx="9" fill="#3C499D"/>
+        <rect x="23" y="26" width="50" height="12" rx="8" fill="#10B981"/>
+        <path d="M48 61c4 0 7-2 7-5 0-2-2-4-5-4h-4c-3 0-5-2-5-4 0-3 3-5 7-5" stroke="#303a7e" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M48 45v20" stroke="#303a7e" stroke-width="3" stroke-linecap="round"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 7 | Dist 7 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.3</text>
+    </g>
+  
+    <g transform="translate(664 1882)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C38</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Calendario $ | Duo</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#e8e9f3"/>
+      
+        <rect x="23" y="26" width="50" height="46" rx="9" fill="#3C499D"/>
+        <rect x="23" y="26" width="50" height="12" rx="8" fill="#6366F1"/>
+        <path d="M48 61c4 0 7-2 7-5 0-2-2-4-5-4h-4c-3 0-5-2-5-4 0-3 3-5 7-5" stroke="#333e85" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M48 45v20" stroke="#333e85" stroke-width="3" stroke-linecap="round"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 7 | Dist 7 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.3</text>
+    </g>
+  
+    <g transform="translate(984 1882)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C39</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Calendario $ | Badge</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <circle cx="48" cy="48" r="46" fill="#3C499D"/>
+      
+        <rect x="23" y="26" width="50" height="46" rx="9" fill="#FFFFFF"/>
+        <rect x="23" y="26" width="50" height="12" rx="8" fill="#43c6b8"/>
+        <path d="M48 61c4 0 7-2 7-5 0-2-2-4-5-4h-4c-3 0-5-2-5-4 0-3 3-5 7-5" stroke="#FFFFFF" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M48 45v20" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 7 | Dist 7 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.3</text>
+    </g>
+  
+    <g transform="translate(1304 1882)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C40</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Calendario $ | Redondeado</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="30" fill="#e8e9f3" stroke="#303a7e" stroke-width="2"/>
+      
+        <rect x="23" y="26" width="50" height="46" rx="9" fill="#36428d"/>
+        <rect x="23" y="26" width="50" height="12" rx="8" fill="#2563EB"/>
+        <path d="M48 61c4 0 7-2 7-5 0-2-2-4-5-4h-4c-3 0-5-2-5-4 0-3 3-5 7-5" stroke="#1c4ab0" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M48 45v20" stroke="#1c4ab0" stroke-width="3" stroke-linecap="round"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 7 | Dist 7 | Repro 9</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.5</text>
+    </g>
+  
+    <g transform="translate(24 2126)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C41</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Pulso | Solido</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#3C499D"/>
+      
+        <circle cx="48" cy="48" r="28" stroke="#FFFFFF" stroke-width="4" fill="none"/>
+        <path d="M26 50h10l4-9 8 16 5-11h17" stroke="#3eb7ed" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 8 | Dist 7 | Repro 9</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.9</text>
+    </g>
+  
+    <g transform="translate(344 2126)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C42</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Pulso | Outline</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#FFFFFF" stroke="#3C499D" stroke-width="4"/>
+      
+        <circle cx="48" cy="48" r="28" stroke="#3C499D" stroke-width="3.5" fill="none"/>
+        <path d="M26 50h10l4-9 8 16 5-11h17" stroke="#16A34A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 8 | Dist 7 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.7</text>
+    </g>
+  
+    <g transform="translate(664 2126)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C43</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Pulso | Duo</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#e8e9f3"/>
+      
+        <circle cx="48" cy="48" r="28" stroke="#3C499D" stroke-width="4" fill="none"/>
+        <path d="M26 50h10l4-9 8 16 5-11h17" stroke="#F59E0B" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 8 | Dist 7 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.7</text>
+    </g>
+  
+    <g transform="translate(984 2126)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C44</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Pulso | Badge</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <circle cx="48" cy="48" r="46" fill="#3C499D"/>
+      
+        <circle cx="48" cy="48" r="28" stroke="#FFFFFF" stroke-width="4" fill="none"/>
+        <path d="M26 50h10l4-9 8 16 5-11h17" stroke="#38c5dd" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 8 | Dist 7 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.7</text>
+    </g>
+  
+    <g transform="translate(1304 2126)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C45</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">Pulso | Redondeado</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="30" fill="#e8e9f3" stroke="#303a7e" stroke-width="2"/>
+      
+        <circle cx="48" cy="48" r="28" stroke="#36428d" stroke-width="4" fill="none"/>
+        <path d="M26 50h10l4-9 8 16 5-11h17" stroke="#8B5CF6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 8 | Dist 7 | Repro 9</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 7.9</text>
+    </g>
+  
+    <g transform="translate(24 2370)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C46</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">D + barras | Solido</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#3C499D"/>
+      
+        <path d="M24 22h18c18 0 30 12 30 30s-12 30-30 30H24V22z" fill="#FFFFFF"/>
+        <rect x="31" y="58" width="6" height="13" rx="2" fill="#f26969"/>
+        <rect x="40" y="52" width="6" height="19" rx="2" fill="#f26969"/>
+        <rect x="49" y="46" width="6" height="25" rx="2" fill="#f26969"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 8 | Dist 8 | Repro 9</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 8.3</text>
+    </g>
+  
+    <g transform="translate(344 2370)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C47</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">D + barras | Outline</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#FFFFFF" stroke="#3C499D" stroke-width="4"/>
+      
+        <path d="M24 22h18c18 0 30 12 30 30s-12 30-30 30H24V22z" fill="#3C499D"/>
+        <rect x="31" y="58" width="6" height="13" rx="2" fill="#10B981"/>
+        <rect x="40" y="52" width="6" height="19" rx="2" fill="#10B981"/>
+        <rect x="49" y="46" width="6" height="25" rx="2" fill="#10B981"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 8 | Dist 8 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 8</text>
+    </g>
+  
+    <g transform="translate(664 2370)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C48</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">D + barras | Duo</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="22" fill="#e8e9f3"/>
+      
+        <path d="M24 22h18c18 0 30 12 30 30s-12 30-30 30H24V22z" fill="#3C499D"/>
+        <rect x="31" y="58" width="6" height="13" rx="2" fill="#6366F1"/>
+        <rect x="40" y="52" width="6" height="19" rx="2" fill="#6366F1"/>
+        <rect x="49" y="46" width="6" height="25" rx="2" fill="#6366F1"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 8 | Dist 8 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 8</text>
+    </g>
+  
+    <g transform="translate(984 2370)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C49</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">D + barras | Badge</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <circle cx="48" cy="48" r="46" fill="#3C499D"/>
+      
+        <path d="M24 22h18c18 0 30 12 30 30s-12 30-30 30H24V22z" fill="#FFFFFF"/>
+        <rect x="31" y="58" width="6" height="13" rx="2" fill="#43c6b8"/>
+        <rect x="40" y="52" width="6" height="19" rx="2" fill="#43c6b8"/>
+        <rect x="49" y="46" width="6" height="25" rx="2" fill="#43c6b8"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 8 | Dist 8 | Repro 8</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 8</text>
+    </g>
+  
+    <g transform="translate(1304 2370)">
+      <rect x="0" y="0" width="296" height="220" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+      <text x="18" y="28" font-family="Inter,Segoe UI,Arial" font-size="14" font-weight="700" fill="#334155">C50</text>
+      <text x="56" y="28" font-family="Inter,Segoe UI,Arial" font-size="13" font-weight="600" fill="#64748B">D + barras | Redondeado</text>
+      <g transform="translate(100 42)">
+    <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="92" height="92" rx="30" fill="#e8e9f3" stroke="#303a7e" stroke-width="2"/>
+      
+        <path d="M24 22h18c18 0 30 12 30 30s-12 30-30 30H24V22z" fill="#36428d"/>
+        <rect x="31" y="58" width="6" height="13" rx="2" fill="#2563EB"/>
+        <rect x="40" y="52" width="6" height="19" rx="2" fill="#2563EB"/>
+        <rect x="49" y="46" width="6" height="25" rx="2" fill="#2563EB"/>
+      
+    </svg>
+  </g>
+      <text x="148" y="156" text-anchor="middle" font-family="Inter,Segoe UI,Arial" font-size="28" font-weight="800" fill="#0F172A">Dinaria</text>
+      <text x="18" y="186" font-family="Inter,Segoe UI,Arial" font-size="12" fill="#64748B">Trust 8 | Dist 8 | Repro 9</text>
+      <text x="245" y="186" text-anchor="end" font-family="Inter,Segoe UI,Arial" font-size="12" font-weight="700" fill="#3C499D">Score 8.3</text>
+    </g>
+  
+</svg>

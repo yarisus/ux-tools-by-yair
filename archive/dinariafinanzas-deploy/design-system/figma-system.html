@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dinaria Design System</title>
+    <link rel="stylesheet" href="../assets/fonts/fonts.css" />
+    <link rel="stylesheet" href="./tokens.css" />
+    <link rel="stylesheet" href="./figma-system.css" />
+    <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+  </head>
+  <body>
+    <main class="ds-page">
+      <section class="ds-canvas ds-canvas--hero">
+        <div class="hero-grid">
+          <div class="hero-brand">
+            <p class="eyebrow">Dinaria Design System</p>
+            <img class="hero-brand-logo" src="../assets/brand/dinaria-isologotipo.svg" alt="Dinaria" />
+            <h1>Una libreria visual clara, amigable y util para una app financiera cotidiana.</h1>
+            <p>
+              Este sistema prioriza claridad, velocidad y confianza. Sirve para disenar y construir
+              Dinaria con la misma logica en desktop y mobile, sin caer en complejidad innecesaria.
+            </p>
+            <div class="hero-pill-list">
+              <span class="hero-pill"><span class="msr">palette</span>Primary #3C499D</span>
+              <span class="hero-pill"><span class="msr">text_fields</span>Nunito</span>
+              <span class="hero-pill"><span class="msr">gesture</span>Rapidez primero</span>
+            </div>
+          </div>
+
+          <div class="hero-preview">
+            <div class="hero-preview-topbar">
+              <img src="../assets/brand/dinaria-isologotipo-white.svg" alt="Dinaria" />
+              <div class="hero-preview-icons">
+                <span class="hero-preview-icon"><span class="msr">chat</span></span>
+                <span class="hero-preview-icon"><span class="msr">dark_mode</span></span>
+                <span class="hero-preview-icon"><span class="msr">account_circle</span></span>
+              </div>
+            </div>
+            <div class="hero-preview-label">Disponible para gastar</div>
+            <div class="hero-preview-value">$1.284.400</div>
+            <div class="hero-preview-meta">Lectura principal del producto. Siempre debe responder: cuanto me queda este mes.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ds-canvas">
+        <div class="section-head">
+          <div>
+            <h2>Fundaciones</h2>
+            <p>Color, tipografia, spacing y elevaciones. Esta es la base que deberia sostener todos los componentes de Dinaria.</p>
+          </div>
+        </div>
+
+        <div class="foundations-grid">
+          <div class="panel block">
+            <h3 class="block-title">Color</h3>
+            <div class="swatch-grid">
+              <div class="swatch">
+                <div class="swatch-color" style="background:#3C499D;"></div>
+                <div class="swatch-meta"><strong>Primary 500</strong><span>#3C499D</span></div>
+              </div>
+              <div class="swatch">
+                <div class="swatch-color" style="background:#334082;"></div>
+                <div class="swatch-meta"><strong>Primary 600</strong><span>#334082</span></div>
+              </div>
+              <div class="swatch">
+                <div class="swatch-color" style="background:#16A34A;"></div>
+                <div class="swatch-meta"><strong>Success</strong><span>#16A34A</span></div>
+              </div>
+              <div class="swatch">
+                <div class="swatch-color" style="background:#E11D48;"></div>
+                <div class="swatch-meta"><strong>Danger</strong><span>#E11D48</span></div>
+              </div>
+              <div class="swatch">
+                <div class="swatch-color" style="background:#2563EB;"></div>
+                <div class="swatch-meta"><strong>Info</strong><span>#2563EB</span></div>
+              </div>
+              <div class="swatch">
+                <div class="swatch-color" style="background:#F4F7FB;"></div>
+                <div class="swatch-meta"><strong>Canvas</strong><span>#F4F7FB</span></div>
+              </div>
+              <div class="swatch">
+                <div class="swatch-color" style="background:#FFFFFF;"></div>
+                <div class="swatch-meta"><strong>Surface</strong><span>#FFFFFF</span></div>
+              </div>
+              <div class="swatch">
+                <div class="swatch-color" style="background:#0F172A;"></div>
+                <div class="swatch-meta"><strong>Text primary</strong><span>#0F172A</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel block">
+            <h3 class="block-title">Tipografia y ritmo</h3>
+            <div class="type-stack">
+              <div class="type-item">
+                <div style="font-size:56px;line-height:1.02;font-weight:800;">56</div>
+                <div class="type-note">Hero mobile / display destacado</div>
+              </div>
+              <div class="type-item">
+                <div style="font-size:30px;line-height:1.08;font-weight:800;">$1.284.400</div>
+                <div class="type-note">KPI principal / 30</div>
+              </div>
+              <div class="type-item">
+                <div style="font-size:16px;line-height:1.45;font-weight:600;">Texto base de interfaz con Nunito.</div>
+                <div class="type-note">Body / 16</div>
+              </div>
+            </div>
+
+            <div class="space-grid">
+              <div class="space-row"><strong>8</strong><div class="space-bar" style="width:48px;"></div></div>
+              <div class="space-row"><strong>12</strong><div class="space-bar" style="width:72px;"></div></div>
+              <div class="space-row"><strong>16</strong><div class="space-bar" style="width:96px;"></div></div>
+              <div class="space-row"><strong>24</strong><div class="space-bar" style="width:144px;"></div></div>
+              <div class="space-row"><strong>32</strong><div class="space-bar" style="width:192px;"></div></div>
+            </div>
+
+            <div class="shadow-grid">
+              <div class="shadow-card sm"><strong>Shadow sm</strong><div class="type-note">Cards y paneles</div></div>
+              <div class="shadow-card md"><strong>Shadow md</strong><div class="type-note">Modales y overlays</div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ds-canvas">
+        <div class="section-head">
+          <div>
+            <h2>Componentes base</h2>
+            <p>Set principal para construir pantallas y flujos sin inventar patrones nuevos cada vez.</p>
+          </div>
+        </div>
+
+        <div class="component-grid">
+          <div class="panel block">
+            <h3 class="block-title">Botones</h3>
+            <div class="row">
+              <button class="btn btn-primary" type="button"><span class="msr">add_circle</span>Agregar gasto</button>
+              <button class="btn btn-secondary" type="button">Exportar</button>
+              <button class="btn btn-tertiary" type="button">Ver tutorial</button>
+              <button class="btn btn-danger" type="button">Eliminar</button>
+              <button class="btn btn-secondary btn-icon" type="button"><span class="msr">calendar_today</span></button>
+            </div>
+          </div>
+
+          <div class="panel block">
+            <h3 class="block-title">Inputs y selects</h3>
+            <div class="field-grid">
+              <div class="field-row">
+                <div class="field"><span>Descripcion</span><span>Hamburguesa</span></div>
+                <div class="field"><span>Categoria</span><span>Vivienda</span></div>
+              </div>
+              <div class="field-row">
+                <div class="field"><span>Monto</span><span>$ 66.000</span></div>
+                <div class="field"><span>Fecha</span><span>21/03/2026</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel block">
+            <h3 class="block-title">Chips de categoria</h3>
+            <div class="chip-row">
+              <span class="chip chip-vivienda">Vivienda</span>
+              <span class="chip chip-servicios">Servicios del hogar</span>
+              <span class="chip chip-impuestos">Impuestos y seguros</span>
+              <span class="chip chip-compras">Compras personales</span>
+              <span class="chip chip-alimentacion">Alimentacion</span>
+            </div>
+          </div>
+
+          <div class="panel block">
+            <h3 class="block-title">Toolbars y contexto mensual</h3>
+            <div class="toolbar-card">
+              <div class="month-toolbar">
+                <button class="btn btn-secondary btn-icon" type="button"><span class="msr">chevron_left</span></button>
+                <div class="month-copy">
+                  <small>Mes actual</small>
+                  <strong>Marzo 2026</strong>
+                </div>
+                <button class="btn btn-secondary btn-icon" type="button"><span class="msr">chevron_right</span></button>
+                <button class="btn btn-secondary" type="button">Volver a mes actual</button>
+              </div>
+              <div class="month-meta">2 gastos recurrentes · 5 gastos puntuales</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ds-canvas">
+        <div class="section-head">
+          <div>
+            <h2>Superficies de producto</h2>
+            <p>Estos son los bloques que el usuario ve todos los dias: KPI cards, tabla de movimientos, panel de categorias y feedback.</p>
+          </div>
+        </div>
+
+        <div class="block">
+          <div class="kpi-grid">
+            <article class="kpi-card">
+              <div class="kpi-head">
+                <div class="kpi-label">
+                  <span class="kpi-badge income"><span class="msr">trending_up</span></span>
+                  Ingresos del mes
+                </div>
+                <button class="btn btn-tertiary btn-icon" type="button"><span class="msr">edit</span></button>
+              </div>
+              <div class="kpi-value">$2.830.000</div>
+            </article>
+
+            <article class="kpi-card">
+              <div class="kpi-head">
+                <div class="kpi-label">
+                  <span class="kpi-badge expense"><span class="msr">trending_down</span></span>
+                  Gastos del mes
+                </div>
+                <span class="msr" style="color:#2563eb;">info</span>
+              </div>
+              <div class="kpi-value">$230.000</div>
+            </article>
+
+            <article class="kpi-card">
+              <div class="kpi-head">
+                <div class="kpi-label">
+                  <span class="kpi-badge balance"><span class="msr">attach_money</span></span>
+                  Disponible para gastar
+                </div>
+                <span class="msr" style="color:#2563eb;">info</span>
+              </div>
+              <div class="kpi-value ok">$2.600.000</div>
+            </article>
+
+            <article class="kpi-card">
+              <div class="kpi-head">
+                <div class="kpi-label">
+                  <span class="kpi-badge period"><span class="msr">calendar_today</span></span>
+                  Disponible diario
+                </div>
+                <span class="msr" style="color:#64748b;">expand_more</span>
+              </div>
+              <div class="kpi-value ok">$152.941</div>
+            </article>
+          </div>
+
+          <div class="component-grid" style="margin-top:18px;">
+            <div class="panel table-card">
+              <div class="table-head">
+                <h3>Tus movimientos</h3>
+                <div class="table-filters">
+                  <button class="btn btn-secondary" type="button"><span class="msr">filter_list</span>Filtrar</button>
+                  <button class="btn btn-secondary" type="button"><span class="msr">calendar_today</span>Fecha: Todo</button>
+                </div>
+              </div>
+
+              <div class="table-shell">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Descripcion</th>
+                      <th>Fecha</th>
+                      <th>Categoria</th>
+                      <th>Frecuencia</th>
+                      <th class="amount">Monto</th>
+                      <th class="amount">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Alquiler</td>
+                      <td>15/03/2026</td>
+                      <td><span class="chip chip-vivienda">Vivienda</span></td>
+                      <td>Mensual</td>
+                      <td class="amount">$414.000</td>
+                      <td class="amount"><span class="msr">edit</span> <span class="msr">delete</span></td>
+                    </tr>
+                    <tr>
+                      <td>Hamburguesa</td>
+                      <td>21/03/2026</td>
+                      <td><span class="chip chip-alimentacion">Alimentacion</span></td>
+                      <td>Puntual</td>
+                      <td class="amount">$66.000</td>
+                      <td class="amount"><span class="msr">edit</span> <span class="msr">delete</span></td>
+                    </tr>
+                    <tr>
+                      <td>Seguro moto</td>
+                      <td>23/03/2026</td>
+                      <td><span class="chip chip-impuestos">Impuestos y seguros</span></td>
+                      <td>Mensual</td>
+                      <td class="amount">$36.000</td>
+                      <td class="amount"><span class="msr">edit</span> <span class="msr">delete</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="panel category-panel">
+              <div class="section-head" style="margin-bottom:0;">
+                <div>
+                  <h2 style="font-size:24px;">Categorias</h2>
+                  <p>Ordenadas de mayor a menor gasto.</p>
+                </div>
+              </div>
+
+              <div class="category-row">
+                <div class="category-row-head"><span>Vivienda</span><strong>$414.000</strong></div>
+                <div class="category-bar"><div class="category-bar-fill vivienda"></div></div>
+              </div>
+              <div class="category-row">
+                <div class="category-row-head"><span>Servicios del hogar</span><strong>$70.000</strong></div>
+                <div class="category-bar"><div class="category-bar-fill servicios"></div></div>
+              </div>
+              <div class="category-row">
+                <div class="category-row-head"><span>Impuestos y seguros</span><strong>$36.000</strong></div>
+                <div class="category-bar"><div class="category-bar-fill impuestos"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ds-canvas">
+        <div class="section-head">
+          <div>
+            <h2>Feedback y patrones de flujo</h2>
+            <p>La aplicacion necesita modales claros, toasts legibles y una jerarquia de acciones predecible.</p>
+          </div>
+        </div>
+
+        <div class="modal-shell">
+          <div class="modal-card">
+            <h3>Agregar gasto</h3>
+            <p>Carga rapido lo importante. Primero el monto, despues categoria y descripcion.</p>
+            <div class="field-row">
+              <div class="field"><span>Monto</span><span>$ 66.000</span></div>
+              <div class="field"><span>Fecha</span><span>21/03/2026</span></div>
+            </div>
+            <div class="field"><span>Categoria</span><span>Alimentacion</span></div>
+            <div class="field"><span>Descripcion</span><span>Hamburguesa</span></div>
+            <div class="row" style="justify-content:flex-end;">
+              <button class="btn btn-secondary" type="button">Cancelar</button>
+              <button class="btn btn-primary" type="button">Guardar gasto</button>
+            </div>
+          </div>
+
+          <div class="toast-stack">
+            <div class="toast success"><span class="msr">check_circle</span>Gasto guardado correctamente</div>
+            <div class="toast info"><span class="msr">cloud_sync</span>Datos sincronizados</div>
+            <div class="toast error"><span class="msr">warning</span>No pudimos sincronizar. Revisa tu conexion.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ds-canvas">
+        <div class="section-head">
+          <div>
+            <h2>Mobile MVP</h2>
+            <p>Version mobile adaptada: disponible protagonista, mini KPIs debajo, lista simplificada y FAB visible para registrar rapido.</p>
+          </div>
+        </div>
+
+        <div class="mobile-grid">
+          <div class="phone-shell">
+            <div class="phone">
+              <div class="phone-screen">
+                <div class="phone-topbar">
+                  <img src="../assets/brand/dinaria-isologotipo-white.svg" alt="Dinaria" />
+                  <div class="hero-preview-icons">
+                    <span class="hero-preview-icon"><span class="msr">dark_mode</span></span>
+                    <span class="hero-preview-icon"><span class="msr">account_circle</span></span>
+                  </div>
+                </div>
+
+                <div class="phone-hero">
+                  <div class="phone-month-row">
+                    <button class="btn btn-secondary btn-icon" type="button"><span class="msr">chevron_left</span></button>
+                    <div class="phone-month-copy">
+                      <small>Mes actual</small>
+                      <strong>Marzo 2026</strong>
+                    </div>
+                    <button class="btn btn-secondary btn-icon" type="button"><span class="msr">chevron_right</span></button>
+                  </div>
+                  <div class="phone-hero-label">Disponible diario</div>
+                  <div class="phone-hero-value">$697.000</div>
+                </div>
+
+                <div class="phone-kpis">
+                  <div class="phone-kpi">
+                    <div class="phone-kpi-head">
+                      <div class="phone-kpi-label">
+                        <span class="kpi-badge income"><span class="msr">trending_up</span></span>
+                        <span>Ingreso Total</span>
+                      </div>
+                      <span class="msr" style="font-size:18px;color:#64748b;">edit</span>
+                    </div>
+                    <strong style="font-size:20px;line-height:1.1;">$2.830.000</strong>
+                  </div>
+
+                  <div class="phone-kpi">
+                    <div class="phone-kpi-head">
+                      <div class="phone-kpi-label">
+                        <span class="kpi-badge expense"><span class="msr">trending_down</span></span>
+                        <span>Gasto Total</span>
+                      </div>
+                      <span class="msr" style="font-size:18px;color:#2563eb;">info</span>
+                    </div>
+                    <strong style="font-size:20px;line-height:1.1;">$237.000</strong>
+                  </div>
+                </div>
+
+                <div class="phone-list-card">
+                  <h3>Tus movimientos</h3>
+
+                  <div class="phone-item">
+                    <div class="phone-item-top">
+                      <span class="chip chip-impuestos">Impuestos</span>
+                      <strong class="phone-item-amount">$66.000</strong>
+                    </div>
+                    <div class="phone-item-name">Hamburguesa</div>
+                  </div>
+
+                  <div class="phone-item">
+                    <div class="phone-item-top">
+                      <span class="chip chip-impuestos">Impuestos</span>
+                      <strong class="phone-item-amount">$66.000</strong>
+                    </div>
+                    <div class="phone-item-name">Hamburguesa</div>
+                  </div>
+
+                  <div class="phone-item">
+                    <div class="phone-item-top">
+                      <span class="chip chip-impuestos">Impuestos</span>
+                      <strong class="phone-item-amount">$66.000</strong>
+                    </div>
+                    <div class="phone-item-name">Hamburguesa</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="phone-fab">+</div>
+          </div>
+
+          <div class="guidelines">
+            <div class="guideline-card">
+              <h3>Principios UX</h3>
+              <ul>
+                <li>Dinaria mobile no es desktop comprimido. La accion principal debe ser siempre registrar rapido.</li>
+                <li>El disponible tiene la maxima jerarquia visual.</li>
+                <li>La lista de movimientos prioriza lectura y velocidad de escaneo.</li>
+              </ul>
+            </div>
+
+            <div class="guideline-card">
+              <h3>Voz y tono</h3>
+              <ul>
+                <li>Simple, practica y cercana.</li>
+                <li>Evitar tecnicismos financieros innecesarios.</li>
+                <li>Explicar que pasa y que hacer despues.</li>
+              </ul>
+            </div>
+
+            <div class="guideline-card">
+              <h3>Reglas de consistencia</h3>
+              <ul>
+                <li>Boton primario: solo para la accion principal del momento.</li>
+                <li>Outlined/secondary: borde primary y radio consistente.</li>
+                <li>KPIs, filtros y toolbars deben usar siempre los mismos tokens.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

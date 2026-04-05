@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dinaria Buttons Preview</title>
+    <link rel="stylesheet" href="../assets/fonts/fonts.css" />
+    <link rel="stylesheet" href="../vendor/bootstrap-icons/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="./tokens.css" />
+    <link rel="stylesheet" href="./library.css" />
+    <style>
+      body {
+        background: linear-gradient(180deg, #eef3fb 0%, #f6f8ff 100%);
+      }
+
+      .buttons-preview-shell {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 36px 24px 56px;
+      }
+
+      .buttons-preview-hero {
+        display: grid;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .buttons-preview-hero h1 {
+        margin: 0;
+        font-size: 36px;
+        line-height: 1.04;
+        letter-spacing: -0.03em;
+      }
+
+      .buttons-preview-hero p {
+        margin: 0;
+        color: var(--ds-text-secondary);
+        font-size: 16px;
+      }
+
+      .buttons-preview-note {
+        color: var(--ds-text-muted);
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="buttons-preview-shell">
+      <section class="buttons-preview-hero">
+        <h1>Botones Dinaria</h1>
+        <p>Vista local para revisar variantes, estados, colores y lógica de uso del sistema.</p>
+        <span class="buttons-preview-note">Nunito · Primary #3C499D · Radius 12px</span>
+      </section>
+
+      <section class="ds-card">
+        <h2>Variantes</h2>
+        <p class="ds-sub">Primary mueve al usuario, Secondary acompaña y Tertiary abre rutas livianas.</p>
+        <div class="btn-showcase-grid">
+          <article class="btn-showcase-card">
+            <div>
+              <h3>Primary</h3>
+              <p>Acción principal de la pantalla o del bloque. Máximo una protagonista clara.</p>
+            </div>
+            <div class="btn-state-row">
+              <button class="btn btn-primary" type="button"><i class="bi bi-plus-circle"></i> Agregar gasto</button>
+            </div>
+            <div class="btn-state-row">
+              <button class="btn btn-primary" type="button">Default</button>
+              <button class="btn btn-primary" type="button" disabled>Disabled</button>
+            </div>
+          </article>
+
+          <article class="btn-showcase-card">
+            <div>
+              <h3>Secondary</h3>
+              <p>Acciones de soporte visibles, como filtrar, exportar o reiniciar datos.</p>
+            </div>
+            <div class="btn-state-row">
+              <button class="btn btn-secondary" type="button"><i class="bi bi-funnel"></i> Filtrar</button>
+              <button class="btn btn-secondary" type="button"><i class="bi bi-download"></i> Exportar</button>
+            </div>
+            <div class="btn-state-row">
+              <button class="btn btn-secondary" type="button">Default</button>
+              <button class="btn btn-secondary" type="button" disabled>Disabled</button>
+            </div>
+          </article>
+
+          <article class="btn-showcase-card">
+            <div>
+              <h3>Tertiary</h3>
+              <p>Acciones livianas y de contexto, útiles para volver o abrir ayuda.</p>
+            </div>
+            <div class="btn-state-row">
+              <button class="btn btn-tertiary" type="button"><i class="bi bi-arrow-counterclockwise"></i> Volver a mes actual</button>
+              <button class="btn btn-tertiary" type="button"><i class="bi bi-question-circle"></i> Ver tutorial</button>
+            </div>
+            <div class="btn-state-row">
+              <button class="btn btn-tertiary" type="button">Default</button>
+              <button class="btn btn-tertiary" type="button" disabled>Disabled</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="ds-card" style="margin-top: 18px;">
+        <h2>Lógica de uso</h2>
+        <p class="ds-sub">La lógica importa tanto como el color: evita que dos botones compitan por atención.</p>
+        <div class="btn-logic-grid" style="margin-top: 14px;">
+          <article class="btn-logic-card">
+            <strong>Primary</strong>
+            <h3>Mueve al usuario</h3>
+            <ul>
+              <li>Usarlo para la tarea principal del momento.</li>
+              <li>Ejemplo real: <code>Agregar gasto</code>.</li>
+              <li>Fondo brand 500, texto blanco.</li>
+            </ul>
+          </article>
+          <article class="btn-logic-card">
+            <strong>Secondary</strong>
+            <h3>Acompaña sin competir</h3>
+            <ul>
+              <li>Ideal para filtros, exportar o reiniciar.</li>
+              <li>Visible, pero no protagonista.</li>
+              <li>Fondo blanco, borde visible, texto oscuro.</li>
+            </ul>
+          </article>
+          <article class="btn-logic-card">
+            <strong>Tertiary</strong>
+            <h3>Abre rutas livianas</h3>
+            <ul>
+              <li>Sirve para volver, ayudar o navegar contexto.</li>
+              <li>Se apoya más en el texto que en el contenedor.</li>
+              <li>Texto brand 600, hover suave en brand 50.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

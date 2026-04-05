@@ -1,0 +1,14 @@
+﻿<svg width="1200" height="400" viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <rect width="1200" height="400" rx="36" fill="#F8FAFF"/>
+  <g transform="translate(72 76)">
+    <circle cx="124" cy="124" r="124" fill="#3C499D"/>
+    <path d="M124 54c39 0 70 31 70 70v58c0 9-7 16-16 16H70c-9 0-16-7-16-16v-58c0-39 31-70 70-70z" fill="#FFFFFF"/>
+    <rect x="88" y="112" width="72" height="14" rx="7" fill="#C9D1FF"/>
+    <rect x="88" y="140" width="48" height="14" rx="7" fill="#C9D1FF"/>
+    <path d="M164 192l14 14 30-30" stroke="#3C499D" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g transform="translate(370 118)">
+    <text x="0" y="92" font-family="Montserrat, Poppins, Segoe UI, Arial, sans-serif" font-size="108" font-weight="800" fill="#16213F">Dinaria</text>
+    <text x="2" y="146" font-family="Montserrat, Poppins, Segoe UI, Arial, sans-serif" font-size="34" font-weight="500" fill="#5C6788">Tus finanzas, bajo control</text>
+  </g>
+</svg>

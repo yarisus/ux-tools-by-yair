@@ -1,0 +1,108 @@
+{
+  "generatedAt": "2026-03-12T18:35:42.390Z",
+  "brand": "Dinaria",
+  "colorBase": "#3C499D",
+  "totalConcepts": 50,
+  "top8": [
+    {
+      "id": "C01",
+      "idx": 1,
+      "family": "dcheck",
+      "style": "solid",
+      "primary": "#3C499D",
+      "accent": "#0EA5E9",
+      "trust": 9,
+      "distinct": 8,
+      "reproduc": 9,
+      "total": 8.7
+    },
+    {
+      "id": "C05",
+      "idx": 5,
+      "family": "dcheck",
+      "style": "rounded",
+      "primary": "#3C499D",
+      "accent": "#8B5CF6",
+      "trust": 9,
+      "distinct": 8,
+      "reproduc": 9,
+      "total": 8.7
+    },
+    {
+      "id": "C06",
+      "idx": 6,
+      "family": "shieldbars",
+      "style": "solid",
+      "primary": "#3C499D",
+      "accent": "#EF4444",
+      "trust": 10,
+      "distinct": 7,
+      "reproduc": 9,
+      "total": 8.7
+    },
+    {
+      "id": "C10",
+      "idx": 10,
+      "family": "shieldbars",
+      "style": "rounded",
+      "primary": "#3C499D",
+      "accent": "#2563EB",
+      "trust": 10,
+      "distinct": 7,
+      "reproduc": 9,
+      "total": 8.7
+    },
+    {
+      "id": "C26",
+      "idx": 26,
+      "family": "handcoin",
+      "style": "solid",
+      "primary": "#3C499D",
+      "accent": "#EF4444",
+      "trust": 9,
+      "distinct": 8,
+      "reproduc": 9,
+      "total": 8.7
+    },
+    {
+      "id": "C30",
+      "idx": 30,
+      "family": "handcoin",
+      "style": "rounded",
+      "primary": "#3C499D",
+      "accent": "#2563EB",
+      "trust": 9,
+      "distinct": 8,
+      "reproduc": 9,
+      "total": 8.7
+    },
+    {
+      "id": "C07",
+      "idx": 7,
+      "family": "shieldbars",
+      "style": "outline",
+      "primary": "#3C499D",
+      "accent": "#10B981",
+      "trust": 10,
+      "distinct": 7,
+      "reproduc": 8,
+      "total": 8.5
+    },
+    {
+      "id": "C08",
+      "idx": 8,
+      "family": "shieldbars",
+      "style": "twotone",
+      "primary": "#3C499D",
+      "accent": "#6366F1",
+      "trust": 10,
+      "distinct": 7,
+      "reproduc": 8,
+      "total": 8.5
+    }
+  ],
+  "files": {
+    "board": "C:\\Users\\Yair-\\ai-lab\\expense-webapp\\branding\\logo-lab\\dinaria-logo-lab-50.svg",
+    "optionsDir": "C:\\Users\\Yair-\\ai-lab\\expense-webapp\\branding\\logo-lab\\options"
+  }
+}

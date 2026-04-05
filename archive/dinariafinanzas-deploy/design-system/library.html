@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dinaria UI Library</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0..1,0"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./tokens.css" />
+    <link rel="stylesheet" href="./library.css" />
+  </head>
+  <body>
+    <main class="ds-shell">
+      <header class="ds-topbar">
+        <h1>Dinaria UI Library</h1>
+        <div class="ds-topbar-actions">
+          <button class="ds-icon-btn" type="button">☾</button>
+          <button class="ds-icon-btn" type="button">?</button>
+          <button class="ds-icon-btn" type="button">☺</button>
+        </div>
+      </header>
+
+      <section class="ds-sections">
+        <article class="ds-card">
+          <h2>Colores</h2>
+          <p class="ds-sub">Paleta base del sistema con primary #3C499D y semanticos.</p>
+          <div class="grid-4">
+            <div class="color-swatch">
+              <div class="color-chip" style="background:#3C499D;"></div>
+              <div class="color-meta"><strong>Primary 500</strong><br />#3C499D</div>
+            </div>
+            <div class="color-swatch">
+              <div class="color-chip" style="background:#334082;"></div>
+              <div class="color-meta"><strong>Primary 600</strong><br />#334082</div>
+            </div>
+            <div class="color-swatch">
+              <div class="color-chip" style="background:#16A34A;"></div>
+              <div class="color-meta"><strong>Success</strong><br />#16A34A</div>
+            </div>
+            <div class="color-swatch">
+              <div class="color-chip" style="background:#E11D48;"></div>
+              <div class="color-meta"><strong>Danger</strong><br />#E11D48</div>
+            </div>
+            <div class="color-swatch">
+              <div class="color-chip" style="background:#D97706;"></div>
+              <div class="color-meta"><strong>Warning</strong><br />#D97706</div>
+            </div>
+            <div class="color-swatch">
+              <div class="color-chip" style="background:#2563EB;"></div>
+              <div class="color-meta"><strong>Info</strong><br />#2563EB</div>
+            </div>
+            <div class="color-swatch">
+              <div class="color-chip" style="background:#F4F7FB;"></div>
+              <div class="color-meta"><strong>Canvas</strong><br />#F4F7FB</div>
+            </div>
+            <div class="color-swatch">
+              <div class="color-chip" style="background:#0F172A;"></div>
+              <div class="color-meta"><strong>Text Primary</strong><br />#0F172A</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="ds-card">
+          <h2>Tipografia</h2>
+          <p class="ds-sub">Nunito como familia principal en toda la interfaz.</p>
+          <div class="grid-3">
+            <div class="type-sample">
+              <div style="font-size:56px;line-height:1.06;font-weight:700;">56</div>
+              <div class="ds-sub">Hero / Display</div>
+            </div>
+            <div class="type-sample">
+              <div style="font-size:30px;line-height:1.2;font-weight:700;">$ 1.250.000</div>
+              <div class="ds-sub">KPI value / 30</div>
+            </div>
+            <div class="type-sample">
+              <div style="font-size:16px;line-height:1.45;font-weight:600;">Texto base de interfaz</div>
+              <div class="ds-sub">Body / 16</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="ds-card">
+          <h2>Spacing y Elevaciones</h2>
+          <p class="ds-sub">Escala de espacio y sombras oficiales.</p>
+          <div class="grid-2">
+            <div>
+              <div class="space-scale">
+                <div class="space-row"><strong>4</strong><div class="space-pill" style="width:16px;"></div></div>
+                <div class="space-row"><strong>8</strong><div class="space-pill" style="width:32px;"></div></div>
+                <div class="space-row"><strong>12</strong><div class="space-pill" style="width:48px;"></div></div>
+                <div class="space-row"><strong>16</strong><div class="space-pill" style="width:64px;"></div></div>
+                <div class="space-row"><strong>24</strong><div class="space-pill" style="width:96px;"></div></div>
+                <div class="space-row"><strong>32</strong><div class="space-pill" style="width:128px;"></div></div>
+                <div class="space-row"><strong>40</strong><div class="space-pill" style="width:160px;"></div></div>
+              </div>
+            </div>
+            <div class="elev-samples">
+              <div class="elev-box elev-sm">
+                <strong>Shadow sm</strong>
+                <p class="ds-sub">Cards y paneles</p>
+              </div>
+              <div class="elev-box elev-md">
+                <strong>Shadow md</strong>
+                <p class="ds-sub">Modales y overlays</p>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="ds-card">
+          <h2>Componentes</h2>
+          <p class="ds-sub">Set base para Dinaria (desktop + mobile).</p>
+
+          <div class="cmp-block">
+            <strong>Botones</strong>
+            <div class="cmp-row">
+              <button class="btn btn-primary" type="button">+ Agregar gasto</button>
+              <button class="btn btn-secondary" type="button">Filtrar</button>
+              <button class="btn btn-danger" type="button">Eliminar</button>
+              <button class="btn btn-secondary icon-only" type="button">✎</button>
+            </div>
+          </div>
+
+          <div class="cmp-block">
+            <strong>Inputs y selects</strong>
+            <div class="field-row">
+              <input class="field" type="text" value="Alquiler" aria-label="item" />
+              <select class="field" aria-label="categoria">
+                <option>Vivienda</option>
+                <option>Servicios</option>
+                <option>Alimentacion</option>
+              </select>
+              <div class="money-wrap">
+                <span>$</span>
+                <input type="text" value="414.000" aria-label="monto" />
+              </div>
+              <input class="field" type="email" value="tu@email.com" aria-label="email" />
+            </div>
+          </div>
+
+          <div class="cmp-block">
+            <strong>Chips de categoria</strong>
+            <div class="cmp-row">
+              <span class="chip chip-vivienda">Vivienda</span>
+              <span class="chip chip-servicios">Servicios</span>
+              <span class="chip chip-alimentacion">Alimentacion</span>
+              <span class="chip chip-compras">Compras</span>
+              <span class="chip chip-ahorro">Ahorro</span>
+            </div>
+          </div>
+
+          <div class="cmp-block">
+            <strong>KPI cards</strong>
+            <div class="kpi-grid">
+              <div class="kpi-card">
+                <div class="kpi-label">Ingresos del mes • info</div>
+                <div class="kpi-value">$ 2.000.000</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-label">Gastos del mes • info</div>
+                <div class="kpi-value">$ 715.600</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-label">Disponible • info</div>
+                <div class="kpi-value ok">$ 1.284.400</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cmp-block">
+            <strong>Tabla</strong>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Gasto</th>
+                    <th>Categoria</th>
+                    <th class="amount">Monto</th>
+                    <th class="amount">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Alquiler</td>
+                    <td><span class="chip chip-vivienda">Vivienda</span></td>
+                    <td class="amount">$ 414.000</td>
+                    <td class="amount">✎ 🗑</td>
+                  </tr>
+                  <tr>
+                    <td>Supermercado</td>
+                    <td><span class="chip chip-alimentacion">Alimentacion</span></td>
+                    <td class="amount">$ 250.000</td>
+                    <td class="amount">✎ 🗑</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="cmp-block">
+            <strong>Modal y toasts</strong>
+            <div class="modal-preview">
+              <strong>Eliminar gasto</strong>
+              <p class="ds-sub">Estas seguro de eliminar "Alquiler"? Esta accion no se puede deshacer.</p>
+              <div class="modal-actions">
+                <button class="btn btn-secondary" type="button">Cancelar</button>
+                <button class="btn btn-danger" type="button">Eliminar</button>
+              </div>
+            </div>
+            <div class="toast-row">
+              <span class="toast-pill toast-success">Gasto guardado correctamente</span>
+              <span class="toast-pill toast-error">No pudimos sincronizar</span>
+              <span class="toast-pill toast-info">Datos actualizados</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="ds-card">
+          <h2>Voz y tono</h2>
+          <p class="ds-sub">Guia corta para mantener coherencia de UX Writing.</p>
+          <div class="tone-grid">
+            <div class="tone-box tone-ok">
+              <h3>Do</h3>
+              <p>"No pudimos sincronizar. Revisa tu conexion e intenta de nuevo."</p>
+              <p>"Disponible para gastar: $ 430.000"</p>
+            </div>
+            <div class="tone-box tone-no">
+              <h3>Dont</h3>
+              <p>"Error fatal en sincronizacion cloud"</p>
+              <p>"Operacion fallida por excepcion desconocida"</p>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <p class="ds-foot">
+        Fuente: Dinaria Design System v2 + tokens activos del proyecto.
+      </p>
+    </main>
+  </body>
+</html>

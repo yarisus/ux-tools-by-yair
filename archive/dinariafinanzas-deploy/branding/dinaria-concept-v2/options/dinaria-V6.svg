@@ -1,0 +1,25 @@
+
+<svg width="1200" height="380" viewBox="0 0 1200 380" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <rect width="1200" height="380" rx="26" fill="#FFFFFF"/>
+  <g transform="translate(64 130)"><svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <defs>
+    <linearGradient id="g-V6" x1="18" y1="20" x2="104" y2="104" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#1D4ED8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- top arrow arc -->
+  <path d="M28 28 H64 C83 28 97 40 97 58" stroke="#1D4ED8" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M95 46 L108 58 L95 70" stroke="#1D4ED8" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- bottom arrow arc -->
+  <path d="M92 92 H56 C37 92 23 80 23 62" stroke="#1D4ED8" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M25 74 L12 62 L25 50" stroke="#1D4ED8" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- white D counter-shape -->
+  <path d="M40 38 H60 C74 38 84 47 84 60 C84 73 74 82 60 82 H40 L52 70 H60 C66 70 70 66 70 60 C70 54 66 50 60 50 H52 Z" fill="#FFFFFF"/>
+  </svg></g>
+  <text x="225" y="208" font-family="Avenir Next, Sora, Poppins, Segoe UI, Arial, sans-serif" font-size="104" font-weight="700" fill="#1D3B86">Dinaria</text>
+  <text x="228" y="250" font-family="Avenir Next, Sora, Poppins, Segoe UI, Arial, sans-serif" font-size="30" font-weight="500" fill="#52607A">V6 · Flat Modern</text>
+</svg>

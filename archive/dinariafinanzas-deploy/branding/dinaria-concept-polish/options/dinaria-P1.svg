@@ -1,0 +1,18 @@
+
+<svg width="1280" height="420" viewBox="0 0 1280 420" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <rect width="1280" height="420" rx="30" fill="#F8FAFC"/>
+  <g transform="translate(88 150)"><svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" fill="none">
+      <defs>
+        <linearGradient id="g-P1" x1="18" y1="20" x2="100" y2="104" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#2563EB"/>
+          <stop offset="100%" stop-color="#1D4ED8"/>
+        </linearGradient>
+      </defs>
+      <path d="M34 18h53l16 16-12 12-10-10H45l-8 40 12 12-16 16-20-20z" fill="url(#g-P1)"/>
+      <path d="M31 102h53c19 0 32-12 36-28 3-11 1-23-7-33l-12 12c2 4 2 9 1 14-2 8-9 16-18 16H50l-10-10-16 16z" fill="url(#g-P1)"/>
+      <path d="M44 42h29c10 0 16 6 16 15 0 4-2 8-4 11l-24 24H40l16-16h9l12-12c1-1 2-3 2-4 0-4-2-7-8-7H44z" fill="#FFFFFF"/>
+    </svg></g>
+  <text x="260" y="248" font-family="Poppins, Montserrat, Segoe UI, Arial, sans-serif" font-size="110" font-weight="700" fill="#1E3A8A">Dinaria</text>
+  <text x="262" y="294" font-family="Poppins, Montserrat, Segoe UI, Arial, sans-serif" font-size="30" font-weight="500" fill="#475569">Finanzas claras para todos</text>
+  <text x="262" y="336" font-family="Poppins, Montserrat, Segoe UI, Arial, sans-serif" font-size="24" font-weight="600" fill="#64748B">P1 - Balanced Flow</text>
+</svg>

@@ -1,0 +1,18 @@
+
+<svg width="1280" height="420" viewBox="0 0 1280 420" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <rect width="1280" height="420" rx="30" fill="#F8FAFC"/>
+  <g transform="translate(88 150)"><svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" fill="none">
+    <defs>
+      <linearGradient id="g-P3" x1="14" y1="16" x2="106" y2="106" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#38BDF8"/>
+        <stop offset="100%" stop-color="#2563EB"/>
+      </linearGradient>
+    </defs>
+    <path d="M35 18h50c2 0 4 1 6 2l14 14c2 2 2 5 0 7L95 51c-2 2-5 2-7 0l-7-7H47l-7 33 9 9c2 2 2 5 0 7L38 104c-2 2-5 2-7 0L13 86c-2-2-2-4-2-7l11-54c1-4 4-7 8-7z" fill="url(#g-P3)"/>
+    <path d="M30 102h54c19 0 32-12 36-28 3-10 1-22-6-31-2-3-6-3-9 0L95 53c-2 2-2 4-1 6 2 3 2 7 1 11-2 8-9 15-17 15H51l-8-8c-2-2-5-2-7 0L20 92c-3 3-2 8 1 10 3 1 6 0 9 0z" fill="url(#g-P3)"/>
+    <path d="M45 43h28c10 0 16 6 16 15 0 5-2 9-5 12L61 93H41l16-16h9l11-11c2-2 3-4 3-6 0-4-3-8-10-8H45z" fill="#FFFFFF"/>
+  </svg></g>
+  <text x="260" y="248" font-family="Poppins, Montserrat, Segoe UI, Arial, sans-serif" font-size="110" font-weight="700" fill="#1E3A8A">Dinaria</text>
+  <text x="262" y="294" font-family="Poppins, Montserrat, Segoe UI, Arial, sans-serif" font-size="30" font-weight="500" fill="#475569">Finanzas claras para todos</text>
+  <text x="262" y="336" font-family="Poppins, Montserrat, Segoe UI, Arial, sans-serif" font-size="24" font-weight="600" fill="#64748B">P3 - Friendly Rounded</text>
+</svg>

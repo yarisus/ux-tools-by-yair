@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#213196" />
+    <title>Dinaria Finanzas | Control de gastos</title>
+    <link rel="manifest" href="./manifest.webmanifest?v=20260403-03" />
+    <link rel="icon" type="image/svg+xml" href="./assets/brand/dinaria-favicon-primary.svg?v=20260403-03" />
+    <link rel="apple-touch-icon" href="./icon-192.svg?v=20260403-03" />
+    <link rel="stylesheet" href="./assets/fonts/fonts.css?v=20260313-02" />
+    <link rel="stylesheet" href="./design-system/tokens.css?v=20260403-03" />
+    <link rel="stylesheet" href="tailwind.generated.css?v=20260403-03" />
+    <link rel="stylesheet" href="styles.css?v=20260403-03" />
+    <link rel="stylesheet" href="./design-system/app-mobile.css?v=20260403-03" />
+  </head>
+  <body class="min-h-screen bg-[#f6f8ff] text-slate-900 antialiased">
+    <div id="launchSplash" class="launch-splash" aria-hidden="true">
+      <img
+        class="launch-splash-logo"
+        src="./assets/brand/dinaria-isologotipo.svg?v=20260313-02"
+        alt="Dinaria Finanzas"
+      />
+    </div>
+    <div class="layout-shell">
+      <main class="app-shell mx-auto w-full max-w-[1440px] px-4 pb-10 pt-5 sm:px-5">
+        <header class="app-topbar">
+          <div class="app-topbar-inner">
+            <a class="topbar-brand" href="#" aria-label="Dinaria Finanzas">
+              <img class="topbar-brand-logo" src="./assets/brand/dinaria-isologotipo-white.svg?v=20260313-02" alt="Dinaria Finanzas" />
+            </a>
+
+            <div class="topbar-actions">
+              <button
+                id="openFeedbackModalBtn"
+                class="feedback-cta inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold"
+                type="button"
+                aria-controls="feedbackModal"
+                aria-haspopup="dialog"
+              >
+                <i class="bi bi-chat-left-dots"></i>
+                <span>Deja tu opinion</span>
+              </button>
+
+              <button
+                id="themeToggleBtn"
+                class="icon-only topbar-icon-btn inline-grid place-items-center rounded-xl"
+                type="button"
+                title="Cambiar tema"
+                aria-label="Cambiar tema claro u oscuro"
+                aria-pressed="false"
+              >
+                <span class="material-symbols-rounded" aria-hidden="true">dark_mode</span>
+              </button>
+
+              <div class="profile-dropdown-wrap topbar-profile-wrap relative">
+                <button
+                  id="openAuthModalBtn"
+                  class="icon-only topbar-icon-btn inline-grid place-items-center rounded-xl"
+                  type="button"
+                  title="Perfil"
+                  aria-label="Abrir menu de perfil"
+                  aria-haspopup="menu"
+                  aria-expanded="false"
+                  aria-controls="profileDropdown"
+                >
+                  <span class="material-symbols-rounded" aria-hidden="true">person</span>
+                </button>
+
+                <div
+                  id="profileDropdown"
+                  class="profile-dropdown is-hidden absolute right-0 top-[calc(100%+10px)] z-30 w-[min(360px,calc(100vw-24px))] rounded-2xl border border-slate-200 bg-white p-3 shadow-xl"
+                  role="menu"
+                  aria-label="Perfil de usuario"
+                >
+                  <p id="authHelpText" class="text-sm text-slate-700">
+                    Inicia sesion con tu cuenta de Google para sincronizar tus datos.
+                  </p>
+
+                  <button
+                    id="signInGoogleBtn"
+                    type="button"
+                    class="google-auth-btn mt-2 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 transition hover:bg-slate-50"
+                  >
+                    <i class="bi bi-google"></i> Iniciar sesion con Google
+                  </button>
+
+                  <div id="authLoggedBox" class="auth-logged-box is-hidden mt-2 rounded-xl border border-emerald-200 bg-emerald-50/70 p-3">
+                    <div class="profile-user mb-3 flex items-center gap-3">
+                      <img
+                        id="authAvatarImg"
+                        class="h-11 w-11 rounded-full border border-emerald-200 object-cover"
+                        src="./assets/brand/dinaria-isotipo.svg?v=20260313-02"
+                        alt="Avatar de usuario"
+                      />
+                      <div class="min-w-0">
+                        <p id="authDisplayName" class="truncate text-sm font-semibold text-emerald-900">Usuario</p>
+                        <p id="authLoggedText" class="truncate text-xs text-emerald-800/90">Estas logueado con Google.</p>
+                      </div>
+                    </div>
+                    <button
+                      id="logoutModalBtn"
+                      type="button"
+                      class="ghost-btn inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700"
+                    >
+                      <i class="bi bi-box-arrow-right"></i> Cerrar sesion
+                    </button>
+                  </div>
+
+                  <div class="profile-tools mt-2 grid gap-1.5 border-t border-slate-200 pt-2">
+                    <button
+                      id="startWalkthroughBtn"
+                      type="button"
+                      class="ghost-btn walkthrough-desktop-only inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700"
+                    >
+                      <i class="bi bi-stars"></i> Ver tutorial
+                    </button>
+                    <button
+                      id="installAppBtn"
+                      class="ghost-btn install-app-mobile-only is-hidden inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-700 shadow-sm transition hover:bg-slate-50"
+                    >
+                      <i class="bi bi-download"></i> Instalar app
+                    </button>
+                    <button
+                      id="profileFeedbackBtn"
+                      type="button"
+                      class="ghost-btn mobile-profile-tool inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700"
+                    >
+                      <i class="bi bi-chat-left-dots"></i> Deja tu opinion
+                    </button>
+                    <button
+                      id="profileExportCsvBtn"
+                      type="button"
+                      class="ghost-btn mobile-profile-tool inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700"
+                    >
+                      <i class="bi bi-filetype-csv"></i> Exportar CSV
+                    </button>
+                    <button
+                      id="profileExportPdfBtn"
+                      type="button"
+                      class="ghost-btn mobile-profile-tool inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700"
+                    >
+                      <i class="bi bi-filetype-pdf"></i> Exportar PDF
+                    </button>
+                    <button
+                      id="profileResetBtn"
+                      type="button"
+                      class="ghost-btn mobile-profile-tool inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700"
+                    >
+                      <i class="bi bi-arrow-clockwise"></i> Reiniciar datos
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <header id="homeSection" class="hero">
+          <div class="hero-toolbar-inner">
+          <div class="hero-head-row">
+            <section
+              id="activeMonthSection"
+              class="month-context-card rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_18px_40px_rgba(15,38,42,0.12)] backdrop-blur"
+              aria-label="Mes activo"
+            >
+              <div class="month-context-shell">
+                <button
+                  id="prevMonthBtn"
+                  class="month-context-nav-btn"
+                  type="button"
+                  aria-label="Ir al mes anterior"
+                  title="Mes anterior"
+                >
+                  <svg class="month-context-nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M14.5 5.5L8 12l6.5 6.5" />
+                  </svg>
+                  <span class="month-context-nav-fallback" aria-hidden="true">&#8249;</span>
+                </button>
+
+                <div class="month-context-copy">
+                  <p id="activeMonthEyebrow" class="month-context-eyebrow">Mes activo</p>
+                  <div class="month-context-title-row">
+                    <h2 id="activeMonthLabel" class="font-space month-context-title">Marzo 2026</h2>
+                  </div>
+                </div>
+
+                <button
+                  id="nextMonthBtn"
+                  class="month-context-nav-btn"
+                  type="button"
+                  aria-label="Ir al mes siguiente"
+                  title="Mes siguiente"
+                >
+                  <svg class="month-context-nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9.5 5.5L16 12l-6.5 6.5" />
+                  </svg>
+                  <span class="month-context-nav-fallback" aria-hidden="true">&#8250;</span>
+                </button>
+
+                <button
+                  id="jumpCurrentMonthBtn"
+                  class="month-context-current-btn is-hidden"
+                  type="button"
+                >
+                  Volver a mes actual
+                </button>
+
+                <p id="activeMonthMeta" class="month-context-meta">Mes actual</p>
+              </div>
+            </section>
+
+            <div class="hero-quick-actions">
+              <button
+                id="resetAllDataBtn"
+                class="ghost-btn inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700"
+                type="button"
+              >
+                Reiniciar datos
+              </button>
+
+              <div class="filter-dropdown relative">
+                <button
+                  id="downloadMenuBtn"
+                  class="ghost-btn mobile-filter-btn inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#213196] bg-transparent px-4 py-2 text-sm font-semibold text-[#213196]"
+                  type="button"
+                  aria-haspopup="menu"
+                  aria-expanded="false"
+                  aria-controls="downloadMenu"
+                >
+                  <i class="bi bi-download"></i> Exportar
+                  <i class="bi bi-chevron-down"></i>
+                </button>
+                <div
+                  id="downloadMenu"
+                  class="menu-list is-hidden absolute right-0 top-[calc(100%+8px)] z-30 grid min-w-[190px] gap-1 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg"
+                  role="menu"
+                  aria-label="Opciones de exportacion"
+                >
+                  <button id="exportCsvBtn" class="menu-item" type="button" role="menuitem">Exportar CSV</button>
+                  <button id="exportPdfBtn" class="menu-item" type="button" role="menuitem">Exportar PDF</button>
+                </div>
+              </div>
+
+              <div class="add-movement-dropdown relative">
+                <button
+                  id="openExpenseModalBtn"
+                  class="primary-btn inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#213196] bg-[#213196] px-4 py-2.5 text-white shadow-sm transition hover:bg-[#1B287A] hover:border-[#1B287A]"
+                  type="button"
+                >
+                  <i class="bi bi-plus-circle"></i> Agregar gasto
+                </button>
+              </div>
+            </div>
+          </div>
+          </div>
+        </header>
+
+        <section class="mobile-home-experience md:hidden" aria-label="Resumen mobile de Dinaria Finanzas">
+          <article class="mobile-primary-panel">
+            <div class="mobile-month-nav">
+              <button
+                id="mobilePrevMonthBtn"
+                class="mobile-month-nav-btn"
+                type="button"
+                aria-label="Ir al mes anterior"
+                title="Mes anterior"
+              >
+                <svg class="mobile-month-nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M14.5 5.5L8 12l6.5 6.5" />
+                </svg>
+              </button>
+
+              <div
+                id="mobileMonthShortcut"
+                class="mobile-month-copy"
+                role="button"
+                tabindex="0"
+                aria-label="Volver al mes actual"
+                title="Volver al mes actual"
+              >
+                <p id="mobileActiveMonthEyebrow" class="mobile-month-eyebrow">Mes actual</p>
+                <h2 id="mobileActiveMonthLabel" class="mobile-month-title font-space">Marzo 2026</h2>
+                <p id="mobileActiveMonthMeta" class="mobile-month-meta">Sin gastos cargados</p>
+              </div>
+
+              <button
+                id="mobileNextMonthBtn"
+                class="mobile-month-nav-btn"
+                type="button"
+                aria-label="Ir al mes siguiente"
+                title="Mes siguiente"
+              >
+                <svg class="mobile-month-nav-svg" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M9.5 5.5L16 12l-6.5 6.5" />
+                </svg>
+              </button>
+            </div>
+            <div class="mobile-budget-period-wrap">
+              <button
+                id="mobileBudgetPeriodBtn"
+                class="mobile-budget-period-btn"
+                type="button"
+                aria-haspopup="menu"
+                aria-expanded="false"
+                aria-controls="mobileBudgetPeriodMenu"
+              >
+                <span id="mobileBudgetPeriodLabel">Disponible mensual</span>
+                <span class="material-symbols-rounded mobile-inline-icon" aria-hidden="true">expand_more</span>
+              </button>
+
+              <div
+                id="mobileBudgetPeriodMenu"
+                class="mobile-budget-period-menu is-hidden"
+                role="menu"
+                aria-label="Periodo sugerido"
+              >
+                <button class="menu-item" type="button" role="menuitemradio" data-mobile-budget-period="monthly">Disponible mensual</button>
+                <button class="menu-item" type="button" role="menuitemradio" data-mobile-budget-period="daily">Disponible diario</button>
+              </div>
+            </div>
+
+            <p id="mobileAvailableBalance" class="mobile-primary-value font-space">$ 0</p>
+            <p id="mobileBudgetHint" class="mobile-summary-hint is-hidden">Sugerencia del mes</p>
+          </article>
+
+          <div class="mobile-mini-kpis">
+            <article id="mobileIncomeCard" class="mobile-mini-kpi mobile-mini-kpi-income">
+              <div class="mobile-mini-kpi-head">
+                <div class="mobile-mini-kpi-title-wrap">
+                  <span class="mobile-mini-kpi-icon mobile-mini-kpi-icon-income" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">arrow_upward</span></span>
+                  <span class="mobile-mini-kpi-label">Ingresos</span>
+                </div>
+              </div>
+              <strong id="mobileMonthlyIncome" class="mobile-mini-kpi-value font-space">$ 0</strong>
+            </article>
+            <article id="mobileExpenseCard" class="mobile-mini-kpi mobile-mini-kpi-expense">
+              <div class="mobile-mini-kpi-head">
+                <div class="mobile-mini-kpi-title-wrap">
+                  <span class="mobile-mini-kpi-icon mobile-mini-kpi-icon-expense" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">arrow_downward</span></span>
+                  <span class="mobile-mini-kpi-label">Gastos</span>
+                </div>
+              </div>
+              <strong id="mobileMonthlySpend" class="mobile-mini-kpi-value font-space">$ 0</strong>
+            </article>
+          </div>
+        </section>
+
+        <section id="mobileStickySummary" class="mobile-sticky-summary md:hidden is-hidden" aria-hidden="true">
+          <div class="mobile-sticky-summary-inner">
+            <article class="mobile-sticky-metric">
+              <span id="mobileStickyIncomeLabel" class="mobile-sticky-label">Ingreso</span>
+              <strong id="mobileStickyIncome" class="mobile-sticky-value font-space">$0</strong>
+            </article>
+            <article class="mobile-sticky-metric">
+              <span id="mobileStickyExpenseLabel" class="mobile-sticky-label">Gastos</span>
+              <strong id="mobileStickyExpense" class="mobile-sticky-value font-space">$0</strong>
+            </article>
+            <article class="mobile-sticky-metric">
+              <span id="mobileStickyAvailableLabel" class="mobile-sticky-label">Disponible</span>
+              <strong id="mobileStickyAvailable" class="mobile-sticky-value font-space">$0</strong>
+            </article>
+          </div>
+        </section>
+
+        <section id="metricsGrid" class="metrics-grid grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <article id="budgetMetricCard" class="card metric rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_18px_40px_rgba(15,38,42,0.12)] backdrop-blur">
+            <div class="metric-head flex items-center justify-between gap-2">
+              <p class="metric-label inline-flex items-center gap-2">
+                <span class="metric-kpi-icon metric-kpi-icon-income" aria-hidden="true"><i class="bi bi-arrow-up"></i></span>
+                <span>Ingresos del mes</span>
+                <button
+                  id="toggleSalaryBtn"
+                  class="kpi-edit-btn"
+                  type="button"
+                  title="Editar sueldo mensual"
+                  aria-label="Editar sueldo mensual"
+                >
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="kpi-info-btn" type="button" aria-label="Info: Ingresos del mes">
+                  <i class="bi bi-exclamation-circle-fill"></i>
+                  <span class="kpi-tooltip">Total de dinero que entra en el mes.</span>
+                </button>
+              </p>
+            </div>
+            <p id="monthlyIncome" class="metric-value mt-2 font-space">$ 0</p>
+            <div class="kpi-income-input input-with-prefix">
+              <span>$</span>
+              <input
+                id="salaryInput"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                placeholder="0"
+                readonly
+                tabindex="-1"
+                aria-label="Sueldo mensual"
+              />
+            </div>
+          </article>
+
+          <article class="card metric rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_18px_40px_rgba(15,38,42,0.12)] backdrop-blur">
+            <p class="metric-label inline-flex items-center gap-2">
+              <span class="metric-kpi-icon metric-kpi-icon-expense" aria-hidden="true"><i class="bi bi-arrow-down"></i></span>
+              <span>Gastos del mes</span>
+              <button class="kpi-info-btn" type="button" aria-label="Info: Gastos del mes">
+                <i class="bi bi-exclamation-circle-fill"></i>
+                <span class="kpi-tooltip">Suma total de gastos cargados en el mes.</span>
+              </button>
+            </p>
+            <p id="monthlySpend" class="metric-value mt-2 font-space">$ 0</p>
+          </article>
+
+          <article id="availableBalanceCard" class="card metric balance rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_18px_40px_rgba(15,38,42,0.12)] backdrop-blur">
+            <p class="metric-label inline-flex items-center gap-2">
+              <span class="metric-kpi-icon metric-kpi-icon-balance" aria-hidden="true"><i class="bi bi-currency-dollar"></i></span>
+              <span>Disponible para gastar</span>
+              <button class="kpi-info-btn" type="button" aria-label="Info: Disponible para gastar">
+                <i class="bi bi-exclamation-circle-fill"></i>
+                <span class="kpi-tooltip">Ingresos menos gastos del mes.</span>
+              </button>
+            </p>
+            <p id="availableBalance" class="metric-value mt-2 font-space text-emerald-700">$ 0</p>
+          </article>
+
+          <article id="periodBudgetCard" class="card metric rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_18px_40px_rgba(15,38,42,0.12)] backdrop-blur">
+            <div class="metric-head metric-head-period flex items-center justify-between gap-2">
+              <div class="metric-label metric-label-period inline-flex items-center gap-2">
+                <span class="metric-kpi-icon metric-kpi-icon-period" aria-hidden="true"><i class="bi bi-calendar3"></i></span>
+                <div class="metric-period-dropdown relative">
+                  <button
+                    id="budgetPeriodBtn"
+                    class="metric-period-trigger inline-flex items-center gap-1"
+                    type="button"
+                    aria-haspopup="menu"
+                    aria-expanded="false"
+                    aria-controls="budgetPeriodMenu"
+                  >
+                    <span id="budgetPeriodLabel">Disponible mensual</span>
+                    <i class="bi bi-chevron-down"></i>
+                  </button>
+                  <div
+                    id="budgetPeriodMenu"
+                    class="menu-list metric-period-menu is-hidden absolute left-0 top-[calc(100%+8px)] z-20 grid min-w-[210px] gap-1 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg"
+                    role="menu"
+                    aria-label="Elegir periodo disponible"
+                  >
+                    <button class="menu-item budget-period-option" type="button" data-budget-period="monthly" role="menuitem">Disponible mensual</button>
+                    <button class="menu-item budget-period-option" type="button" data-budget-period="daily" role="menuitem">Disponible diario</button>
+                  </div>
+                </div>
+                <button class="kpi-info-btn" type="button" aria-label="Info: Disponible por periodo">
+                  <i class="bi bi-exclamation-circle-fill"></i>
+                  <span class="kpi-tooltip">Puedes alternar entre diario y mensual.</span>
+                </button>
+              </div>
+            </div>
+            <p id="dailyBudget" class="metric-value mt-2 font-space">$ 0</p>
+          </article>
+
+          <output id="weeklyBudget" class="hidden"></output>
+        </section>
+
+        <section id="workspaceGrid" class="workspace-grid mt-4 grid grid-cols-1 gap-3 xl:grid-cols-12">
+          <article
+            id="movementsSection"
+            class="card table-card rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_18px_40px_rgba(15,38,42,0.12)] backdrop-blur xl:col-span-9"
+          >
+            <header class="table-head mb-3 flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <h2 class="section-title font-space">Tus movimientos</h2>
+                <div id="movementsFilterStatus" class="table-filter-status is-hidden" aria-live="polite">
+                  <p id="movementsFilterSummary" class="table-filter-summary"></p>
+                  <div id="movementsActiveFilters" class="table-filter-chips"></div>
+                  <button
+                    id="clearMovementFiltersBtn"
+                    class="table-filter-clear-btn"
+                    type="button"
+                  >
+                    Limpiar filtros
+                  </button>
+                </div>
+              </div>
+
+              <div class="table-head-actions flex w-full flex-col gap-2 md:w-auto md:flex-row md:items-end md:justify-end">
+              <select
+                id="categoryFilter"
+                class="hidden"
+              >
+                <option value="all">Todas</option>
+                <option value="vivienda">Vivienda</option>
+                <option value="servicios">Servicios del hogar</option>
+                <option value="alimentacion">Alimentacion</option>
+                <option value="transporte">Transporte</option>
+                <option value="salud">Salud</option>
+                <option value="finanzas">Finanzas</option>
+                <option value="educacion">Educacion</option>
+                <option value="compras">Compras personales</option>
+                <option value="ocio">Ocio y entretenimiento</option>
+                <option value="ahorro">Ahorro e inversion</option>
+                <option value="impuestos">Impuestos y seguros</option>
+                <option value="otros">Otros</option>
+              </select>
+
+              <select id="dateFilter" class="hidden">
+                <option value="all">Todo</option>
+                <option value="today">Hoy</option>
+                <option value="last7">Ultima semana</option>
+                <option value="last30">Ultimos 30 dias</option>
+                <option value="thisMonth">Este mes</option>
+                <option value="lastMonth">Mes pasado</option>
+              </select>
+
+              <select id="statusFilter" class="hidden">
+                <option value="all">Todo</option>
+                <option value="recurring">Recurrentes</option>
+                <option value="oneTime">Puntuales</option>
+              </select>
+
+              <div class="filter-dropdown relative">
+                <button
+                  id="mobileCategoryFilterBtn"
+                  class="ghost-btn mobile-filter-btn mobile-card-filter-btn inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#213196] bg-transparent px-4 py-2"
+                  type="button"
+                  aria-haspopup="menu"
+                  aria-expanded="false"
+                  aria-controls="categoryFilterMenu"
+                >
+                  <span class="material-symbols-rounded mobile-filter-trigger-icon" aria-hidden="true">tune</span><span class="mobile-filter-btn-label">Filtrar</span>
+                </button>
+                <div
+                  id="categoryFilterMenu"
+                  class="menu-list is-hidden absolute right-0 top-[calc(100%+8px)] z-30 grid min-w-[190px] gap-1 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg"
+                  role="menu"
+                  aria-label="Filtro por categoria"
+                >
+                  <button class="menu-item category-filter-option" type="button" data-category-value="all" role="menuitem">Todas</button>
+                  <button class="menu-item category-filter-option" type="button" data-category-value="vivienda" role="menuitem">Vivienda</button>
+                  <button class="menu-item category-filter-option" type="button" data-category-value="servicios" role="menuitem">Servicios del hogar</button>
+                  <button class="menu-item category-filter-option" type="button" data-category-value="alimentacion" role="menuitem">Alimentacion</button>
+                  <button class="menu-item category-filter-option" type="button" data-category-value="transporte" role="menuitem">Transporte</button>
+                  <button class="menu-item category-filter-option" type="button" data-category-value="salud" role="menuitem">Salud</button>
+                  <button class="menu-item category-filter-option" type="button" data-category-value="finanzas" role="menuitem">Finanzas</button>
+                  <button class="menu-item category-filter-option" type="button" data-category-value="educacion" role="menuitem">Educacion</button>
+                  <button class="menu-item category-filter-option" type="button" data-category-value="compras" role="menuitem">Compras personales</button>
+                  <button class="menu-item category-filter-option" type="button" data-category-value="ocio" role="menuitem">Ocio y entretenimiento</button>
+                  <button class="menu-item category-filter-option" type="button" data-category-value="ahorro" role="menuitem">Ahorro e inversion</button>
+                  <button class="menu-item category-filter-option" type="button" data-category-value="impuestos" role="menuitem">Impuestos y seguros</button>
+                  <button class="menu-item category-filter-option" type="button" data-category-value="otros" role="menuitem">Otros</button>
+                </div>
+              </div>
+
+              <div class="filter-dropdown relative">
+                <button
+                  id="mobileDateFilterBtn"
+                  class="ghost-btn mobile-filter-btn inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#213196] bg-transparent px-4 py-2"
+                  type="button"
+                  aria-haspopup="menu"
+                  aria-expanded="false"
+                  aria-controls="dateFilterMenu"
+                >
+                  <i class="bi bi-calendar-week"></i><span class="mobile-filter-btn-label">Fecha: Todo</span>
+                </button>
+                <div
+                  id="dateFilterMenu"
+                  class="menu-list is-hidden absolute right-0 top-[calc(100%+8px)] z-30 grid min-w-[190px] gap-1 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg"
+                  role="menu"
+                  aria-label="Filtro por fecha"
+                >
+                  <button class="menu-item date-filter-option" type="button" data-date-value="all" role="menuitem">Todo</button>
+                  <button class="menu-item date-filter-option" type="button" data-date-value="today" role="menuitem">Hoy</button>
+                  <button class="menu-item date-filter-option" type="button" data-date-value="last7" role="menuitem">Ultima semana</button>
+                  <button class="menu-item date-filter-option" type="button" data-date-value="last30" role="menuitem">Ultimos 30 dias</button>
+                  <button class="menu-item date-filter-option" type="button" data-date-value="thisMonth" role="menuitem">Este mes</button>
+                  <button class="menu-item date-filter-option" type="button" data-date-value="lastMonth" role="menuitem">Mes pasado</button>
+                </div>
+              </div>
+
+              </div>
+            </header>
+
+            <div id="movementsTableArea" class="table-wrap hidden overflow-x-auto md:block">
+              <table class="expense-table min-w-full border-separate border-spacing-y-2 text-sm">
+                <colgroup>
+                  <col class="col-descripcion" />
+                  <col class="col-fecha" />
+                  <col class="col-categoria" />
+                  <col class="col-frecuencia" />
+                  <col class="col-monto" />
+                  <col class="col-acciones" />
+                </colgroup>
+                <thead>
+                  <tr class="table-head-row">
+                    <th class="table-col">Descripcion</th>
+                    <th class="table-col">Fecha</th>
+                    <th class="table-col">Categoria</th>
+                    <th class="table-col">Frecuencia</th>
+                    <th class="table-col table-col-right">Monto</th>
+                    <th class="table-col">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="expenseTableBody"></tbody>
+              </table>
+            </div>
+
+            <div id="expenseMobileList" class="expense-mobile-list grid gap-2 md:hidden"></div>
+          </article>
+
+          <aside
+            id="categoriesSection"
+            class="card chart-card rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_18px_40px_rgba(15,38,42,0.12)] backdrop-blur xl:col-span-3"
+          >
+          <header class="chart-head chart-head-split">
+            <h3 class="font-space chart-title">Gastos por categoria</h3>
+          </header>
+
+          <div id="categoriesChartArea" class="bar-chart-wrap mt-4">
+            <div id="categoryDonut" class="bar-chart" role="img" aria-label="Grafico de barras por categorias">
+              <div id="donutSvg" class="bar-chart-bars" aria-hidden="true"></div>
+            </div>
+          </div>
+          </aside>
+        </section>
+      </main>
+    </div>
+
+    <div id="expenseModal" class="modal" aria-hidden="true">
+      <div class="modal-backdrop" data-close-modal="true"></div>
+      <section
+        class="modal-card relative mx-auto mt-[6vh] w-[min(600px,calc(100%-20px))] rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalTitle"
+      >
+        <header class="modal-head mb-3 flex items-center justify-between gap-2">
+          <h2 id="modalTitle" class="font-space text-2xl font-bold text-slate-900">Agregar gasto</h2>
+          <button
+            id="closeExpenseModalBtn"
+            class="icon-btn inline-grid h-11 w-11 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+            type="button"
+            title="Cerrar"
+            aria-label="Cerrar modal de movimiento"
+          >
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </header>
+
+        <form id="expenseForm" class="expense-form grid grid-cols-1 gap-3">
+          <input id="typeInput" type="hidden" value="expense" />
+
+          <div class="mobile-add-type-tabs mobile-only" role="tablist" aria-label="Tipo de movimiento">
+            <button
+              class="mobile-add-type-tab is-active"
+              type="button"
+              data-add-type="expense"
+              role="tab"
+              aria-selected="true"
+            >
+              Gasto
+            </button>
+            <button
+              class="mobile-add-type-tab"
+              type="button"
+              data-add-type="income"
+              role="tab"
+              aria-selected="false"
+            >
+              Ingreso
+            </button>
+          </div>
+
+          <label class="grid gap-1 text-xs text-slate-600">
+            Fecha
+            <span class="field-control field-control--text-icon">
+              <input
+                id="dateInput"
+                class="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-brand-500"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                placeholder="dd/mm/aaaa"
+                required
+              />
+              <span class="field-control-icon" aria-hidden="true"><i class="bi bi-calendar3"></i></span>
+            </span>
+          </label>
+
+          <label class="grid gap-1 text-xs text-slate-600">
+            Categoria
+            <span class="field-control field-control--select">
+              <select
+                id="categoryInput"
+                class="form-select rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-brand-500"
+                required
+              >
+                <option value="vivienda">Vivienda</option>
+                <option value="servicios">Servicios del hogar</option>
+                <option value="alimentacion">Alimentacion</option>
+                <option value="transporte">Transporte</option>
+                <option value="salud">Salud</option>
+                <option value="finanzas">Finanzas</option>
+                <option value="educacion">Educacion</option>
+                <option value="compras">Compras personales</option>
+                <option value="ocio">Ocio y entretenimiento</option>
+                <option value="ahorro">Ahorro e inversion</option>
+                <option value="impuestos">Impuestos y seguros</option>
+                <option value="otros">Otros</option>
+              </select>
+              <span class="field-control-icon" aria-hidden="true"><i class="bi bi-chevron-down"></i></span>
+            </span>
+          </label>
+
+          <label class="grid gap-1 text-xs text-slate-600">
+            Descripcion
+            <input
+              id="nameInput"
+              class="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-brand-500"
+              type="text"
+              placeholder="Ej: Luz, freelance, alquiler"
+              required
+              maxlength="60"
+            />
+          </label>
+
+          <label class="grid gap-1 text-xs text-slate-600 mobile-amount-field">
+            Monto
+            <input
+              id="amountInput"
+              class="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-brand-500"
+              type="text"
+              inputmode="numeric"
+              autocomplete="off"
+              placeholder="$ 0"
+              required
+            />
+          </label>
+
+          <label class="recurring-toggle">
+            <input id="recurringInput" type="checkbox" />
+            <span>
+              <strong>Se repite cada mes</strong>
+              <small>Si lo activas, este movimiento aparece automaticamente en los meses siguientes. Si no, queda solo en este mes.</small>
+            </span>
+          </label>
+
+          <button
+            id="expenseSubmitBtn"
+            type="submit"
+            class="primary-btn full inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-brand-500 bg-brand-500 px-4 py-2.5 font-semibold text-white transition hover:bg-brand-700 hover:border-brand-700"
+          >
+            <i class="bi bi-check2-circle"></i> Guardar gasto
+          </button>
+        </form>
+      </section>
+    </div>
+
+    <div id="walkthroughOverlay" class="walkthrough-overlay is-hidden" aria-hidden="true">
+      <div class="walkthrough-backdrop" data-close-walkthrough="true"></div>
+      <div id="walkthroughSpotlight" class="walkthrough-spotlight" aria-hidden="true"></div>
+
+      <section
+        id="walkthroughCard"
+        class="walkthrough-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="walkthroughTitle"
+        aria-describedby="walkthroughBody"
+        tabindex="-1"
+      >
+        <div class="walkthrough-card-inner">
+          <div class="walkthrough-topbar">
+            <p class="walkthrough-eyebrow">
+              <i class="bi bi-stars"></i> Tour guiado
+            </p>
+            <button
+              id="closeWalkthroughBtn"
+              class="icon-btn walkthrough-close-btn inline-grid h-10 w-10 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+              type="button"
+              aria-label="Cerrar tutorial guiado"
+            >
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <div class="walkthrough-head">
+            <div>
+              <p id="walkthroughStepCounter" class="walkthrough-step-counter">Paso 1 de 6</p>
+              <h2 id="walkthroughTitle" class="walkthrough-title font-space">Asi lees tu balance total</h2>
+            </div>
+          </div>
+
+          <p id="walkthroughBody" class="walkthrough-body">
+            Cuando cargues tu sueldo mensual y tu primer gasto, aqui veras cuanto dinero te queda en total.
+          </p>
+
+          <div class="walkthrough-dots" id="walkthroughDots" aria-hidden="true">
+            <span class="walkthrough-dot is-active" data-walkthrough-dot="0"></span>
+            <span class="walkthrough-dot" data-walkthrough-dot="1"></span>
+            <span class="walkthrough-dot" data-walkthrough-dot="2"></span>
+            <span class="walkthrough-dot" data-walkthrough-dot="3"></span>
+            <span class="walkthrough-dot" data-walkthrough-dot="4"></span>
+            <span class="walkthrough-dot" data-walkthrough-dot="5"></span>
+          </div>
+
+          <footer class="walkthrough-actions">
+            <button
+              id="walkthroughSkipBtn"
+              class="ghost-btn inline-flex min-h-11 items-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-700"
+              type="button"
+            >
+              Saltar
+            </button>
+            <div class="walkthrough-actions-main">
+              <button
+                id="walkthroughPrevBtn"
+                class="ghost-btn inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-700"
+                type="button"
+              >
+                <i class="bi bi-arrow-left"></i> Anterior
+              </button>
+              <button
+                id="walkthroughNextBtn"
+                class="primary-btn inline-flex min-h-11 items-center gap-2 rounded-xl border border-brand-500 bg-brand-500 px-4 py-2.5 font-semibold text-white"
+                type="button"
+              >
+                Siguiente <i class="bi bi-arrow-right"></i>
+              </button>
+            </div>
+          </footer>
+        </div>
+      </section>
+    </div>
+
+    <div id="onboardingModal" class="modal onboarding-modal" aria-hidden="true">
+      <div class="modal-backdrop" data-close-onboarding="true"></div>
+      <section
+        class="onboarding-card relative mx-auto mt-[4vh] w-[min(860px,calc(100%-16px))] rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="onboardingTitle"
+      >
+        <header class="mb-3 flex items-center justify-between gap-2">
+          <div>
+            <p class="eyebrow inline-flex items-center gap-2 rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1 text-[11px] uppercase tracking-[0.1em] text-emerald-900">
+              <i class="bi bi-stars"></i> Bienvenido
+            </p>
+            <h2 id="onboardingTitle" class="font-space mt-2 text-2xl font-bold text-slate-900">Tu app de gastos en 1 minuto</h2>
+          </div>
+          <button
+            id="closeOnboardingBtn"
+            class="icon-btn inline-grid h-11 w-11 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+            type="button"
+            title="Cerrar"
+            aria-label="Cerrar onboarding"
+          >
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </header>
+
+        <div class="onboarding-viewport">
+          <article class="onboarding-step is-active" data-step="0">
+            <div class="onboarding-illustration">
+              <svg viewBox="0 0 360 200" aria-hidden="true">
+                <rect x="16" y="20" width="328" height="160" rx="20" fill="#e8f4ff"></rect>
+                <rect x="36" y="44" width="138" height="28" rx="10" fill="#ffffff"></rect>
+                <rect x="36" y="84" width="288" height="18" rx="9" fill="#ffffff"></rect>
+                <rect x="36" y="112" width="238" height="18" rx="9" fill="#ffffff"></rect>
+                <circle cx="286" cy="58" r="26" fill="#D7DFFF"></circle>
+                <path d="M286 46v24M274 58h24" stroke="#213196" stroke-width="4" stroke-linecap="round"></path>
+              </svg>
+            </div>
+            <h3 class="font-space text-xl font-bold text-slate-900">1. Define tu sueldo y suma gastos</h3>
+            <p class="text-slate-700">
+              Primero carga tu sueldo mensual en la KPI inicial. Despues usa <strong>Agregar gasto</strong> para registrar cada salida con categoria y monto.
+            </p>
+          </article>
+
+          <article class="onboarding-step" data-step="1" hidden>
+            <div class="onboarding-illustration">
+              <svg viewBox="0 0 360 200" aria-hidden="true">
+                <rect x="16" y="20" width="328" height="160" rx="20" fill="#e9f8f1"></rect>
+                <circle cx="106" cy="102" r="56" fill="#fff"></circle>
+                <circle cx="106" cy="102" r="34" fill="#e9f8f1"></circle>
+                <path d="M106 46A56 56 0 0 1 159 120H106z" fill="#213196"></path>
+                <path d="M106 46A56 56 0 0 1 156 82l-50 20z" fill="#1B287A"></path>
+                <rect x="196" y="68" width="118" height="16" rx="8" fill="#ffffff"></rect>
+                <rect x="196" y="94" width="98" height="16" rx="8" fill="#ffffff"></rect>
+                <rect x="196" y="120" width="130" height="16" rx="8" fill="#ffffff"></rect>
+              </svg>
+            </div>
+            <h3 class="font-space text-xl font-bold text-slate-900">2. Mira tu balance al instante</h3>
+            <p class="text-slate-700">
+              Las tarjetas KPI y el grafico te muestran gasto mensual, saldo disponible y distribucion de gastos por categoria.
+            </p>
+          </article>
+
+          <article class="onboarding-step" data-step="2" hidden>
+            <div class="onboarding-illustration">
+              <svg viewBox="0 0 360 200" aria-hidden="true">
+                <rect x="16" y="20" width="328" height="160" rx="20" fill="#fff7e8"></rect>
+                <rect x="34" y="42" width="292" height="26" rx="12" fill="#fff"></rect>
+                <rect x="34" y="78" width="292" height="20" rx="10" fill="#fff"></rect>
+                <rect x="34" y="106" width="292" height="20" rx="10" fill="#fff"></rect>
+                <rect x="34" y="134" width="188" height="20" rx="10" fill="#fff"></rect>
+                <circle cx="283" cy="145" r="21" fill="#D7DFFF"></circle>
+                <path d="m272 145 8 8 14-16" stroke="#213196" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </div>
+            <h3 class="font-space text-xl font-bold text-slate-900">3. Edita y exporta cuando quieras</h3>
+            <p class="text-slate-700">
+              Edita montos con el icono lapiz y exporta en CSV o PDF desde el boton de descarga.
+            </p>
+          </article>
+        </div>
+
+        <footer class="mt-3 grid gap-3 border-t border-slate-200 pt-3 sm:grid-cols-[1fr_auto] sm:items-center">
+          <div class="onboarding-dots" id="onboardingDots" role="tablist" aria-label="Pasos onboarding">
+            <button class="onboarding-dot is-active" type="button" data-step-jump="0" aria-label="Ir al paso 1"></button>
+            <button class="onboarding-dot" type="button" data-step-jump="1" aria-label="Ir al paso 2"></button>
+            <button class="onboarding-dot" type="button" data-step-jump="2" aria-label="Ir al paso 3"></button>
+          </div>
+          <div class="onboarding-actions flex flex-wrap items-center justify-end gap-2">
+            <button
+              id="onboardingSkipBtn"
+              class="ghost-btn inline-flex min-h-11 items-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-700"
+              type="button"
+            >
+              Saltar
+            </button>
+            <button
+              id="onboardingPrevBtn"
+              class="ghost-btn inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-700"
+              type="button"
+            >
+              <i class="bi bi-arrow-left"></i> Anterior
+            </button>
+            <button
+              id="onboardingNextBtn"
+              class="primary-btn inline-flex min-h-11 items-center gap-2 rounded-xl border border-brand-500 bg-brand-500 px-4 py-2.5 font-semibold text-white"
+              type="button"
+            >
+              Siguiente <i class="bi bi-arrow-right"></i>
+            </button>
+            <button
+              id="onboardingDoneBtn"
+              class="primary-btn is-hidden inline-flex min-h-11 items-center gap-2 rounded-xl border border-brand-500 bg-brand-500 px-4 py-2.5 font-semibold text-white"
+              type="button"
+            >
+              <i class="bi bi-check2-circle"></i> Empezar
+            </button>
+          </div>
+        </footer>
+      </section>
+    </div>
+
+    <div id="toast" class="toast" aria-live="polite" aria-atomic="true"></div>
+
+    <div id="deleteConfirmModal" class="modal" aria-hidden="true">
+      <div class="modal-backdrop" data-close-delete-modal="true"></div>
+      <section
+        class="modal-card relative mx-auto mt-[18vh] w-[min(480px,calc(100%-20px))] rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="deleteConfirmTitle"
+      >
+        <header class="modal-head mb-2 flex items-center justify-between gap-2">
+          <h3 id="deleteConfirmTitle" class="font-space text-2xl font-bold text-slate-900">Eliminar movimiento</h3>
+          <button
+            id="closeDeleteConfirmBtn"
+            class="icon-btn inline-grid h-11 w-11 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+            type="button"
+            aria-label="Cerrar confirmacion de borrado"
+          >
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </header>
+        <p id="deleteConfirmText" class="text-sm text-slate-700">Esta accion no se puede deshacer.</p>
+        <footer class="mt-4 flex items-center justify-end gap-2">
+          <button id="cancelDeleteBtn" class="ghost-btn inline-flex min-h-11 items-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-700" type="button">
+            Cancelar
+          </button>
+          <button id="confirmDeleteSeriesBtn" class="ghost-btn is-hidden inline-flex min-h-11 items-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-700" type="button">
+            Eliminar en todos
+          </button>
+          <button id="confirmDeleteBtn" class="danger-confirm-btn inline-flex min-h-11 items-center rounded-xl border border-rose-600 bg-rose-600 px-4 py-2.5 font-semibold text-white" type="button">
+            Eliminar
+          </button>
+        </footer>
+      </section>
+    </div>
+
+    <div id="feedbackModal" class="modal" aria-hidden="true">
+      <div class="modal-backdrop" data-close-feedback-modal="true"></div>
+      <section
+        class="modal-card relative mx-auto mt-[10vh] w-[min(560px,calc(100%-20px))] rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="feedbackModalTitle"
+      >
+        <header class="modal-head mb-3 flex items-center justify-between gap-2">
+          <h2 id="feedbackModalTitle" class="font-space text-2xl font-bold text-slate-900">Tu opinion importa</h2>
+          <button
+            id="closeFeedbackModalBtn"
+            class="icon-btn inline-grid h-11 w-11 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+            type="button"
+            title="Cerrar"
+            aria-label="Cerrar modal de feedback"
+          >
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </header>
+
+        <p class="mb-3 text-sm text-slate-600">
+          Cuentanos en que podemos mejorar. No necesitas iniciar sesion para enviar feedback.
+        </p>
+
+        <form id="feedbackForm" class="grid grid-cols-1 gap-3">
+          <label class="grid gap-1 text-xs text-slate-600">
+            Tipo
+            <span class="field-control field-control--select">
+              <select
+                id="feedbackKindInput"
+                class="form-select rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-brand-500"
+              >
+                <option value="idea">Idea</option>
+                <option value="bug">Bug</option>
+                <option value="ux">Mejora UX</option>
+              </select>
+              <span class="field-control-icon" aria-hidden="true"><i class="bi bi-chevron-down"></i></span>
+            </span>
+          </label>
+
+          <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <label class="grid gap-1 text-xs text-slate-600">
+              Valoracion (opcional)
+              <span class="field-control field-control--select">
+                <select
+                  id="feedbackRatingInput"
+                  class="form-select rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-brand-500"
+                >
+                  <option value="">Sin valoracion</option>
+                  <option value="5">5 - Excelente</option>
+                  <option value="4">4 - Muy buena</option>
+                  <option value="3">3 - Aceptable</option>
+                  <option value="2">2 - Mejorable</option>
+                  <option value="1">1 - Mala</option>
+                </select>
+                <span class="field-control-icon" aria-hidden="true"><i class="bi bi-chevron-down"></i></span>
+              </span>
+            </label>
+
+            <label class="grid gap-1 text-xs text-slate-600">
+              Email (opcional)
+              <input
+                id="feedbackEmailInput"
+                class="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-brand-500"
+                type="email"
+                inputmode="email"
+                autocomplete="email"
+                placeholder="tu@email.com"
+              />
+            </label>
+          </div>
+
+          <label class="grid gap-1 text-xs text-slate-600">
+            Mensaje
+            <textarea
+              id="feedbackMessageInput"
+              class="min-h-[120px] resize-y rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-brand-500"
+              placeholder="Ej: Me gustaria poder duplicar gastos o ver comparacion mes a mes..."
+              minlength="8"
+              maxlength="1200"
+              required
+            ></textarea>
+          </label>
+
+          <footer class="mt-2 flex items-center justify-end gap-2">
+            <button
+              id="cancelFeedbackBtn"
+              class="ghost-btn inline-flex min-h-11 items-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-700"
+              type="button"
+              data-close-feedback-modal="true"
+            >
+              Cancelar
+            </button>
+            <button
+              id="feedbackSubmitBtn"
+              class="primary-btn inline-flex min-h-11 items-center gap-2 rounded-xl border border-[#213196] bg-[#213196] px-4 py-2.5 font-semibold text-white transition hover:bg-[#1B287A] hover:border-[#1B287A]"
+              type="submit"
+            >
+              <i class="bi bi-send"></i> Enviar feedback
+            </button>
+          </footer>
+        </form>
+      </section>
+    </div>
+
+    <div id="salaryModal" class="modal" aria-hidden="true">
+      <div class="modal-backdrop" data-close-salary-modal="true"></div>
+      <section
+        class="modal-card relative mx-auto mt-[10vh] w-[min(460px,calc(100%-20px))] rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="salaryModalTitle"
+      >
+        <header class="modal-head mb-3 flex items-center justify-between gap-2">
+          <h2 id="salaryModalTitle" class="font-space text-2xl font-bold text-slate-900">Sueldo mensual</h2>
+          <button
+            id="closeSalaryModalBtn"
+            class="icon-btn inline-grid h-11 w-11 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+            type="button"
+            title="Cerrar"
+            aria-label="Cerrar modal de sueldo"
+          >
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </header>
+
+        <p class="mb-3 text-sm text-slate-600">
+          Define el ingreso base solo del mes visible. Si quieres repetir ingresos en otros meses, crea un ingreso recurrente.
+        </p>
+
+        <label class="grid gap-1 text-xs text-slate-600">
+          Monto del sueldo
+          <span class="field-control">
+            <input
+              id="salaryModalInput"
+              class="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-brand-500"
+              type="text"
+              inputmode="numeric"
+              autocomplete="off"
+              placeholder="$ 0"
+            />
+          </span>
+        </label>
+
+        <footer class="mt-4 flex items-center justify-end gap-2">
+          <button
+            id="cancelSalaryModalBtn"
+            class="ghost-btn inline-flex min-h-11 items-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-700"
+            type="button"
+            data-close-salary-modal="true"
+          >
+            Cancelar
+          </button>
+          <button
+            id="saveSalaryModalBtn"
+            class="primary-btn inline-flex min-h-11 items-center gap-2 rounded-xl border border-[#213196] bg-[#213196] px-4 py-2.5 font-semibold text-white transition hover:bg-[#1B287A] hover:border-[#1B287A]"
+            type="button"
+          >
+            <i class="bi bi-check2-circle"></i> Guardar sueldo
+          </button>
+        </footer>
+      </section>
+    </div>
+
+    <template id="tableRowTemplate">
+      <tr class="expense-row">
+        <td class="item-name"><span class="item-name-text"></span></td>
+        <td class="date-cell">
+          <span class="date-text"></span>
+        </td>
+        <td class="category-cell">
+          <span class="category-chip"></span>
+        </td>
+        <td class="frequency-cell">
+          <span class="frequency-text"></span>
+        </td>
+        <td class="amount-cell amount-cell-right">
+          <strong class="amount-text"></strong>
+        </td>
+        <td class="table-actions">
+          <div class="inline-flex items-center gap-2">
+            <button
+              class="edit-item-btn mini-btn inline-grid h-9 w-9 place-items-center rounded-lg border border-slate-200 bg-white text-slate-700"
+              type="button"
+              title="Editar movimiento"
+              aria-label="Editar movimiento"
+            >
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button
+              class="delete-item-btn mini-btn danger inline-grid h-9 w-9 place-items-center rounded-lg border border-rose-200 bg-white text-rose-700"
+              type="button"
+              title="Eliminar movimiento"
+              aria-label="Eliminar movimiento"
+            >
+              <i class="bi bi-trash3"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </template>
+
+    <template id="mobileItemTemplate">
+      <article class="mobile-expense-row" tabindex="0" role="button" aria-label="Abrir detalle del movimiento">
+        <div class="mobile-item-top">
+          <span class="mobile-item-icon-wrap" aria-hidden="true">
+            <span class="material-symbols-rounded mobile-item-icon">receipt_long</span>
+          </span>
+        </div>
+        <div class="mobile-item-main">
+          <p class="mobile-item-name"></p>
+          <p class="mobile-item-secondary"></p>
+        </div>
+        <div class="mobile-item-amount-wrap">
+          <strong class="amount-text"></strong>
+        </div>
+        <div class="mobile-item-submeta">
+          <span class="mobile-item-date-wrap">
+            <span class="mobile-item-recurring-indicator is-hidden" aria-hidden="true">
+              <span class="material-symbols-rounded mobile-symbol">autorenew</span>
+            </span>
+            <span class="date-text mobile-date-text"></span>
+          </span>
+        </div>
+      </article>
+    </template>
+
+    <script src="./vendor/jspdf/jspdf.umd.min.js?v=2.5.1-local-02"></script>
+    <script src="./vendor/supabase/supabase.umd.js?v=2-local-02"></script>
+    <script>
+      window.SUPABASE_CONFIG = window.SUPABASE_CONFIG || {
+        url: "https://tkkiudmhwmevpgbldaka.supabase.co",
+        anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRra2l1ZG1od21ldnBnYmxkYWthIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5ODYyMTgsImV4cCI6MjA4ODU2MjIxOH0.VpVz3j_McvLamLVSKBY4u89dNorWVryZNmxX5Ko_1HY"
+      };
+    </script>
+    <div class="mobile-add-fab-wrap md:hidden" aria-label="Agregar movimiento rapido">
+      <button
+        id="mobileAddFabBtn"
+        class="mobile-add-fab"
+        type="button"
+        aria-label="Agregar movimiento"
+      >
+        <span class="material-symbols-rounded mobile-add-fab-icon" aria-hidden="true">add</span>
+        <span class="sr-only">Agregar movimiento</span>
+      </button>
+    </div>
+
+      <nav class="mobile-bottom-nav md:hidden" aria-label="Navegacion principal mobile">
+        <button class="mobile-bottom-nav-btn is-active" type="button" data-mobile-nav-target="homeSection">
+          <span class="material-symbols-rounded mobile-nav-icon" aria-hidden="true">home</span>
+          <span class="mobile-nav-label">Inicio</span>
+        </button>
+        <button id="mobileProfileBtn" class="mobile-bottom-nav-btn mobile-bottom-nav-profile-btn" type="button" aria-label="Perfil" aria-haspopup="menu" aria-expanded="false" aria-controls="profileDropdown">
+          <span class="material-symbols-rounded mobile-nav-icon" aria-hidden="true">person</span>
+          <span class="mobile-nav-label">Perfil</span>
+        </button>
+      </nav>
+
+    <div id="mobileQuickAddSheet" class="mobile-quick-add-sheet is-hidden md:hidden" aria-hidden="true">
+      <div class="mobile-sheet-backdrop" data-close-mobile-quick-add="true"></div>
+      <section class="mobile-quick-add-card" role="dialog" aria-modal="true" aria-labelledby="mobileQuickAddTitle">
+        <header class="mobile-sheet-head">
+          <div>
+            <p class="mobile-sheet-eyebrow">Agregar rapido</p>
+            <h2 id="mobileQuickAddTitle" class="font-space">Que quieres registrar?</h2>
+          </div>
+          <button
+            id="closeMobileQuickAddBtn"
+            class="icon-btn inline-grid h-11 w-11 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+            type="button"
+            aria-label="Cerrar opciones de alta"
+          >
+            <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">close</span>
+          </button>
+        </header>
+
+        <div class="mobile-quick-add-options">
+          <button id="mobileQuickAddExpenseBtn" class="mobile-quick-add-option" type="button">
+            <span class="mobile-quick-add-option-icon" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">trending_down</span></span>
+            <span class="mobile-quick-add-option-copy">
+              <strong>Agregar gasto</strong>
+              <small>Registrar una compra, servicio o salida</small>
+            </span>
+          </button>
+
+          <button id="mobileQuickAddIncomeBtn" class="mobile-quick-add-option" type="button">
+            <span class="mobile-quick-add-option-icon" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">arrow_outward</span></span>
+            <span class="mobile-quick-add-option-copy">
+              <strong>Agregar ingreso</strong>
+              <small>Registrar plata extra, venta o freelance</small>
+            </span>
+          </button>
+
+          <button id="mobileQuickAddSalaryBtn" class="mobile-quick-add-option" type="button">
+            <span class="mobile-quick-add-option-icon" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">payments</span></span>
+            <span class="mobile-quick-add-option-copy">
+              <strong>Editar ingreso del mes</strong>
+              <small>Ajustar el sueldo base de este mes</small>
+            </span>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <div id="mobileAmountScreen" class="mobile-amount-screen is-hidden md:hidden" aria-hidden="true">
+      <section class="mobile-amount-screen-card" role="dialog" aria-modal="true" aria-labelledby="mobileAmountScreenTitle">
+        <header class="mobile-amount-screen-head">
+          <div class="mobile-amount-type-tabs" role="tablist" aria-label="Tipo de movimiento rapido">
+            <button id="mobileAmountExpenseTab" class="mobile-amount-type-tab is-active" type="button" role="tab" aria-selected="true" data-mobile-amount-type="expense">Gastos</button>
+            <button id="mobileAmountIncomeTab" class="mobile-amount-type-tab" type="button" role="tab" aria-selected="false" data-mobile-amount-type="income">Ingresos</button>
+          </div>
+          <button
+            id="closeMobileAmountScreenBtn"
+            class="icon-btn inline-grid h-11 w-11 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+            type="button"
+            aria-label="Cerrar carga de monto"
+          >
+            <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">close</span>
+          </button>
+        </header>
+
+        <div class="mobile-amount-screen-body">
+          <p id="mobileAmountScreenTitle" class="mobile-amount-screen-title">Ingresa el monto</p>
+          <div class="mobile-amount-display" aria-live="polite">
+            <span class="mobile-amount-display-currency">$</span>
+            <input
+              id="mobileAmountInput"
+              class="mobile-amount-input font-space"
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              autocomplete="off"
+              placeholder="0"
+              aria-label="Monto"
+            />
+          </div>
+        </div>
+
+        <div class="mobile-amount-keypad" aria-label="Teclado numerico">
+          <button class="mobile-amount-key" type="button" data-mobile-amount-key="1">1</button>
+          <button class="mobile-amount-key" type="button" data-mobile-amount-key="2">2</button>
+          <button class="mobile-amount-key" type="button" data-mobile-amount-key="3">3</button>
+          <button class="mobile-amount-key" type="button" data-mobile-amount-key="4">4</button>
+          <button class="mobile-amount-key" type="button" data-mobile-amount-key="5">5</button>
+          <button class="mobile-amount-key" type="button" data-mobile-amount-key="6">6</button>
+          <button class="mobile-amount-key" type="button" data-mobile-amount-key="7">7</button>
+          <button class="mobile-amount-key" type="button" data-mobile-amount-key="8">8</button>
+          <button class="mobile-amount-key" type="button" data-mobile-amount-key="9">9</button>
+          <button class="mobile-amount-key mobile-amount-key-soft" type="button" data-mobile-amount-key="000">000</button>
+          <button class="mobile-amount-key" type="button" data-mobile-amount-key="0">0</button>
+          <button class="mobile-amount-key mobile-amount-key-soft" type="button" data-mobile-amount-key="backspace" aria-label="Borrar ultimo digito">
+            <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">backspace</span>
+          </button>
+        </div>
+
+        <footer class="mobile-amount-screen-footer">
+          <button id="mobileAmountNextBtn" class="primary-btn inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-[#213196] bg-[#213196] px-4 py-3 text-base font-semibold text-white" type="button">
+            Siguiente
+          </button>
+        </footer>
+      </section>
+    </div>
+
+    <div id="mobileQuickEntrySheet" class="mobile-quick-entry-sheet is-hidden md:hidden" aria-hidden="true">
+      <div class="mobile-sheet-backdrop" data-close-mobile-quick-entry="true"></div>
+      <section class="mobile-quick-entry-card" role="dialog" aria-modal="true" aria-labelledby="mobileQuickEntryTitle">
+        <header class="mobile-quick-entry-head">
+          <button
+            id="backMobileQuickEntryBtn"
+            class="icon-btn is-hidden inline-grid h-11 w-11 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+            type="button"
+            aria-label="Volver a elegir monto"
+          >
+            <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">arrow_back</span>
+          </button>
+          <div class="mobile-quick-entry-head-copy">
+            <p class="mobile-sheet-eyebrow">Carga rapida</p>
+            <h2 id="mobileQuickEntryTitle" class="font-space">Completa el movimiento</h2>
+          </div>
+          <button
+            id="closeMobileQuickEntryBtn"
+            class="icon-btn inline-grid h-11 w-11 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+            type="button"
+            aria-label="Cerrar carga rapida"
+          >
+            <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">close</span>
+          </button>
+        </header>
+
+        <div class="mobile-quick-entry-summary">
+          <span id="mobileQuickEntryTypePill" class="mobile-quick-entry-type-pill">Gasto</span>
+          <strong id="mobileQuickEntryAmount" class="mobile-quick-entry-amount font-space">$0</strong>
+        </div>
+
+        <div class="mobile-quick-entry-fields">
+          <label id="mobileQuickEntryAmountWrap" class="mobile-quick-entry-field is-hidden">
+            <span>Monto</span>
+            <span class="field-control">
+              <input
+                id="mobileQuickEntryAmountInput"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                placeholder="$ 0"
+              />
+            </span>
+          </label>
+
+          <label class="mobile-quick-entry-field">
+            <span>Categoria</span>
+            <span class="field-control field-control--select">
+              <select id="mobileQuickEntryCategory" class="form-select"></select>
+              <span class="field-control-icon" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">expand_more</span></span>
+            </span>
+          </label>
+
+          <label class="mobile-quick-entry-field">
+            <span>Descripcion</span>
+            <input
+              id="mobileQuickEntryName"
+              type="text"
+              autocomplete="off"
+              maxlength="60"
+            />
+          </label>
+
+          <label class="mobile-quick-entry-field">
+            <span>Fecha</span>
+            <span class="field-control field-control--text-icon">
+              <input
+                id="mobileQuickEntryDate"
+                type="date"
+                autocomplete="off"
+              />
+              <span class="field-control-icon" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">calendar_month</span></span>
+            </span>
+          </label>
+
+          <label id="mobileQuickEntryRecurringWrap" class="recurring-toggle mobile-quick-entry-recurring">
+            <input id="mobileQuickEntryRecurring" type="checkbox" />
+            <span>
+              <strong>Se repite cada mes</strong>
+              <small>Si lo activas, este movimiento aparece automaticamente en los meses siguientes. Si no, queda solo en este mes.</small>
+            </span>
+          </label>
+
+          <label id="mobileQuickEntryRecurringMonthsWrap" class="mobile-quick-entry-field is-hidden">
+            <span>Cuantos meses</span>
+            <span class="field-control field-control--select">
+              <select
+                id="mobileQuickEntryRecurringMonths"
+                class="form-select"
+                disabled
+              ></select>
+              <span class="field-control-icon" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">expand_more</span></span>
+            </span>
+          </label>
+
+          <div id="mobileQuickEntryScopeWrap" class="mobile-edit-scope is-hidden" role="group" aria-label="Alcance de la edicion recurrente">
+            <p class="mobile-edit-scope-label">Aplicar cambios</p>
+            <div class="mobile-edit-scope-options">
+              <button id="mobileQuickEntryScopeThisMonthBtn" class="mobile-edit-scope-btn is-active" type="button" aria-pressed="true">
+                Solo este mes
+              </button>
+              <button id="mobileQuickEntryScopeAllMonthsBtn" class="mobile-edit-scope-btn" type="button" aria-pressed="false">
+                Todos los meses
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <footer class="mobile-quick-entry-footer">
+          <button id="mobileQuickEntryDeleteBtn" class="ghost-btn is-hidden inline-flex min-h-11 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700" type="button">
+            Eliminar
+          </button>
+          <button id="mobileQuickEntrySaveBtn" class="primary-btn inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#213196] bg-[#213196] px-4 py-3 text-base font-semibold text-white" type="button">
+            Guardar movimiento
+          </button>
+        </footer>
+      </section>
+    </div>
+
+    <div id="mobileFilterSheet" class="mobile-filter-sheet is-hidden md:hidden" aria-hidden="true">
+      <div class="mobile-filter-sheet-backdrop" data-close-mobile-filter="true"></div>
+      <section class="mobile-filter-sheet-card" role="dialog" aria-modal="true" aria-labelledby="mobileFilterSheetTitle">
+        <header class="mobile-filter-sheet-head">
+          <div>
+            <p class="mobile-filter-sheet-eyebrow">Filtros</p>
+            <h2 id="mobileFilterSheetTitle" class="font-space">Filtrar movimientos</h2>
+          </div>
+          <button
+            id="closeMobileFilterSheetBtn"
+            class="icon-btn inline-grid h-11 w-11 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+            type="button"
+            aria-label="Cerrar filtros"
+          >
+            <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">close</span>
+          </button>
+        </header>
+
+        <label class="mobile-filter-search-wrap">
+          <span class="material-symbols-rounded mobile-filter-search-icon" aria-hidden="true">search</span>
+          <input id="mobileFilterSearchInput" type="search" autocomplete="off" placeholder="Buscar categoria" />
+        </label>
+
+        <section class="mobile-filter-sheet-section">
+          <h3>Periodo</h3>
+          <div id="mobileFilterDateOptions" class="mobile-filter-date-options">
+            <button type="button" class="mobile-filter-date-chip" data-mobile-date-value="all">Todo</button>
+            <button type="button" class="mobile-filter-date-chip" data-mobile-date-value="today">Hoy</button>
+            <button type="button" class="mobile-filter-date-chip" data-mobile-date-value="last7">Ultima semana</button>
+            <button type="button" class="mobile-filter-date-chip" data-mobile-date-value="last30">Ultimos 30 dias</button>
+            <button type="button" class="mobile-filter-date-chip" data-mobile-date-value="thisMonth">Este mes</button>
+            <button type="button" class="mobile-filter-date-chip" data-mobile-date-value="lastMonth">Mes pasado</button>
+          </div>
+        </section>
+
+        <section class="mobile-filter-sheet-section">
+          <h3>Recurrencia</h3>
+          <div id="mobileFilterStatusOptions" class="mobile-filter-date-options">
+            <button type="button" class="mobile-filter-date-chip" data-mobile-status-value="all">Todo</button>
+            <button type="button" class="mobile-filter-date-chip" data-mobile-status-value="recurring">Recurrentes</button>
+            <button type="button" class="mobile-filter-date-chip" data-mobile-status-value="oneTime">Puntuales</button>
+          </div>
+        </section>
+
+        <section class="mobile-filter-sheet-section mobile-filter-sheet-categories">
+          <div class="mobile-filter-sheet-section-title">
+            <h3>Categorias</h3>
+            <button id="mobileClearFilterSearchBtn" type="button" class="mobile-filter-clear-inline is-hidden">Limpiar busqueda</button>
+          </div>
+          <div id="mobileFilterCategoryOptions" class="mobile-filter-category-options"></div>
+          <p id="mobileFilterEmptyState" class="mobile-filter-empty is-hidden">No encontramos categorias para esa busqueda.</p>
+        </section>
+
+        <footer class="mobile-filter-sheet-footer">
+          <button id="mobileClearFiltersBtn" type="button" class="ghost-btn inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700">
+            Limpiar filtros
+          </button>
+          <button id="mobileApplyFiltersBtn" type="button" class="primary-btn inline-flex min-h-11 items-center justify-center rounded-xl border border-[#213196] bg-[#213196] px-4 py-2.5 text-sm font-semibold text-white">
+            Ver movimientos
+          </button>
+        </footer>
+      </section>
+    </div>
+    <div id="overlayInteractionBlocker" class="overlay-interaction-blocker is-hidden" aria-hidden="true"></div>
+    <script src="app.js?v=20260403-03"></script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

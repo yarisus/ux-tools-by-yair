@@ -1,0 +1,200 @@
+﻿:root {
+  /* Typography */
+  --ds-font-body: "Nunito", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --ds-font-display: "Nunito", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --ds-font-weight-regular: 600;
+  --ds-font-weight-medium: 700;
+  --ds-font-weight-bold: 800;
+  --ds-font-size-xs: 12px;
+  --ds-font-size-sm: 14px;
+  --ds-font-size-md: 16px;
+  --ds-font-size-lg: 20px;
+  --ds-font-size-xl: 24px;
+  --ds-font-size-2xl: 30px;
+  --ds-font-size-display: 56px;
+
+  /* Spacing */
+  --ds-space-0: 0;
+  --ds-space-1: 4px;
+  --ds-space-2: 8px;
+  --ds-space-3: 12px;
+  --ds-space-4: 16px;
+  --ds-space-5: 20px;
+  --ds-space-6: 24px;
+  --ds-space-7: 32px;
+  --ds-space-8: 40px;
+
+  /* Radius */
+  --ds-radius-sm: 8px;
+  --ds-radius-md: 12px;
+  --ds-radius-lg: 16px;
+  --ds-radius-xl: 24px;
+  --ds-radius-pill: 999px;
+
+  /* Brand palette (Dinaria) */
+  --ds-brand-50: #e8edff;
+  --ds-brand-100: #d7dfff;
+  --ds-brand-200: #bac7ff;
+  --ds-brand-300: #93a7ff;
+  --ds-brand-400: #607fff;
+  --ds-brand-500: #213196;
+  --ds-brand-600: #1B287A;
+  --ds-brand-700: #152061;
+  --ds-brand-800: #101847;
+  --ds-brand-900: #0a102f;
+
+  /* Neutrals */
+  --ds-slate-0: #ffffff;
+  --ds-slate-50: #f8fafc;
+  --ds-slate-100: #f1f5f9;
+  --ds-slate-200: #e2e8f0;
+  --ds-slate-300: #cbd5e1;
+  --ds-slate-400: #94a3b8;
+  --ds-slate-500: #64748b;
+  --ds-slate-600: #475569;
+  --ds-slate-700: #334155;
+  --ds-slate-800: #1e293b;
+  --ds-slate-900: #0f172a;
+
+  /* Feedback */
+  --ds-success-500: #16a34a;
+  --ds-success-700: #166534;
+  --ds-danger-500: #e11d48;
+  --ds-danger-700: #9f1239;
+  --ds-warning-500: #d97706;
+  --ds-info-500: #2563eb;
+
+  /* Semantic */
+  --ds-bg-canvas: #f4f7fb;
+  --ds-bg-surface: #ffffff;
+  --ds-bg-surface-subtle: #f8fbff;
+  --ds-border-subtle: #dbe3ef;
+  --ds-border-strong: #b8c6dd;
+  --ds-text-primary: #0f172a;
+  --ds-text-secondary: #475569;
+  --ds-text-muted: #64748b;
+  --ds-text-inverse: #f8fafc;
+  --ds-text-dark: #0f172a;
+  --ds-text-dark-secondary: #334155;
+  --ds-text-dark-muted: #475569;
+  --ds-text-light: #ffffff;
+  --ds-text-light-secondary: #e8edff;
+  --ds-text-light-muted: #d7dfff;
+
+  --ds-topbar-bg: var(--ds-brand-500);
+  --ds-topbar-bg-strong: var(--ds-brand-600);
+  --ds-topbar-text: #f8fbff;
+
+  --ds-button-primary-bg: var(--ds-brand-500);
+  --ds-button-primary-bg-hover: var(--ds-brand-600);
+  --ds-button-primary-text: #ffffff;
+  --ds-button-secondary-bg: #ffffff;
+  --ds-button-secondary-bg-hover: #f8fafc;
+  --ds-button-secondary-border: var(--ds-border-subtle);
+  --ds-button-secondary-text: var(--ds-slate-700);
+  --ds-button-tertiary-bg: transparent;
+  --ds-button-tertiary-bg-hover: var(--ds-brand-50);
+  --ds-button-tertiary-text: var(--ds-brand-600);
+
+  --ds-input-bg: #ffffff;
+  --ds-input-border: var(--ds-border-subtle);
+  --ds-input-border-hover: var(--ds-border-strong);
+  --ds-input-border-focus: var(--ds-brand-500);
+
+  --ds-focus-ring-color: rgba(33, 49, 150, 0.28);
+
+  /* Elevation */
+  --ds-shadow-sm: 0 4px 14px rgba(15, 23, 42, 0.08);
+  --ds-shadow-md: 0 16px 34px rgba(15, 23, 42, 0.16);
+
+  /* Motion */
+  --ds-motion-fast: 120ms;
+  --ds-motion-base: 180ms;
+  --ds-motion-ease: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Category palette (12) */
+  --ds-category-vivienda: #0f766e;
+  --ds-category-servicios: #1d4ed8;
+  --ds-category-alimentacion: #d97706;
+  --ds-category-transporte: #7c3aed;
+  --ds-category-salud: #0ea5e9;
+  --ds-category-finanzas: #14b8a6;
+  --ds-category-educacion: #2563eb;
+  --ds-category-compras: #db2777;
+  --ds-category-ocio: #7c2d12;
+  --ds-category-ahorro: #059669;
+  --ds-category-impuestos: #b45309;
+  --ds-category-otros: #475569;
+
+  /* Legacy mappings for current app */
+  --cat-fijos: var(--ds-category-vivienda);
+  --cat-variables: var(--ds-category-servicios);
+  --cat-semifijos: var(--ds-category-alimentacion);
+  --donut-gap-color: var(--ds-bg-canvas);
+  --ok: var(--ds-success-700);
+  --bad: var(--ds-danger-700);
+  --info: var(--ds-info-500);
+  --focus: var(--ds-brand-500);
+  --focus-shadow: var(--ds-focus-ring-color);
+  --text-hero: clamp(40px, 4vw, var(--ds-font-size-display));
+  --text-subtitle: var(--ds-font-size-lg);
+  --text-kpi-label: var(--ds-font-size-md);
+  --text-kpi-value: var(--ds-font-size-2xl);
+  --text-panel-title: var(--ds-font-size-xl);
+  --text-table-head: var(--ds-font-size-md);
+  --text-body: var(--ds-font-size-md);
+  --line-hero: 1.06;
+  --line-subtitle: 1.4;
+  --line-kpi-label: 1.35;
+  --line-kpi-value: 1.2;
+  --line-panel-title: 1.2;
+  --line-table-head: 1.35;
+  --line-body: 1.45;
+}
+
+body.theme-dark {
+  --ds-bg-canvas: #0b1220;
+  --ds-bg-surface: #111827;
+  --ds-bg-surface-subtle: #0f172a;
+  --ds-border-subtle: #334155;
+  --ds-border-strong: #475569;
+  --ds-text-primary: #f8fafc;
+  --ds-text-secondary: #cbd5e1;
+  --ds-text-muted: #94a3b8;
+  --ds-text-inverse: #0b1220;
+  --ds-text-dark: #f8fafc;
+  --ds-text-dark-secondary: #e2e8f0;
+  --ds-text-dark-muted: #cbd5e1;
+  --ds-text-light: #ffffff;
+  --ds-text-light-secondary: #e8edff;
+  --ds-text-light-muted: #d7dfff;
+
+  --ds-topbar-bg: #101847;
+  --ds-topbar-bg-strong: #152061;
+  --ds-topbar-text: #e2e8f0;
+
+  --ds-button-primary-bg: #3144b7;
+  --ds-button-primary-bg-hover: #3c51d0;
+  --ds-button-primary-text: #f8fafc;
+  --ds-button-secondary-bg: #0f172a;
+  --ds-button-secondary-bg-hover: #111c2f;
+  --ds-button-secondary-border: #334155;
+  --ds-button-secondary-text: #e2e8f0;
+  --ds-button-tertiary-bg: transparent;
+  --ds-button-tertiary-bg-hover: rgba(49, 68, 183, 0.16);
+  --ds-button-tertiary-text: #d7dfff;
+
+  --ds-input-bg: #0f172a;
+  --ds-input-border: #334155;
+  --ds-input-border-hover: #475569;
+  --ds-input-border-focus: #60a5fa;
+
+  --ds-focus-ring-color: rgba(49, 68, 183, 0.3);
+
+  --donut-gap-color: var(--ds-bg-canvas);
+  --ok: #4ade80;
+  --bad: #fb7185;
+  --info: #7dd3fc;
+  --focus: #60a5fa;
+  --focus-shadow: var(--ds-focus-ring-color);
+}
