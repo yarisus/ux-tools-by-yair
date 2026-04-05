@@ -2,7 +2,7 @@
   "redirects": [
     {
       "source": "/",
-      "destination": "/landing.html",
+      "destination": "/entry.html",
       "permanent": false
     }
   ]
