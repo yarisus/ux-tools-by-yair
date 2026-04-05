@@ -1,42 +1,46 @@
-﻿# Expense Web App
+# Dinaria
 
-Aplicacion web para controlar gastos mensuales por categorias.
+## Overview
+Dinaria is a personal finance web app focused on helping users track income, expenses, and monthly balance with a mobile-first experience.
 
-## Funcionalidades
-- Alta, edicion y eliminacion de gastos.
-- Categorias: gastos fijos, gastos semifijos y gastos variables.
-- Filtro por categoria.
-- Resumen mensual: gasto total en uso, saldo disponible y presupuesto estimado semanal y diario.
-- Grafico de gastos por categoria.
-- Opcion para ocultar/mostrar sueldo mensual.
-- Boton de descarga con exportacion de reporte a CSV o PDF.
-- Datos guardados en `localStorage` del navegador.
-- Instalacion como app (PWA) en navegadores compatibles.
+## Architecture
+- App location: [expense-webapp](/C:/Users/Yair-/ai-lab/expense-webapp)
+- Funnel location: [expense-webapp/funnel-deploy](/C:/Users/Yair-/ai-lab/expense-webapp/funnel-deploy)
 
-## Uso local
-1. Abrir con un servidor estatico (recomendado para PWA):
-   - `cd C:\Users\Yair-\ai-lab\expense-webapp`
-   - `python -m http.server 5500`
-2. Entrar en `http://localhost:5500`.
+## Deployments
+- Funnel: [https://dinaria-go.vercel.app](https://dinaria-go.vercel.app)
+- App: [https://dinariafinanzas.vercel.app](https://dinariafinanzas.vercel.app)
 
-Tambien se puede abrir `index.html` directo, pero la instalacion PWA y service worker no funcionan en `file://`.
+## Routing Flow
+- `/` -> `/entry.html`
+- `/entry.html` detects device type
+- Mobile -> `/landing.html`
+- Desktop -> `/desktop.html`
+- `/demo.html` is a separate preview page
 
-## Persistencia de datos
-- Los datos **no se borran al reiniciar la compu**.
-- Se guardan en el navegador del usuario (localStorage).
-- Se pierden si el usuario borra datos del sitio, usa modo incognito o cambia de dispositivo/navegador.
+## Important Rules
+- Funnel source of truth is only [expense-webapp/funnel-deploy](/C:/Users/Yair-/ai-lab/expense-webapp/funnel-deploy)
+- Do not edit archived files under [archive](/C:/Users/Yair-/ai-lab/archive)
+- Do not confuse [expense-webapp/funnel-deploy/vercel.json](/C:/Users/Yair-/ai-lab/expense-webapp/funnel-deploy/vercel.json) with [expense-webapp/vercel.json](/C:/Users/Yair-/ai-lab/expense-webapp/vercel.json)
+- Do not mix funnel files with app files
 
-## Publicar en GitHub Pages
-1. Subir esta carpeta al repositorio.
-2. En GitHub: `Settings > Pages`.
-3. Seleccionar branch y carpeta de deploy.
-4. Abrir la URL publicada.
+## Folder Structure
+```text
+expense-webapp/
+|-- funnel-deploy/        # Funnel source of truth and deploy bundle
+|-- index.html            # Real app entry
+|-- app.js                # Real app logic
+|-- manifest.webmanifest  # Real app manifest
+|-- sw.js                 # Real app service worker
+|-- assets/               # Shared assets
+|-- design-system/        # Shared tokens and app styles
+`-- vercel.json           # App deploy config
 
-## Estructura
-- `index.html`
-- `styles.css`
-- `app.js`
-- `manifest.webmanifest`
-- `sw.js`
-- `icon-192.svg`
-- `icon-512.svg`
+archive/
+|-- dinariafinanzas-deploy/
+`-- root-funnel-duplicates/
+```
+
+## Dev Workflow
+- To edit the funnel, work only inside [expense-webapp/funnel-deploy](/C:/Users/Yair-/ai-lab/expense-webapp/funnel-deploy)
+- To edit the real app, work in the root app files inside [expense-webapp](/C:/Users/Yair-/ai-lab/expense-webapp)
