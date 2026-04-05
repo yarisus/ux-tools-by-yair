@@ -215,6 +215,7 @@ const mobileStatusFilterBtn = document.getElementById("mobileStatusFilterBtn");
 const movementsFilterStatus = document.getElementById("movementsFilterStatus");
 const movementsFilterSummary = document.getElementById("movementsFilterSummary");
 const movementsActiveFilters = document.getElementById("movementsActiveFilters");
+const movementsFilterIndicator = document.getElementById("movementsFilterIndicator");
 const clearMovementFiltersBtn = document.getElementById("clearMovementFiltersBtn");
 const categoryFilterMenu = document.getElementById("categoryFilterMenu");
 const dateFilterMenu = document.getElementById("dateFilterMenu");
@@ -6231,7 +6232,7 @@ function updateMovementFilterUi() {
 
   setFilterButtonState(mobileCategoryFilterBtn, {
     icon: "funnel",
-    label: "Filtrar",
+    label: hasAnyFilter ? `Filtrar (${activeFilterCount})` : "Filtrar",
     active: hasAnyFilter
   });
 
@@ -6247,6 +6248,15 @@ function updateMovementFilterUi() {
     active: hasStatusFilter
   });
 
+  if (movementsFilterIndicator instanceof HTMLElement) {
+    movementsFilterIndicator.classList.toggle("is-hidden", !hasAnyFilter);
+    movementsFilterIndicator.textContent = hasAnyFilter
+      ? activeFilterCount === 1
+        ? "1 filtro activo"
+        : `${activeFilterCount} filtros activos`
+      : "";
+  }
+
   if (!(movementsFilterStatus instanceof HTMLElement) || !(movementsFilterSummary instanceof HTMLElement) || !(movementsActiveFilters instanceof HTMLElement)) {
     return;
   }
@@ -6259,7 +6269,7 @@ function updateMovementFilterUi() {
   }
 
   movementsFilterStatus.classList.remove("is-hidden");
-  movementsFilterSummary.textContent = `Mostrando ${filteredItems.length} de ${monthItems.length} movimientos de ${formatMonthLabel(state.activeMonth)}`;
+  movementsFilterSummary.textContent = `Lista filtrada: mostrando ${filteredItems.length} de ${monthItems.length} movimientos de ${formatMonthLabel(state.activeMonth)}`;
   movementsActiveFilters.innerHTML = activeFilters
     .map((filter) => `<span class="table-filter-chip">${filter.label}</span>`)
     .join("");
@@ -6288,7 +6298,7 @@ function getDateFilterLabel() {
     return "Este mes";
   }
   if (value === "lastMonth") {
-    return "Mes previo";
+    return "Mes pasado";
   }
   return "Todo";
 }
@@ -6354,14 +6364,23 @@ function renderActiveMonthContext() {
   if (activeMonthLabel) {
     activeMonthLabel.textContent = monthLabel;
   }
+  if (activeMonthSection) {
+    activeMonthSection.dataset.monthState = isCurrentMonth
+      ? "current"
+      : isPastMonth
+        ? "previous"
+        : isProjectedMonth
+          ? "projected"
+          : "current";
+  }
   if (activeMonthEyebrow) {
     activeMonthEyebrow.classList.remove("is-hidden");
     activeMonthEyebrow.textContent = isCurrentMonth
       ? "Mes actual"
       : isPastMonth
-        ? "Mes previo"
+        ? "Mes pasado"
         : isProjectedMonth
-          ? "Mes proyectado"
+          ? "Mes futuro"
           : "Mes actual";
   }
   if (activeMonthMeta) {
@@ -6374,15 +6393,22 @@ function renderActiveMonthContext() {
     mobileActiveMonthEyebrow.textContent = isCurrentMonth
       ? "Mes actual"
       : isPastMonth
-        ? "Mes previo"
+        ? "Mes pasado"
         : isProjectedMonth
-          ? "Mes proyectado"
+          ? "Mes futuro"
           : "Mes actual";
   }
   if (mobileActiveMonthMeta) {
     mobileActiveMonthMeta.textContent = detailParts.join(" · ");
   }
   if (mobileMonthShortcut) {
+    mobileMonthShortcut.dataset.monthState = isCurrentMonth
+      ? "current"
+      : isPastMonth
+        ? "previous"
+        : isProjectedMonth
+          ? "projected"
+          : "current";
     const monthShortcutCopy = isCurrentMonth
       ? `Ya estas viendo ${monthLabel}`
       : `Volver a ${formatMonthLabel(getCurrentMonthKey())}`;
@@ -6515,7 +6541,7 @@ function updateMonthContextCopyWidth() {
   const eyebrowStyle = window.getComputedStyle(activeMonthEyebrow);
   const { minMonth, maxMonth } = getMonthNavigationBounds();
   const titleLabels = [];
-  const eyebrowLabels = ["Mes actual", "Mes previo", "Mes proyectado"];
+  const eyebrowLabels = ["Mes actual", "Mes pasado", "Mes futuro"];
 
   let pointer = normalizeMonthKey(minMonth);
   const safeLimit = 80;
