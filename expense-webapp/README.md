@@ -44,3 +44,12 @@ archive/
 ## Dev Workflow
 - To edit the funnel, work only inside [expense-webapp/funnel-deploy](/C:/Users/Yair-/ai-lab/expense-webapp/funnel-deploy)
 - To edit the real app, work in the root app files inside [expense-webapp](/C:/Users/Yair-/ai-lab/expense-webapp)
+
+## Development Guardrails
+- Funnel source of truth is only [expense-webapp/funnel-deploy](/C:/Users/Yair-/ai-lab/expense-webapp/funnel-deploy)
+- Do not edit files under [archive](/C:/Users/Yair-/ai-lab/archive)
+- Do not edit root duplicate funnel files if they reappear
+- Do not change the wrong `vercel.json` by mistake
+- App source of truth is [expense-webapp](/C:/Users/Yair-/ai-lab/expense-webapp)
+- Before pushing funnel changes, validate `/`, `/entry.html`, `/landing.html`, `/desktop.html`, and `/demo.html`
+- If changing routing, preserve `/` -> `entry.html`, mobile -> `landing.html`, and desktop -> `desktop.html`
