@@ -1,0 +1,25 @@
+{
+  "id": "/",
+  "name": "Dinaria Finanzas QA",
+  "short_name": "Dinaria QA",
+  "description": "Version QA de Dinaria Finanzas para probar gastos e ingresos sin mezclar datos reales.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#213196",
+  "icons": [
+    {
+      "src": "./icon-192-qa.svg?v=20260328-10",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512-qa.svg?v=20260328-10",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

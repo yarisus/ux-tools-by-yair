@@ -4,17 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#213196" />
-    <title>Dinaria Finanzas | Control de gastos</title>
-    <link rel="manifest" href="./manifest.webmanifest?v=20260403-03" />
-    <link rel="icon" type="image/svg+xml" href="./assets/brand/dinaria-favicon-primary.svg?v=20260403-03" />
-    <link rel="apple-touch-icon" href="./icon-192.svg?v=20260403-03" />
+    <title>Dinaria Finanzas QA | Control de gastos</title>
+    <link rel="manifest" href="./qa-manifest.webmanifest?v=20260403-03" />
+    <link rel="icon" type="image/svg+xml" href="./icon-192-qa.svg?v=20260328-10" />
+    <link rel="apple-touch-icon" href="./icon-192-qa.svg?v=20260328-10" />
     <link rel="stylesheet" href="./assets/fonts/fonts.css?v=20260313-02" />
     <link rel="stylesheet" href="./design-system/tokens.css?v=20260403-03" />
     <link rel="stylesheet" href="tailwind.generated.css?v=20260403-03" />
     <link rel="stylesheet" href="styles.css?v=20260403-03" />
     <link rel="stylesheet" href="./design-system/app-mobile.css?v=20260403-03" />
   </head>
-  <body class="min-h-screen bg-[#f6f8ff] text-slate-900 antialiased">
+  <body class="min-h-screen bg-[#f6f8ff] text-slate-900 antialiased" data-app-variant="qa">
     <div id="launchSplash" class="launch-splash" aria-hidden="true">
       <img
         class="launch-splash-logo"
@@ -469,7 +469,7 @@
           >
             <header class="table-head mb-3 flex flex-wrap items-end justify-between gap-3">
               <div>
-                <h2 class="section-title font-space">Tus movimientos</h2>
+                <h2 class="section-title font-space">Transacciones</h2>
                 <div id="movementsFilterStatus" class="table-filter-status is-hidden" aria-live="polite">
                   <p id="movementsFilterSummary" class="table-filter-summary"></p>
                   <div id="movementsActiveFilters" class="table-filter-chips"></div>
@@ -509,7 +509,7 @@
                 <option value="last7">Ultima semana</option>
                 <option value="last30">Ultimos 30 dias</option>
                 <option value="thisMonth">Este mes</option>
-                  <option value="lastMonth">Mes previo</option>
+                <option value="lastMonth">Mes pasado</option>
               </select>
 
               <select id="statusFilter" class="hidden">
@@ -573,7 +573,7 @@
                   <button class="menu-item date-filter-option" type="button" data-date-value="last7" role="menuitem">Ultima semana</button>
                   <button class="menu-item date-filter-option" type="button" data-date-value="last30" role="menuitem">Ultimos 30 dias</button>
                   <button class="menu-item date-filter-option" type="button" data-date-value="thisMonth" role="menuitem">Este mes</button>
-                    <button class="menu-item date-filter-option" type="button" data-date-value="lastMonth" role="menuitem">Mes previo</button>
+                  <button class="menu-item date-filter-option" type="button" data-date-value="lastMonth" role="menuitem">Mes pasado</button>
                 </div>
               </div>
 
@@ -1503,7 +1503,7 @@
             <button type="button" class="mobile-filter-date-chip" data-mobile-date-value="last7">Ultima semana</button>
             <button type="button" class="mobile-filter-date-chip" data-mobile-date-value="last30">Ultimos 30 dias</button>
             <button type="button" class="mobile-filter-date-chip" data-mobile-date-value="thisMonth">Este mes</button>
-            <button type="button" class="mobile-filter-date-chip" data-mobile-date-value="lastMonth">Mes previo</button>
+            <button type="button" class="mobile-filter-date-chip" data-mobile-date-value="lastMonth">Mes pasado</button>
           </div>
         </section>
 
@@ -1536,6 +1536,9 @@
       </section>
     </div>
     <div id="overlayInteractionBlocker" class="overlay-interaction-blocker is-hidden" aria-hidden="true"></div>
+    <script>
+      window.__DINARIA_APP_VARIANT__ = "qa";
+    </script>
     <script src="app.js?v=20260403-03"></script>
   </body>
 </html>
