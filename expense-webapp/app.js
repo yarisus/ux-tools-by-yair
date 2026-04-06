@@ -2656,6 +2656,7 @@ function getMonthScopedExpenseItems(monthKey = state.activeMonth) {
   const visibleItems = [];
   const latestRecurringBySeries = new Map();
   const actualRecurringSeries = new Set();
+  const allowProjectedRecurring = compareMonthKeys(selectedMonth, getCurrentMonthKey()) >= 0;
 
   for (const item of state.items) {
     if (normalizeMovementType(item.type) !== "expense") {
@@ -2681,6 +2682,9 @@ function getMonthScopedExpenseItems(monthKey = state.activeMonth) {
   }
 
   for (const [seriesId, sourceItem] of latestRecurringBySeries.entries()) {
+    if (!allowProjectedRecurring) {
+      continue;
+    }
     const sourceMonth = getMonthKeyFromItem(sourceItem);
     if (compareMonthKeys(sourceMonth, selectedMonth) >= 0) {
       continue;
@@ -2711,6 +2715,7 @@ function getVisibleMonthIncomeItems(monthKey = state.activeMonth) {
   const visibleItems = [];
   const latestRecurringBySeries = new Map();
   const actualRecurringSeries = new Set();
+  const allowProjectedRecurring = compareMonthKeys(selectedMonth, getCurrentMonthKey()) >= 0;
 
   for (const item of state.items) {
     if (normalizeMovementType(item.type) !== "income") {
@@ -2736,6 +2741,9 @@ function getVisibleMonthIncomeItems(monthKey = state.activeMonth) {
   }
 
   for (const [seriesId, sourceItem] of latestRecurringBySeries.entries()) {
+    if (!allowProjectedRecurring) {
+      continue;
+    }
     const sourceMonth = getMonthKeyFromItem(sourceItem);
     if (compareMonthKeys(sourceMonth, selectedMonth) >= 0) {
       continue;
@@ -3450,6 +3458,8 @@ function saveMovementRecord({
   }
 
   let didMutate = false;
+  let nextActiveMonthAfterSave = "";
+  const viewedMonthAtSave = normalizeMonthKey(state.activeMonth);
 
   if (editingItemId) {
     const item = state.items.find((entry) => entry.id === editingItemId);
@@ -3474,6 +3484,9 @@ function saveMovementRecord({
     const nextMonthKey = getMonthKeyFromItem(item);
     if (previousSeriesId && previousMonthKey !== nextMonthKey) {
       removeRecurringSkip(previousSeriesId, previousMonthKey);
+    }
+    if (nextMonthKey !== viewedMonthAtSave) {
+      nextActiveMonthAfterSave = nextMonthKey;
     }
 
     if (recurring) {
@@ -3616,7 +3629,13 @@ function saveMovementRecord({
 
   if (didMutate) {
     saveState();
-    render();
+    if (nextActiveMonthAfterSave && nextActiveMonthAfterSave !== normalizeMonthKey(state.activeMonth)) {
+      queueMicrotask(() => {
+        setActiveMonth(nextActiveMonthAfterSave);
+      });
+    } else {
+      render();
+    }
   }
   return true;
 }
