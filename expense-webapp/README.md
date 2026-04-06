@@ -53,3 +53,5 @@ archive/
 - App source of truth is [expense-webapp](/C:/Users/Yair-/ai-lab/expense-webapp)
 - Before pushing funnel changes, validate `/`, `/entry.html`, `/landing.html`, `/desktop.html`, and `/demo.html`
 - If changing routing, preserve `/` -> `entry.html`, mobile -> `landing.html`, and desktop -> `desktop.html`
+
+<!-- Deployment note: keep app and funnel on separate Vercel projects. -->
