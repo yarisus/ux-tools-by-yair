@@ -196,6 +196,8 @@ const categoryInput = document.getElementById("categoryInput");
 const nameInput = document.getElementById("nameInput");
 const amountInput = document.getElementById("amountInput");
 const recurringInput = document.getElementById("recurringInput");
+const recurringMonthsWrap = document.getElementById("recurringMonthsWrap");
+const recurringMonthsInput = document.getElementById("recurringMonthsInput");
 const expenseModal = document.getElementById("expenseModal");
 const modalTitle = document.getElementById("modalTitle");
 const expenseSubmitBtn = document.getElementById("expenseSubmitBtn");
@@ -378,6 +380,7 @@ const mobileClearFilterSearchBtn = document.getElementById("mobileClearFilterSea
 const overlayInteractionBlocker = document.getElementById("overlayInteractionBlocker");
 
 populateMobileRecurringDurationOptions();
+populateRecurringDurationOptions(recurringMonthsInput, recurringMonthsInput?.value || "12");
 const mobileAddFabBtn = document.getElementById("mobileAddFabBtn");
 const mobileAddMovementMenu = document.getElementById("mobileAddMovementMenu");
 const mobileBottomNavButtons = Array.from(document.querySelectorAll("[data-mobile-nav-target]"));
@@ -813,6 +816,21 @@ if (mobileQuickEntryDate) {
   });
 }
 
+if (recurringInput) {
+  recurringInput.addEventListener("change", () => {
+    syncRecurringDurationVisibility();
+  });
+}
+
+if (recurringMonthsInput) {
+  recurringMonthsInput.addEventListener("change", () => {
+    if (!(recurringMonthsInput instanceof HTMLSelectElement)) {
+      return;
+    }
+    populateRecurringDurationOptions(recurringMonthsInput, recurringMonthsInput.value || "12");
+  });
+}
+
 if (mobileQuickEntryRecurring) {
   mobileQuickEntryRecurring.addEventListener("change", () => {
     syncMobileQuickEntryRecurringDurationVisibility();
@@ -824,7 +842,7 @@ if (mobileQuickEntryRecurringMonths) {
     if (!(mobileQuickEntryRecurringMonths instanceof HTMLSelectElement)) {
       return;
     }
-    mobileQuickEntryRecurringMonths.value = normalizeRecurringDurationSelectionValue(mobileQuickEntryRecurringMonths.value || "12");
+    populateRecurringDurationOptions(mobileQuickEntryRecurringMonths, mobileQuickEntryRecurringMonths.value || "12");
   });
 }
 
@@ -949,7 +967,8 @@ expenseForm.addEventListener("submit", (event) => {
     category: categoryInput?.value || getDefaultCategoryKeyForType("expense"),
     name: nameInput?.value || "",
     amount: parseCurrencyInput(amountInput?.value || ""),
-    isRecurring: Boolean(recurringInput?.checked)
+    isRecurring: Boolean(recurringInput?.checked),
+    recurringMonths: parseRecurringDurationSelection(recurringMonthsInput?.value || "12")
   });
 
   if (!didSave) {
@@ -2424,6 +2443,10 @@ function clampRecurringMonths(rawValue, { min = 1, max = 24, fallback = 12 } = {
   return Math.max(min, Math.min(max, numericValue));
 }
 
+function getStandardRecurringDurationValues() {
+  return [3, 6, 12, 24];
+}
+
 function normalizeRecurringDurationSelectionValue(rawValue) {
   const value = String(rawValue || "").trim().toLowerCase();
   if (value === "always") {
@@ -2435,6 +2458,37 @@ function normalizeRecurringDurationSelectionValue(rawValue) {
 function parseRecurringDurationSelection(rawValue) {
   const normalizedValue = normalizeRecurringDurationSelectionValue(rawValue);
   return normalizedValue === "always" ? "always" : clampRecurringMonths(normalizedValue);
+}
+
+function buildRecurringDurationOptionsMarkup(selectedValue = "12") {
+  const normalizedValue = normalizeRecurringDurationSelectionValue(selectedValue);
+  const numericValue = normalizedValue === "always" ? null : Number(normalizedValue);
+  const values = [...getStandardRecurringDurationValues()];
+
+  if (numericValue && !values.includes(numericValue)) {
+    values.push(numericValue);
+    values.sort((a, b) => a - b);
+  }
+
+  const finiteOptions = values.map((months) => {
+    const label = months === 1 ? "1 mes" : `${months} meses`;
+    const selected = numericValue === months ? " selected" : "";
+    return `<option value="${months}"${selected}>${label}</option>`;
+  });
+
+  const alwaysSelected = normalizedValue === "always" ? " selected" : "";
+  finiteOptions.push(`<option value="always"${alwaysSelected}>Hasta cancelarlo</option>`);
+  return finiteOptions.join("");
+}
+
+function populateRecurringDurationOptions(select, selectedValue = "12") {
+  if (!(select instanceof HTMLSelectElement)) {
+    return;
+  }
+
+  const normalizedValue = normalizeRecurringDurationSelectionValue(selectedValue);
+  select.innerHTML = buildRecurringDurationOptionsMarkup(normalizedValue);
+  select.value = normalizedValue;
 }
 
 function normalizeStatusFilterValue(rawValue) {
@@ -2492,21 +2546,50 @@ function clearRecurringWindow(item) {
 }
 
 function populateMobileRecurringDurationOptions() {
-  if (!(mobileQuickEntryRecurringMonths instanceof HTMLSelectElement)) {
+  populateRecurringDurationOptions(mobileQuickEntryRecurringMonths, mobileQuickEntryRecurringMonths?.value || "12");
+}
+
+function syncRecurringDurationVisibility({ isProjected = Boolean(editingProjectedItem) } = {}) {
+  if (
+    !recurringMonthsWrap
+    || !(recurringInput instanceof HTMLInputElement)
+    || !(recurringMonthsInput instanceof HTMLSelectElement)
+  ) {
     return;
   }
 
-  const options = [];
-  for (let month = 1; month <= 24; month += 1) {
-    const label = month === 1 ? "1 mes" : `${month} meses`;
-    options.push(`<option value="${month}">${label}</option>`);
-  }
-  options.push('<option value="always">Siempre</option>');
+  const shouldShow = !isProjected && recurringInput.checked;
+  recurringMonthsWrap.classList.toggle("is-hidden", !shouldShow);
+  recurringMonthsInput.disabled = !shouldShow;
+}
 
-  mobileQuickEntryRecurringMonths.innerHTML = options.join("");
-  if (!mobileQuickEntryRecurringMonths.value) {
-    mobileQuickEntryRecurringMonths.value = "12";
+function getRecurringDisplayMeta(item, monthKey = getMonthKeyFromItem(item)) {
+  if (!item?.isRecurring) {
+    return {
+      label: "Puntual",
+      title: "Movimiento puntual del mes"
+    };
   }
+
+  const sourceMonth = normalizeMonthKey(item?.recurringSourceMonth || getMonthKeyFromItem(item));
+  const selectedMonth = normalizeMonthKey(monthKey);
+  const endMonth = getRecurringEndMonth(item);
+  const totalMonths = endMonth
+    ? Math.max(1, getMonthOffsetBetween(sourceMonth, endMonth) + 1)
+    : getRecurringSeriesMonths(item);
+
+  if (!totalMonths) {
+    return {
+      label: "Mensual",
+      title: "Se repite cada mes hasta cancelarlo"
+    };
+  }
+
+  const currentOccurrence = Math.max(1, Math.min(totalMonths, getMonthOffsetBetween(sourceMonth, selectedMonth) + 1));
+  return {
+    label: `${currentOccurrence}/${totalMonths}`,
+    title: `Se repite cada mes · ${currentOccurrence} de ${totalMonths}`
+  };
 }
 
 function isRecurringItemActiveForMonth(item, monthKey) {
@@ -2697,6 +2780,7 @@ function getMonthScopedExpenseItems(monthKey = state.activeMonth) {
       ...sourceItem,
       id: `projection:${seriesId}:${selectedMonth}`,
       date: buildDateForMonth(sourceItem.date, selectedMonth),
+      recurringSourceMonth: sourceMonth,
       recurringSeriesId: seriesId,
       isProjectedRecurring: true
     });
@@ -2756,6 +2840,7 @@ function getVisibleMonthIncomeItems(monthKey = state.activeMonth) {
       ...sourceItem,
       id: `projection:${seriesId}:${selectedMonth}`,
       date: buildDateForMonth(sourceItem.date, selectedMonth),
+      recurringSourceMonth: sourceMonth,
       recurringSeriesId: seriesId,
       isProjectedRecurring: true
     });
@@ -2993,6 +3078,10 @@ function closeModal() {
   if (recurringInput) {
     recurringInput.checked = false;
   }
+  if (recurringMonthsInput) {
+    populateRecurringDurationOptions(recurringMonthsInput, "12");
+  }
+  syncRecurringDurationVisibility({ isProjected: false });
   setExpenseFormMode("create");
   syncMovementTypeTabs("expense");
   updateOverlayScrollLock();
@@ -3342,7 +3431,7 @@ function openMobileQuickEntrySheet(movementType = "expense", amount = 0, item = 
     const defaultDuration = editableItem
       ? getRecurringDurationSelectionForItem(editableItem, getMonthKeyFromItem(editableItem))
       : "12";
-    mobileQuickEntryRecurringMonths.value = normalizeRecurringDurationSelectionValue(defaultDuration);
+    populateRecurringDurationOptions(mobileQuickEntryRecurringMonths, defaultDuration);
     mobileQuickEntryRecurringMonths.disabled = !mobileQuickEntryRecurring?.checked || isProjectedItem;
   }
   syncMobileQuickEntryRecurringDurationVisibility({ isProjected: isProjectedItem });
@@ -3413,7 +3502,7 @@ function closeMobileQuickEntrySheet() {
     mobileQuickEntryAmountInput.value = "";
   }
   if (mobileQuickEntryRecurringMonths instanceof HTMLSelectElement) {
-    mobileQuickEntryRecurringMonths.value = "12";
+    populateRecurringDurationOptions(mobileQuickEntryRecurringMonths, "12");
     mobileQuickEntryRecurringMonths.disabled = true;
   }
   if (mobileQuickEntryRecurringMonthsWrap) {
@@ -3822,6 +3911,10 @@ function openExpenseModalForCreate(trigger = null, movementType = "expense", opt
   if (recurringInput) {
     recurringInput.checked = false;
   }
+  if (recurringMonthsInput) {
+    populateRecurringDurationOptions(recurringMonthsInput, "12");
+  }
+  syncRecurringDurationVisibility({ isProjected: false });
   setExpenseFormMode("create");
   syncMovementTypeTabs(normalizedType);
   openExpenseModal(trigger);
@@ -3969,6 +4062,14 @@ function openExpenseModalForEdit(item, trigger = null) {
   if (recurringInput) {
     recurringInput.checked = Boolean(editableItem.isRecurring);
   }
+  if (recurringMonthsInput) {
+    const durationSource = projectionSourceItem || editableItem;
+    const durationMonth = projectionSourceItem
+      ? getMonthKeyFromItem(projectionSourceItem)
+      : getMonthKeyFromItem(editableItem);
+    populateRecurringDurationOptions(recurringMonthsInput, getRecurringDurationSelectionForItem(durationSource, durationMonth));
+  }
+  syncRecurringDurationVisibility({ isProjected: Boolean(editingProjectedItem) });
   syncMovementTypeTabs(movementType);
   openExpenseModal(trigger);
 }
@@ -6034,23 +6135,29 @@ function populateItemNode(node, item) {
 
   const frequencyText = node.querySelector(".frequency-text");
   if (frequencyText) {
-    const frequencyLabel = isRecurring ? "Mensual" : "Puntual";
-    const frequencyTitle = isRecurring ? "Se repite cada mes" : "Movimiento puntual del mes";
+    const { label: frequencyLabel, title: frequencyTitle } = getRecurringDisplayMeta(item);
     if (isMobileRow) {
       frequencyText.textContent = isRecurring ? frequencyLabel : "";
       frequencyText.setAttribute("title", isRecurring ? frequencyTitle : "");
       frequencyText.classList.toggle("is-hidden", !isRecurring);
+      if (isRecurring) {
+        frequencyText.style.setProperty("display", "inline-block", "important");
+      } else {
+        frequencyText.style.setProperty("display", "none", "important");
+      }
     } else {
       frequencyText.textContent = frequencyLabel;
       frequencyText.setAttribute("title", frequencyTitle);
       frequencyText.classList.remove("is-hidden");
+      frequencyText.style.removeProperty("display");
     }
   }
 
   const recurringIndicator = node.querySelector(".mobile-item-recurring-indicator");
   if (recurringIndicator) {
+    const { title: recurringTitle } = getRecurringDisplayMeta(item);
     recurringIndicator.classList.toggle("is-hidden", !isRecurring);
-    recurringIndicator.setAttribute("title", "Se repite cada mes");
+    recurringIndicator.setAttribute("title", recurringTitle);
   }
 
   const amountText = node.querySelector(".amount-text");

@@ -747,6 +747,17 @@
             </span>
           </label>
 
+          <label id="recurringMonthsWrap" class="grid gap-1 text-xs text-slate-600 is-hidden">
+            Duracion
+            <span class="field-control field-control--select">
+              <select
+                id="recurringMonthsInput"
+                class="form-select"
+              ></select>
+              <span class="field-control-icon" aria-hidden="true"><i class="bi bi-chevron-down"></i></span>
+            </span>
+          </label>
+
           <button
             id="expenseSubmitBtn"
             type="submit"
@@ -1214,6 +1225,7 @@
             <span class="mobile-item-recurring-indicator is-hidden" aria-hidden="true">
               <span class="material-symbols-rounded mobile-symbol">autorenew</span>
             </span>
+            <span class="frequency-text mobile-frequency-text is-hidden"></span>
             <span class="date-text mobile-date-text"></span>
           </span>
         </div>

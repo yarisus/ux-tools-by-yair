@@ -24164,6 +24164,25 @@ body.theme-dark .hero #activeMonthSection[data-month-state="projected"] .month-c
     gap: 6px !important;
   }
 
+  body .mobile-item-submeta {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin: 0 !important;
+  }
+
+  body .mobile-item-date-wrap {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    min-width: max-content !important;
+  }
+
+  body .mobile-frequency-text {
+    display: inline !important;
+    white-space: nowrap !important;
+  }
+
   body .mobile-month-eyebrow {
     display: inline-flex !important;
     align-items: center !important;
