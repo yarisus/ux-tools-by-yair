@@ -758,6 +758,18 @@
             </span>
           </label>
 
+          <div id="expenseEditScopeWrap" class="mobile-edit-scope is-hidden" role="group" aria-label="Alcance de la edicion recurrente">
+            <p class="mobile-edit-scope-label">Aplicar cambios</p>
+            <div class="mobile-edit-scope-options">
+              <button id="expenseEditScopeThisMonthBtn" class="mobile-edit-scope-btn is-active" type="button" aria-pressed="true">
+                Solo este mes
+              </button>
+              <button id="expenseEditScopeAllMonthsBtn" class="mobile-edit-scope-btn" type="button" aria-pressed="false">
+                Desde este mes en adelante
+              </button>
+            </div>
+          </div>
+
           <button
             id="expenseSubmitBtn"
             type="submit"
@@ -1470,7 +1482,7 @@
                 Solo este mes
               </button>
               <button id="mobileQuickEntryScopeAllMonthsBtn" class="mobile-edit-scope-btn" type="button" aria-pressed="false">
-                Todos los meses
+                Desde este mes en adelante
               </button>
             </div>
           </div>

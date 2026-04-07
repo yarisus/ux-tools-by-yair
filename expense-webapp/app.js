@@ -198,6 +198,9 @@ const amountInput = document.getElementById("amountInput");
 const recurringInput = document.getElementById("recurringInput");
 const recurringMonthsWrap = document.getElementById("recurringMonthsWrap");
 const recurringMonthsInput = document.getElementById("recurringMonthsInput");
+const expenseEditScopeWrap = document.getElementById("expenseEditScopeWrap");
+const expenseEditScopeThisMonthBtn = document.getElementById("expenseEditScopeThisMonthBtn");
+const expenseEditScopeAllMonthsBtn = document.getElementById("expenseEditScopeAllMonthsBtn");
 const expenseModal = document.getElementById("expenseModal");
 const modalTitle = document.getElementById("modalTitle");
 const expenseSubmitBtn = document.getElementById("expenseSubmitBtn");
@@ -429,6 +432,7 @@ let overlayBackStateActive = false;
 let overlayBackStateSyncScheduled = false;
 let ignoreOverlayBackPopstate = false;
 let mobileQuickEntryAmount = 0;
+let expenseEditScope = "thisMonth";
 let mobileQuickEntryScope = "thisMonth";
 let mobileAmountMode = "expense";
 let mobileAmountValue = "";
@@ -831,6 +835,20 @@ if (recurringMonthsInput) {
   });
 }
 
+if (expenseEditScopeThisMonthBtn) {
+  expenseEditScopeThisMonthBtn.addEventListener("click", () => {
+    expenseEditScope = "thisMonth";
+    updateExpenseEditScopeSelection();
+  });
+}
+
+if (expenseEditScopeAllMonthsBtn) {
+  expenseEditScopeAllMonthsBtn.addEventListener("click", () => {
+    expenseEditScope = "allMonths";
+    updateExpenseEditScopeSelection();
+  });
+}
+
 if (mobileQuickEntryRecurring) {
   mobileQuickEntryRecurring.addEventListener("change", () => {
     syncMobileQuickEntryRecurringDurationVisibility();
@@ -968,7 +986,8 @@ expenseForm.addEventListener("submit", (event) => {
     name: nameInput?.value || "",
     amount: parseCurrencyInput(amountInput?.value || ""),
     isRecurring: Boolean(recurringInput?.checked),
-    recurringMonths: parseRecurringDurationSelection(recurringMonthsInput?.value || "12")
+    recurringMonths: parseRecurringDurationSelection(recurringMonthsInput?.value || "12"),
+    editScope: expenseEditScope
   });
 
   if (!didSave) {
@@ -1966,6 +1985,51 @@ function normalizeEditScope(rawScope) {
   return String(rawScope || "").trim().toLowerCase() === "allmonths" ? "allMonths" : "thisMonth";
 }
 
+function shouldShowRecurringEditScope(item = null, { isProjected = Boolean(editingProjectedItem) } = {}) {
+  return Boolean(isProjected || item?.isRecurring);
+}
+
+function createRecurringContinuationItem(sourceItem, seriesId, startMonthKey) {
+  const normalizedStartMonth = normalizeMonthKey(startMonthKey);
+  const normalizedSeriesId = String(seriesId || getRecurringSeriesId(sourceItem)).trim();
+  const endMonth = getRecurringEndMonth(sourceItem);
+  const sourceMonth = getRecurringSeriesSourceMonth(sourceItem);
+  if (!normalizedSeriesId) {
+    return null;
+  }
+
+  if (endMonth && compareMonthKeys(normalizedStartMonth, endMonth) > 0) {
+    return null;
+  }
+
+  const continuationItem = sanitizeItem({
+    id: createItemId(),
+    type: normalizeMovementType(sourceItem?.type),
+    date: buildDateForMonth(normalizeItemDate(sourceItem?.date), normalizedStartMonth),
+    category: normalizeCategoryKeyForType(sourceItem?.category, sourceItem?.type),
+    name: String(sourceItem?.name || "").trim(),
+    amount: Math.max(0, Number(sourceItem?.amount || 0)),
+    isRecurring: true,
+    recurringSeriesId: normalizedSeriesId,
+    recurringSourceMonth: sourceMonth,
+    sortAnchorId: String(sourceItem?.sortAnchorId || sourceItem?.id || "").trim() || undefined,
+    createdAt: new Date().toISOString()
+  });
+
+  if (!continuationItem) {
+    return null;
+  }
+
+  const continuationDuration = getRecurringDurationSelectionForItem(sourceItem, normalizedStartMonth);
+  if (continuationDuration === "always") {
+    clearRecurringWindow(continuationItem);
+  } else {
+    setRecurringWindow(continuationItem, normalizedStartMonth, continuationDuration);
+  }
+
+  return continuationItem;
+}
+
 function getHistoryStateObject() {
   return history.state && typeof history.state === "object" ? history.state : {};
 }
@@ -2399,6 +2463,72 @@ function getRecurringSeriesId(item) {
   return String(item.recurringSeriesId || item.id || "").trim();
 }
 
+function getRecurringSeriesSourceMonth(item) {
+  const fallbackMonth = normalizeMonthKey(item?.recurringSourceMonth || getMonthKeyFromItem(item));
+  const seriesId = getRecurringSeriesId(item);
+  if (!seriesId || !Array.isArray(state?.items)) {
+    return fallbackMonth;
+  }
+
+  let earliestMonth = fallbackMonth;
+  for (const entry of state.items) {
+    if (getRecurringSeriesId(entry) !== seriesId) {
+      continue;
+    }
+
+    const entryMonth = normalizeMonthKey(entry?.recurringSourceMonth || getMonthKeyFromItem(entry));
+    if (!earliestMonth || compareMonthKeys(entryMonth, earliestMonth) < 0) {
+      earliestMonth = entryMonth;
+    }
+  }
+
+  return earliestMonth || fallbackMonth;
+}
+
+function getRecurringSeriesTerminalMonth(item) {
+  const seriesId = getRecurringSeriesId(item);
+  const fallbackEndMonth = (() => {
+    const directEndMonth = getRecurringEndMonth(item);
+    if (directEndMonth) {
+      return directEndMonth;
+    }
+
+    const storedMonths = getRecurringSeriesMonths(item);
+    return storedMonths ? shiftMonthKey(getMonthKeyFromItem(item), storedMonths - 1) : "";
+  })();
+
+  if (!seriesId || !Array.isArray(state?.items)) {
+    return fallbackEndMonth;
+  }
+
+  let latestEndMonth = fallbackEndMonth;
+  for (const entry of state.items) {
+    if (!entry?.isRecurring || getRecurringSeriesId(entry) !== seriesId) {
+      continue;
+    }
+
+    const entryEndMonth = (() => {
+      const directEndMonth = getRecurringEndMonth(entry);
+      if (directEndMonth) {
+        return directEndMonth;
+      }
+
+      const storedMonths = getRecurringSeriesMonths(entry);
+      return storedMonths ? shiftMonthKey(getMonthKeyFromItem(entry), storedMonths - 1) : "";
+    })();
+
+    if (!entryEndMonth) {
+      return "";
+    }
+
+    if (!latestEndMonth || compareMonthKeys(entryEndMonth, latestEndMonth) > 0) {
+      latestEndMonth = entryEndMonth;
+    }
+  }
+
+  return latestEndMonth;
+}
+
 function getItemInsertionOrderMap() {
   const itemOrder = new Map();
 
@@ -2418,6 +2548,11 @@ function getItemInsertionOrderMap() {
 }
 
 function getItemInsertionOrder(item, itemOrder = getItemInsertionOrderMap()) {
+  const sortAnchorId = String(item?.sortAnchorId || "").trim();
+  if (sortAnchorId && itemOrder.has(sortAnchorId)) {
+    return itemOrder.get(sortAnchorId);
+  }
+
   const itemId = String(item?.id || "").trim();
   if (itemId && itemOrder.has(itemId)) {
     return itemOrder.get(itemId);
@@ -2571,9 +2706,9 @@ function getRecurringDisplayMeta(item, monthKey = getMonthKeyFromItem(item)) {
     };
   }
 
-  const sourceMonth = normalizeMonthKey(item?.recurringSourceMonth || getMonthKeyFromItem(item));
+  const sourceMonth = getRecurringSeriesSourceMonth(item);
   const selectedMonth = normalizeMonthKey(monthKey);
-  const endMonth = getRecurringEndMonth(item);
+  const endMonth = getRecurringSeriesTerminalMonth(item);
   const totalMonths = endMonth
     ? Math.max(1, getMonthOffsetBetween(sourceMonth, endMonth) + 1)
     : getRecurringSeriesMonths(item);
@@ -2768,8 +2903,9 @@ function getMonthScopedExpenseItems(monthKey = state.activeMonth) {
     if (!allowProjectedRecurring) {
       continue;
     }
-    const sourceMonth = getMonthKeyFromItem(sourceItem);
-    if (compareMonthKeys(sourceMonth, selectedMonth) >= 0) {
+    const sourceItemMonth = getMonthKeyFromItem(sourceItem);
+    const sourceMonth = getRecurringSeriesSourceMonth(sourceItem);
+    if (compareMonthKeys(sourceItemMonth, selectedMonth) >= 0) {
       continue;
     }
     if (actualRecurringSeries.has(seriesId) || isRecurringSkippedForMonth(seriesId, selectedMonth)) {
@@ -2828,8 +2964,9 @@ function getVisibleMonthIncomeItems(monthKey = state.activeMonth) {
     if (!allowProjectedRecurring) {
       continue;
     }
-    const sourceMonth = getMonthKeyFromItem(sourceItem);
-    if (compareMonthKeys(sourceMonth, selectedMonth) >= 0) {
+    const sourceItemMonth = getMonthKeyFromItem(sourceItem);
+    const sourceMonth = getRecurringSeriesSourceMonth(sourceItem);
+    if (compareMonthKeys(sourceItemMonth, selectedMonth) >= 0) {
       continue;
     }
     if (actualRecurringSeries.has(seriesId) || isRecurringSkippedForMonth(seriesId, selectedMonth)) {
@@ -3082,6 +3219,11 @@ function closeModal() {
     populateRecurringDurationOptions(recurringMonthsInput, "12");
   }
   syncRecurringDurationVisibility({ isProjected: false });
+  expenseEditScope = "thisMonth";
+  if (expenseEditScopeWrap) {
+    expenseEditScopeWrap.classList.add("is-hidden");
+  }
+  updateExpenseEditScopeSelection();
   setExpenseFormMode("create");
   syncMovementTypeTabs("expense");
   updateOverlayScrollLock();
@@ -3295,6 +3437,24 @@ function updateMobileQuickEntryScopeSelection() {
   });
 }
 
+function updateExpenseEditScopeSelection() {
+  const selectedScope = normalizeEditScope(expenseEditScope);
+  const scopeButtons = [
+    [expenseEditScopeThisMonthBtn, "thisMonth"],
+    [expenseEditScopeAllMonthsBtn, "allMonths"]
+  ];
+
+  scopeButtons.forEach(([button, scopeValue]) => {
+    if (!(button instanceof HTMLElement)) {
+      return;
+    }
+
+    const isSelected = scopeValue === selectedScope;
+    button.classList.toggle("is-active", isSelected);
+    button.setAttribute("aria-pressed", String(isSelected));
+  });
+}
+
 function syncMobileQuickEntryRecurringDurationVisibility({ isProjected = Boolean(editingProjectedItem) } = {}) {
   if (
     !mobileQuickEntryRecurringMonthsWrap
@@ -3382,8 +3542,8 @@ function openMobileQuickEntrySheet(movementType = "expense", amount = 0, item = 
       seriesId: projectionSeriesId,
       monthKey: projectionMonthKey,
       sourceItemId: projectionSourceItem?.id || "",
-      sourceMonthKey: projectionSourceItem ? getMonthKeyFromItem(projectionSourceItem) : "",
-      endMonth: projectionSourceItem ? getRecurringEndMonth(projectionSourceItem) : "",
+      sourceMonthKey: projectionSourceItem ? getRecurringSeriesSourceMonth(projectionSourceItem) : "",
+      endMonth: projectionSourceItem ? getRecurringSeriesTerminalMonth(projectionSourceItem) : "",
       type: normalizedType,
       date: normalizeItemDate(editableItem?.date),
       category: normalizeCategoryKeyForType(editableItem?.category, normalizedType),
@@ -3436,8 +3596,9 @@ function openMobileQuickEntrySheet(movementType = "expense", amount = 0, item = 
   }
   syncMobileQuickEntryRecurringDurationVisibility({ isProjected: isProjectedItem });
   mobileQuickEntryScope = "thisMonth";
+  const shouldShowScopeChoice = shouldShowRecurringEditScope(editableItem, { isProjected: isProjectedItem });
   if (mobileQuickEntryScopeWrap) {
-    mobileQuickEntryScopeWrap.classList.toggle("is-hidden", !isProjectedItem);
+    mobileQuickEntryScopeWrap.classList.toggle("is-hidden", !shouldShowScopeChoice);
   }
   updateMobileQuickEntryScopeSelection();
 
@@ -3561,46 +3722,106 @@ function saveMovementRecord({
     const previousSeriesId = item.isRecurring || item.recurringSeriesId
       ? getRecurringSeriesId(item)
       : "";
+    const originalItemSnapshot = {
+      type: normalizeMovementType(item.type),
+      date: normalizeItemDate(item.date),
+      category: normalizeCategoryKeyForType(item.category, item.type),
+      name: String(item.name || "").trim(),
+      amount: Math.max(0, Number(item.amount || 0)),
+      isRecurring: Boolean(item.isRecurring),
+      recurringSeriesId: previousSeriesId,
+      recurringEndMonth: getRecurringEndMonth(item),
+      recurringDuration: previousSeriesId ? getRecurringDurationSelectionForItem(item, previousMonthKey) : null
+    };
+    const isRecurringSourceEdit = Boolean(originalItemSnapshot.isRecurring && previousSeriesId);
+    const nextMovementDate = isRecurringSourceEdit
+      ? buildDateForMonth(movementDate, previousMonthKey)
+      : movementDate;
+    const scopedOccurrenceIsUnchanged = isRecurringSourceEdit
+      && normalizedType === originalItemSnapshot.type
+      && nextMovementDate === originalItemSnapshot.date
+      && normalizedCategory === originalItemSnapshot.category
+      && trimmedName === originalItemSnapshot.name
+      && numericAmount === originalItemSnapshot.amount;
 
-    item.type = normalizedType;
-    item.date = movementDate;
-    item.category = normalizedCategory;
-    item.name = trimmedName;
-    item.amount = numericAmount;
-    item.isRecurring = recurring;
-    item.createdAt = normalizeItemCreatedAt(item.createdAt, item.date);
+    if (isRecurringSourceEdit && normalizedEditScope === "thisMonth") {
+      if (!scopedOccurrenceIsUnchanged) {
+        const continuationMonthKey = shiftMonthKey(previousMonthKey, 1);
+        const continuationItem = createRecurringContinuationItem({
+          type: originalItemSnapshot.type,
+          date: originalItemSnapshot.date,
+          category: originalItemSnapshot.category,
+          name: originalItemSnapshot.name,
+          amount: originalItemSnapshot.amount,
+          isRecurring: true,
+          recurringSeriesId: originalItemSnapshot.recurringSeriesId,
+          recurringEndMonth: originalItemSnapshot.recurringEndMonth,
+          recurringMonths: originalItemSnapshot.recurringDuration === "always"
+            ? undefined
+            : originalItemSnapshot.recurringDuration
+        }, previousSeriesId, continuationMonthKey);
 
-    const nextMonthKey = getMonthKeyFromItem(item);
-    if (previousSeriesId && previousMonthKey !== nextMonthKey) {
-      removeRecurringSkip(previousSeriesId, previousMonthKey);
-    }
-    if (nextMonthKey !== viewedMonthAtSave) {
-      nextActiveMonthAfterSave = nextMonthKey;
-    }
-
-    if (recurring) {
-      item.recurringSeriesId = previousSeriesId || String(item.recurringSeriesId || item.id || createItemId()).trim();
-      const nextRecurringDuration = requestedRecurringMonths == null
-        ? getRecurringDurationSelectionForItem(item, nextMonthKey)
-        : requestedRecurringMonths;
-      if (nextRecurringDuration === "always") {
+        item.type = normalizedType;
+        item.date = nextMovementDate;
+        item.category = normalizedCategory;
+        item.name = trimmedName;
+        item.amount = numericAmount;
+        item.isRecurring = false;
+        item.recurringSeriesId = previousSeriesId;
+        item.createdAt = normalizeItemCreatedAt(item.createdAt, item.date);
         clearRecurringWindow(item);
-      } else {
-        setRecurringWindow(item, nextMonthKey, nextRecurringDuration);
-      }
-      removeRecurringSkip(item.recurringSeriesId, nextMonthKey);
-    } else if (previousSeriesId) {
-      item.recurringSeriesId = previousSeriesId;
-      clearRecurringWindow(item);
-      addRecurringSkip(previousSeriesId, nextMonthKey);
-      limitRecurringSeriesBeforeMonth(previousSeriesId, nextMonthKey);
-    } else {
-      delete item.recurringSeriesId;
-      clearRecurringWindow(item);
-    }
+        removeRecurringSkip(previousSeriesId, previousMonthKey);
 
-    didMutate = true;
-    showToast(normalizedType === "income" ? "Ingreso actualizado correctamente." : "Gasto actualizado correctamente.");
+        if (continuationItem) {
+          state.items.push(continuationItem);
+          limitRecurringSeriesBeforeMonth(previousSeriesId, continuationMonthKey);
+          removeRecurringSkip(previousSeriesId, continuationMonthKey);
+        }
+
+        didMutate = true;
+        showToast(normalizedType === "income" ? "Ingreso actualizado correctamente." : "Gasto actualizado correctamente.");
+      }
+    } else {
+      item.type = normalizedType;
+      item.date = nextMovementDate;
+      item.category = normalizedCategory;
+      item.name = trimmedName;
+      item.amount = numericAmount;
+      item.isRecurring = recurring;
+      item.createdAt = normalizeItemCreatedAt(item.createdAt, item.date);
+
+      const nextMonthKey = getMonthKeyFromItem(item);
+      if (previousSeriesId && previousMonthKey !== nextMonthKey) {
+        removeRecurringSkip(previousSeriesId, previousMonthKey);
+      }
+      if (nextMonthKey !== viewedMonthAtSave) {
+        nextActiveMonthAfterSave = nextMonthKey;
+      }
+
+      if (recurring) {
+        item.recurringSeriesId = previousSeriesId || String(item.recurringSeriesId || item.id || createItemId()).trim();
+        const nextRecurringDuration = requestedRecurringMonths == null
+          ? getRecurringDurationSelectionForItem(item, nextMonthKey)
+          : requestedRecurringMonths;
+        if (nextRecurringDuration === "always") {
+          clearRecurringWindow(item);
+        } else {
+          setRecurringWindow(item, nextMonthKey, nextRecurringDuration);
+        }
+        removeRecurringSkip(item.recurringSeriesId, nextMonthKey);
+      } else if (previousSeriesId) {
+        item.recurringSeriesId = previousSeriesId;
+        clearRecurringWindow(item);
+        addRecurringSkip(previousSeriesId, nextMonthKey);
+        limitRecurringSeriesBeforeMonth(previousSeriesId, nextMonthKey);
+      } else {
+        delete item.recurringSeriesId;
+        clearRecurringWindow(item);
+      }
+
+      didMutate = true;
+      showToast(normalizedType === "income" ? "Ingreso actualizado correctamente." : "Gasto actualizado correctamente.");
+    }
   } else if (editingProjectedItem?.seriesId && editingProjectedItem?.monthKey) {
     const projectionContext = editingProjectedItem;
     const projectionDate = buildDateForMonth(movementDate, projectionContext.monthKey);
@@ -3629,6 +3850,8 @@ function saveMovementRecord({
             amount: numericAmount,
             isRecurring: true,
             recurringSeriesId: projectionContext.seriesId,
+            recurringSourceMonth: projectionContext.sourceMonthKey || projectionContext.monthKey,
+            sortAnchorId: String(projectionContext.sourceItemId || "").trim() || undefined,
             createdAt: new Date().toISOString(),
             recurringMonths: projectionContext.endMonth
               ? Math.max(1, getMonthOffsetBetween(projectionContext.monthKey, projectionContext.endMonth) + 1)
@@ -3654,7 +3877,8 @@ function saveMovementRecord({
             amount: numericAmount,
             isRecurring: false,
             createdAt: new Date().toISOString(),
-            recurringSeriesId: projectionContext.seriesId
+            recurringSeriesId: projectionContext.seriesId,
+            sortAnchorId: String(projectionContext.sourceItemId || "").trim() || undefined
           });
 
         if (!monthException) {
@@ -3677,7 +3901,8 @@ function saveMovementRecord({
           amount: numericAmount,
           isRecurring: false,
           createdAt: new Date().toISOString(),
-          recurringSeriesId: projectionContext.seriesId
+          recurringSeriesId: projectionContext.seriesId,
+          sortAnchorId: String(projectionContext.sourceItemId || "").trim() || undefined
         });
 
       if (!materializedItem) {
@@ -3915,6 +4140,11 @@ function openExpenseModalForCreate(trigger = null, movementType = "expense", opt
     populateRecurringDurationOptions(recurringMonthsInput, "12");
   }
   syncRecurringDurationVisibility({ isProjected: false });
+  expenseEditScope = "thisMonth";
+  if (expenseEditScopeWrap) {
+    expenseEditScopeWrap.classList.add("is-hidden");
+  }
+  updateExpenseEditScopeSelection();
   setExpenseFormMode("create");
   syncMovementTypeTabs(normalizedType);
   openExpenseModal(trigger);
@@ -4038,6 +4268,8 @@ function openExpenseModalForEdit(item, trigger = null) {
       seriesId: projectionSeriesId,
       monthKey: projectionMonthKey,
       sourceItemId: projectionSourceItem?.id || "",
+      sourceMonthKey: projectionSourceItem ? getRecurringSeriesSourceMonth(projectionSourceItem) : "",
+      endMonth: projectionSourceItem ? getRecurringSeriesTerminalMonth(projectionSourceItem) : "",
       type: normalizeMovementType(editableItem.type),
       date: normalizeItemDate(editableItem.date),
       category: normalizeCategoryKeyForType(editableItem.category, editableItem.type),
@@ -4070,6 +4302,11 @@ function openExpenseModalForEdit(item, trigger = null) {
     populateRecurringDurationOptions(recurringMonthsInput, getRecurringDurationSelectionForItem(durationSource, durationMonth));
   }
   syncRecurringDurationVisibility({ isProjected: Boolean(editingProjectedItem) });
+  expenseEditScope = "thisMonth";
+  if (expenseEditScopeWrap) {
+    expenseEditScopeWrap.classList.toggle("is-hidden", !shouldShowRecurringEditScope(editableItem, { isProjected: Boolean(editingProjectedItem) }));
+  }
+  updateExpenseEditScopeSelection();
   syncMovementTypeTabs(movementType);
   openExpenseModal(trigger);
 }
@@ -5475,6 +5712,7 @@ function sanitizeItem(item) {
     ? clampRecurringMonths(item.recurringMonths, { min: 1, fallback: 1 })
     : undefined;
   const recurringEndMonth = normalizeRecurringEndMonth(item?.recurringEndMonth);
+  const recurringSourceMonth = normalizeRecurringEndMonth(item?.recurringSourceMonth);
 
   return {
     id: String(item?.id || createItemId()),
@@ -5486,6 +5724,8 @@ function sanitizeItem(item) {
     isRecurring,
     createdAt: createdAt || undefined,
     recurringSeriesId: item?.recurringSeriesId ? String(item.recurringSeriesId) : undefined,
+    sortAnchorId: item?.sortAnchorId ? String(item.sortAnchorId) : undefined,
+    recurringSourceMonth: isRecurring && recurringSourceMonth ? recurringSourceMonth : undefined,
     recurringMonths: isRecurring && recurringMonths ? recurringMonths : undefined,
     recurringEndMonth: isRecurring && recurringEndMonth ? recurringEndMonth : undefined
   };
