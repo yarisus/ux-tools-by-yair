@@ -177,6 +177,7 @@ let feedbackModalTrigger = null;
 let feedbackSubmitting = false;
 let monthModelOpen = false;
 let pendingDeleteProjection = null;
+let pendingDeleteRecurringContext = null;
 
 const salaryInput = document.getElementById("salaryInput");
 const toggleSalaryBtn = document.getElementById("toggleSalaryBtn");
@@ -1633,6 +1634,21 @@ if (confirmDeleteBtn) {
       return;
     }
 
+    if (pendingDeleteRecurringContext) {
+      const didDeleteRecurring = deleteRecurringThisMonth(pendingDeleteRecurringContext);
+      pendingDeleteRecurringContext = null;
+      pendingDeleteProjection = null;
+      pendingDeleteItemId = null;
+      if (!didDeleteRecurring) {
+        closeDeleteConfirmModal();
+        return;
+      }
+      saveState();
+      render();
+      closeDeleteConfirmModal();
+      return;
+    }
+
     if (pendingDeleteProjection?.seriesId && pendingDeleteProjection?.monthKey) {
       if (!Array.isArray(state.recurringSkips)) {
         state.recurringSkips = [];
@@ -1982,11 +1998,184 @@ function normalizeBudgetPeriod(rawPeriod) {
 }
 
 function normalizeEditScope(rawScope) {
-  return String(rawScope || "").trim().toLowerCase() === "allmonths" ? "allMonths" : "thisMonth";
+  const value = String(rawScope || "").trim().toLowerCase();
+  if (value === "allmonths") {
+    return "allMonths";
+  }
+  if (value === "thismonth") {
+    return "thisMonth";
+  }
+  return "";
 }
 
 function shouldShowRecurringEditScope(item = null, { isProjected = Boolean(editingProjectedItem) } = {}) {
   return Boolean(isProjected || item?.isRecurring);
+}
+
+function isRecurringEditContext(item = null, { isProjected = Boolean(editingProjectedItem) } = {}) {
+  return Boolean(isProjected || item?.isRecurring);
+}
+
+function applyExpenseRecurringEditRestrictions({ isRecurringEdit = false } = {}) {
+  movementTypeTabButtons.forEach((button) => {
+    if (button instanceof HTMLButtonElement) {
+      button.disabled = isRecurringEdit;
+    }
+  });
+
+  if (dateInput instanceof HTMLInputElement) {
+    dateInput.disabled = isRecurringEdit;
+    if (isRecurringEdit) {
+      dateInput.setAttribute("aria-readonly", "true");
+    } else {
+      dateInput.removeAttribute("aria-readonly");
+    }
+  }
+
+  const recurringLabel = recurringInput instanceof HTMLInputElement
+    ? recurringInput.closest(".recurring-toggle")
+    : null;
+
+  if (recurringInput instanceof HTMLInputElement) {
+    if (isRecurringEdit) {
+      recurringInput.checked = true;
+    }
+    recurringInput.disabled = isRecurringEdit;
+  }
+
+  if (recurringLabel instanceof HTMLElement) {
+    recurringLabel.classList.toggle("is-hidden", isRecurringEdit);
+  }
+
+  if (recurringMonthsWrap) {
+    const shouldShowDuration = isRecurringEdit || Boolean(recurringInput?.checked);
+    recurringMonthsWrap.classList.toggle("is-hidden", !shouldShowDuration);
+  }
+
+  if (recurringMonthsInput instanceof HTMLSelectElement) {
+    recurringMonthsInput.disabled = isRecurringEdit || !Boolean(recurringInput?.checked);
+  }
+}
+
+function applyMobileRecurringEditRestrictions({ isRecurringEdit = false } = {}) {
+  if (mobileQuickEntryDate instanceof HTMLInputElement) {
+    mobileQuickEntryDate.disabled = isRecurringEdit;
+    if (isRecurringEdit) {
+      mobileQuickEntryDate.setAttribute("aria-readonly", "true");
+    } else {
+      mobileQuickEntryDate.removeAttribute("aria-readonly");
+    }
+  }
+
+  if (mobileQuickEntryRecurring instanceof HTMLInputElement) {
+    if (isRecurringEdit) {
+      mobileQuickEntryRecurring.checked = true;
+    }
+    mobileQuickEntryRecurring.disabled = isRecurringEdit;
+  }
+
+  if (mobileQuickEntryRecurringWrap) {
+    mobileQuickEntryRecurringWrap.classList.toggle("is-hidden", isRecurringEdit);
+  }
+
+  if (mobileQuickEntryRecurringMonthsWrap) {
+    const shouldShowDuration = isRecurringEdit || Boolean(mobileQuickEntryRecurring?.checked);
+    mobileQuickEntryRecurringMonthsWrap.classList.toggle("is-hidden", !shouldShowDuration);
+  }
+
+  if (mobileQuickEntryRecurringMonths instanceof HTMLSelectElement) {
+    mobileQuickEntryRecurringMonths.disabled = isRecurringEdit || !Boolean(mobileQuickEntryRecurring?.checked);
+  }
+}
+
+function getRecurringDeleteContext(item) {
+  if (item?.isProjectedRecurring) {
+    const seriesId = getRecurringSeriesId(item);
+    const monthKey = getMonthKeyFromItem(item);
+    const sourceItem = findLatestRecurringSourceItem(seriesId, monthKey);
+    if (!seriesId) {
+      return null;
+    }
+
+    return {
+      kind: "projected",
+      seriesId,
+      monthKey,
+      sourceItemId: sourceItem?.id || "",
+      sourceMonthKey: sourceItem ? getRecurringSeriesSourceMonth(sourceItem) : monthKey
+    };
+  }
+
+  if (item?.isRecurring) {
+    const seriesId = getRecurringSeriesId(item);
+    if (!seriesId) {
+      return null;
+    }
+
+    return {
+      kind: "stored",
+      seriesId,
+      monthKey: getMonthKeyFromItem(item),
+      sourceItemId: item.id,
+      sourceMonthKey: getRecurringSeriesSourceMonth(item)
+    };
+  }
+
+  return null;
+}
+
+function deleteRecurringThisMonth(context) {
+  const monthLabel = formatMonthLabel(context?.monthKey);
+  if (!context?.seriesId || !context?.monthKey) {
+    return false;
+  }
+
+  if (context.kind === "projected") {
+    addRecurringSkip(context.seriesId, context.monthKey);
+    showToast(`Movimiento omitido en ${monthLabel}.`);
+    return true;
+  }
+
+  const sourceItem = state.items.find((entry) => entry.id === context.sourceItemId);
+  if (!sourceItem?.isRecurring) {
+    return false;
+  }
+
+  const continuationMonthKey = shiftMonthKey(context.monthKey, 1);
+  const continuationItem = createRecurringContinuationItem(sourceItem, context.seriesId, continuationMonthKey);
+  state.items = state.items.filter((entry) => entry.id !== sourceItem.id);
+  addRecurringSkip(context.seriesId, context.monthKey);
+
+  if (continuationItem) {
+    state.items.push(continuationItem);
+    limitRecurringSeriesBeforeMonth(context.seriesId, continuationMonthKey);
+    removeRecurringSkip(context.seriesId, continuationMonthKey);
+  }
+
+  showToast(`Movimiento omitido en ${monthLabel}.`);
+  return true;
+}
+
+function deleteRecurringFromMonthForward(context) {
+  if (!context?.seriesId || !context?.monthKey) {
+    return false;
+  }
+
+  state.items = state.items.filter((entry) => {
+    if (getRecurringSeriesId(entry) !== context.seriesId) {
+      return true;
+    }
+
+    return compareMonthKeys(getMonthKeyFromItem(entry), context.monthKey) < 0;
+  });
+
+  limitRecurringSeriesBeforeMonth(context.seriesId, context.monthKey);
+  state.recurringSkips = Array.isArray(state.recurringSkips)
+    ? state.recurringSkips.filter((entry) => !(entry?.seriesId === context.seriesId && compareMonthKeys(entry?.month, context.monthKey) >= 0))
+    : [];
+
+  showToast(`Serie eliminada desde ${formatMonthLabel(context.monthKey)}.`);
+  return true;
 }
 
 function createRecurringContinuationItem(sourceItem, seriesId, startMonthKey) {
@@ -3219,6 +3408,7 @@ function closeModal() {
     populateRecurringDurationOptions(recurringMonthsInput, "12");
   }
   syncRecurringDurationVisibility({ isProjected: false });
+  applyExpenseRecurringEditRestrictions({ isRecurringEdit: false });
   expenseEditScope = "thisMonth";
   if (expenseEditScopeWrap) {
     expenseEditScopeWrap.classList.add("is-hidden");
@@ -3255,6 +3445,16 @@ function setExpenseFormMode(mode) {
     if (recurringLabel instanceof HTMLElement) {
       recurringLabel.classList.remove("is-hidden");
     }
+    recurringInput.disabled = false;
+  }
+
+  if (dateInput instanceof HTMLInputElement) {
+    dateInput.disabled = false;
+    dateInput.removeAttribute("aria-readonly");
+  }
+
+  if (recurringMonthsInput instanceof HTMLSelectElement) {
+    recurringMonthsInput.disabled = !Boolean(recurringInput?.checked);
   }
 }
 
@@ -3269,6 +3469,21 @@ function syncMovementTypeTabs(movementType) {
 
 if (confirmDeleteSeriesBtn) {
   confirmDeleteSeriesBtn.addEventListener("click", () => {
+    if (pendingDeleteRecurringContext) {
+      const didDeleteRecurring = deleteRecurringFromMonthForward(pendingDeleteRecurringContext);
+      pendingDeleteRecurringContext = null;
+      pendingDeleteProjection = null;
+      pendingDeleteItemId = null;
+      if (!didDeleteRecurring) {
+        closeDeleteConfirmModal();
+        return;
+      }
+      saveState();
+      render();
+      closeDeleteConfirmModal();
+      return;
+    }
+
     if (!pendingDeleteProjection?.seriesId) {
       closeDeleteConfirmModal();
       return;
@@ -3595,7 +3810,9 @@ function openMobileQuickEntrySheet(movementType = "expense", amount = 0, item = 
     mobileQuickEntryRecurringMonths.disabled = !mobileQuickEntryRecurring?.checked || isProjectedItem;
   }
   syncMobileQuickEntryRecurringDurationVisibility({ isProjected: isProjectedItem });
-  mobileQuickEntryScope = "thisMonth";
+  const isRecurringEdit = isRecurringEditContext(editableItem, { isProjected: isProjectedItem });
+  applyMobileRecurringEditRestrictions({ isRecurringEdit });
+  mobileQuickEntryScope = isRecurringEdit ? "" : "thisMonth";
   const shouldShowScopeChoice = shouldShowRecurringEditScope(editableItem, { isProjected: isProjectedItem });
   if (mobileQuickEntryScopeWrap) {
     mobileQuickEntryScopeWrap.classList.toggle("is-hidden", !shouldShowScopeChoice);
@@ -3669,6 +3886,7 @@ function closeMobileQuickEntrySheet() {
   if (mobileQuickEntryRecurringMonthsWrap) {
     mobileQuickEntryRecurringMonthsWrap.classList.add("is-hidden");
   }
+  applyMobileRecurringEditRestrictions({ isRecurringEdit: false });
   mobileQuickEntryScope = "thisMonth";
   if (mobileQuickEntryScopeWrap) {
     mobileQuickEntryScopeWrap.classList.add("is-hidden");
@@ -3734,6 +3952,12 @@ function saveMovementRecord({
       recurringDuration: previousSeriesId ? getRecurringDurationSelectionForItem(item, previousMonthKey) : null
     };
     const isRecurringSourceEdit = Boolean(originalItemSnapshot.isRecurring && previousSeriesId);
+    if (isRecurringSourceEdit && !normalizedEditScope) {
+      showToast("Elige como aplicar los cambios recurrentes.", true);
+      return false;
+    }
+
+    const effectiveRecurring = isRecurringSourceEdit ? true : recurring;
     const nextMovementDate = isRecurringSourceEdit
       ? buildDateForMonth(movementDate, previousMonthKey)
       : movementDate;
@@ -3787,7 +4011,7 @@ function saveMovementRecord({
       item.category = normalizedCategory;
       item.name = trimmedName;
       item.amount = numericAmount;
-      item.isRecurring = recurring;
+      item.isRecurring = effectiveRecurring;
       item.createdAt = normalizeItemCreatedAt(item.createdAt, item.date);
 
       const nextMonthKey = getMonthKeyFromItem(item);
@@ -3798,7 +4022,7 @@ function saveMovementRecord({
         nextActiveMonthAfterSave = nextMonthKey;
       }
 
-      if (recurring) {
+      if (effectiveRecurring) {
         item.recurringSeriesId = previousSeriesId || String(item.recurringSeriesId || item.id || createItemId()).trim();
         const nextRecurringDuration = requestedRecurringMonths == null
           ? getRecurringDurationSelectionForItem(item, nextMonthKey)
@@ -3825,8 +4049,12 @@ function saveMovementRecord({
   } else if (editingProjectedItem?.seriesId && editingProjectedItem?.monthKey) {
     const projectionContext = editingProjectedItem;
     const projectionDate = buildDateForMonth(movementDate, projectionContext.monthKey);
-    const projectedItemIsUnchanged = recurring
-      && normalizedType === projectionContext.type
+    if (!normalizedEditScope) {
+      showToast("Elige como aplicar los cambios recurrentes.", true);
+      return false;
+    }
+
+    const projectedItemIsUnchanged = normalizedType === projectionContext.type
       && projectionDate === projectionContext.date
       && normalizedCategory === projectionContext.category
       && trimmedName === projectionContext.name
@@ -3839,56 +4067,32 @@ function saveMovementRecord({
         return false;
       }
 
-        if (recurring) {
-          limitRecurringSeriesBeforeMonth(projectionContext.seriesId, projectionContext.monthKey);
-          const seriesSourceItem = sanitizeItem({
-            id: createItemId(),
-            type: normalizedType,
+      limitRecurringSeriesBeforeMonth(projectionContext.seriesId, projectionContext.monthKey);
+      const seriesSourceItem = sanitizeItem({
+        id: createItemId(),
+        type: normalizedType,
           date: projectionDate,
           category: normalizedCategory,
           name: trimmedName,
-            amount: numericAmount,
-            isRecurring: true,
-            recurringSeriesId: projectionContext.seriesId,
-            recurringSourceMonth: projectionContext.sourceMonthKey || projectionContext.monthKey,
-            sortAnchorId: String(projectionContext.sourceItemId || "").trim() || undefined,
-            createdAt: new Date().toISOString(),
-            recurringMonths: projectionContext.endMonth
-              ? Math.max(1, getMonthOffsetBetween(projectionContext.monthKey, projectionContext.endMonth) + 1)
-              : undefined,
-            recurringEndMonth: projectionContext.endMonth || undefined
-          });
+        amount: numericAmount,
+        isRecurring: true,
+        recurringSeriesId: projectionContext.seriesId,
+        recurringSourceMonth: projectionContext.sourceMonthKey || projectionContext.monthKey,
+        sortAnchorId: String(projectionContext.sourceItemId || "").trim() || undefined,
+        createdAt: new Date().toISOString(),
+        recurringMonths: projectionContext.endMonth
+          ? Math.max(1, getMonthOffsetBetween(projectionContext.monthKey, projectionContext.endMonth) + 1)
+          : undefined,
+        recurringEndMonth: projectionContext.endMonth || undefined
+      });
 
-        if (!seriesSourceItem) {
-          showToast("No pudimos actualizar esta serie.", true);
-          return false;
-        }
-
-        state.items.push(seriesSourceItem);
-        removeRecurringSkip(projectionContext.seriesId, projectionContext.monthKey);
-      } else {
-        limitRecurringSeriesBeforeMonth(projectionContext.seriesId, projectionContext.monthKey);
-          const monthException = sanitizeItem({
-            id: createItemId(),
-            type: normalizedType,
-            date: projectionDate,
-            category: normalizedCategory,
-            name: trimmedName,
-            amount: numericAmount,
-            isRecurring: false,
-            createdAt: new Date().toISOString(),
-            recurringSeriesId: projectionContext.seriesId,
-            sortAnchorId: String(projectionContext.sourceItemId || "").trim() || undefined
-          });
-
-        if (!monthException) {
-          showToast("No pudimos actualizar este movimiento.", true);
-          return false;
-        }
-
-        state.items.push(monthException);
-        addRecurringSkip(projectionContext.seriesId, projectionContext.monthKey);
+      if (!seriesSourceItem) {
+        showToast("No pudimos actualizar esta serie.", true);
+        return false;
       }
+
+      state.items.push(seriesSourceItem);
+      removeRecurringSkip(projectionContext.seriesId, projectionContext.monthKey);
 
       didMutate = true;
     } else if (!projectedItemIsUnchanged) {
@@ -4140,6 +4344,7 @@ function openExpenseModalForCreate(trigger = null, movementType = "expense", opt
     populateRecurringDurationOptions(recurringMonthsInput, "12");
   }
   syncRecurringDurationVisibility({ isProjected: false });
+  applyExpenseRecurringEditRestrictions({ isRecurringEdit: false });
   expenseEditScope = "thisMonth";
   if (expenseEditScopeWrap) {
     expenseEditScopeWrap.classList.add("is-hidden");
@@ -4302,7 +4507,9 @@ function openExpenseModalForEdit(item, trigger = null) {
     populateRecurringDurationOptions(recurringMonthsInput, getRecurringDurationSelectionForItem(durationSource, durationMonth));
   }
   syncRecurringDurationVisibility({ isProjected: Boolean(editingProjectedItem) });
-  expenseEditScope = "thisMonth";
+  const isRecurringEdit = isRecurringEditContext(editableItem, { isProjected: Boolean(editingProjectedItem) });
+  applyExpenseRecurringEditRestrictions({ isRecurringEdit });
+  expenseEditScope = isRecurringEdit ? "" : "thisMonth";
   if (expenseEditScopeWrap) {
     expenseEditScopeWrap.classList.toggle("is-hidden", !shouldShowRecurringEditScope(editableItem, { isProjected: Boolean(editingProjectedItem) }));
   }
@@ -5409,6 +5616,7 @@ function closeDeleteConfirmModal() {
   deleteConfirmModal.setAttribute("aria-hidden", "true");
   pendingDeleteItemId = null;
   pendingDeleteProjection = null;
+  pendingDeleteRecurringContext = null;
   pendingDeleteKind = "item";
   if (deleteConfirmTitle) {
     deleteConfirmTitle.textContent = "Eliminar movimiento";
@@ -5420,6 +5628,7 @@ function closeDeleteConfirmModal() {
     confirmDeleteBtn.textContent = "Eliminar";
   }
   if (confirmDeleteSeriesBtn) {
+    confirmDeleteSeriesBtn.textContent = "Eliminar en todos";
     confirmDeleteSeriesBtn.classList.add("is-hidden");
   }
   updateOverlayScrollLock();
@@ -5436,19 +5645,34 @@ function openDeleteConfirmModal(item, trigger = null) {
 
   modalTrigger = trigger instanceof HTMLElement ? trigger : null;
   pendingDeleteKind = "item";
+  pendingDeleteRecurringContext = getRecurringDeleteContext(item);
   pendingDeleteProjection = item?.isProjectedRecurring
     ? { seriesId: getRecurringSeriesId(item), monthKey: getMonthKeyFromItem(item) }
     : null;
   pendingDeleteItemId = item?.isProjectedRecurring ? null : item.id;
-  if (deleteConfirmTitle) {
-    deleteConfirmTitle.textContent = item?.isProjectedRecurring ? "Omitir movimiento este mes" : "Eliminar movimiento";
-  }
-  deleteConfirmText.textContent = item?.isProjectedRecurring
-    ? `Estas seguro de ocultar "${item.name}" solo en ${formatMonthLabel(getMonthKeyFromItem(item))}? En los meses siguientes seguira apareciendo porque es recurrente.`
-    : `Estas seguro de eliminar "${item.name}"? Esta accion no se puede deshacer.`;
-  confirmDeleteBtn.textContent = item?.isProjectedRecurring ? "Omitir este mes" : "Eliminar";
-  if (confirmDeleteSeriesBtn) {
-    confirmDeleteSeriesBtn.classList.toggle("is-hidden", !item?.isProjectedRecurring);
+  if (pendingDeleteRecurringContext) {
+    const recurringMonthLabel = formatMonthLabel(pendingDeleteRecurringContext.monthKey);
+    if (deleteConfirmTitle) {
+      deleteConfirmTitle.textContent = "Eliminar movimiento recurrente";
+    }
+    deleteConfirmText.textContent = `Elige si quieres quitar "${item.name}" solo en ${recurringMonthLabel} o desde ${recurringMonthLabel} en adelante.`;
+    confirmDeleteBtn.textContent = "Solo este mes";
+    if (confirmDeleteSeriesBtn) {
+      confirmDeleteSeriesBtn.textContent = "Desde este mes en adelante";
+      confirmDeleteSeriesBtn.classList.remove("is-hidden");
+    }
+  } else {
+    if (deleteConfirmTitle) {
+      deleteConfirmTitle.textContent = item?.isProjectedRecurring ? "Omitir movimiento este mes" : "Eliminar movimiento";
+    }
+    deleteConfirmText.textContent = item?.isProjectedRecurring
+      ? `Estas seguro de ocultar "${item.name}" solo en ${formatMonthLabel(getMonthKeyFromItem(item))}? En los meses siguientes seguira apareciendo porque es recurrente.`
+      : `Estas seguro de eliminar "${item.name}"? Esta accion no se puede deshacer.`;
+    confirmDeleteBtn.textContent = item?.isProjectedRecurring ? "Omitir este mes" : "Eliminar";
+    if (confirmDeleteSeriesBtn) {
+      confirmDeleteSeriesBtn.textContent = "Eliminar en todos";
+      confirmDeleteSeriesBtn.classList.toggle("is-hidden", !item?.isProjectedRecurring);
+    }
   }
   deleteConfirmModal.classList.add("show");
   deleteConfirmModal.setAttribute("aria-hidden", "false");
@@ -5466,6 +5690,8 @@ function openResetAllConfirmModal(trigger = null) {
 
   modalTrigger = trigger instanceof HTMLElement ? trigger : null;
   pendingDeleteItemId = null;
+  pendingDeleteProjection = null;
+  pendingDeleteRecurringContext = null;
   pendingDeleteKind = "all";
   if (deleteConfirmTitle) {
     deleteConfirmTitle.textContent = "Reiniciar datos";
