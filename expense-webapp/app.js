@@ -149,6 +149,8 @@ const LEGACY_CATEGORY_MAP = {
   semifijos: "finanzas"
 };
 const ONBOARDING_STEPS = 3;
+const ONBOARDING_SWIPE_THRESHOLD = 48;
+const ONBOARDING_SWIPE_VERTICAL_TOLERANCE = 24;
 const state = loadState();
 const cloudConfig = loadCloudConfig();
 const systemThemeMedia = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
@@ -259,6 +261,7 @@ const onboardingPrevBtn = document.getElementById("onboardingPrevBtn");
 const onboardingNextBtn = document.getElementById("onboardingNextBtn");
 const onboardingDoneBtn = document.getElementById("onboardingDoneBtn");
 const onboardingSkipBtn = document.getElementById("onboardingSkipBtn");
+const onboardingViewport = onboardingModal?.querySelector(".onboarding-viewport") || null;
 const onboardingStepDots = Array.from(document.querySelectorAll("[data-step-jump]"));
 const onboardingStepCards = Array.from(document.querySelectorAll(".onboarding-step"));
 const toast = document.getElementById("toast");
@@ -414,6 +417,7 @@ let sheetTrigger = null;
 let onboardingTrigger = null;
 let onboardingStep = 0;
 let pendingOnboardingTimer = null;
+let onboardingGestureState = null;
 let editingItemId = null;
 let editingProjectedItem = null;
 let salaryEditMode = false;
@@ -1387,6 +1391,14 @@ if (onboardingSkipBtn) {
   onboardingSkipBtn.addEventListener("click", () => {
     closeOnboarding(true);
   });
+}
+
+if (onboardingViewport) {
+  onboardingViewport.addEventListener("pointerdown", handleOnboardingPointerDown);
+  onboardingViewport.addEventListener("pointermove", handleOnboardingPointerMove);
+  onboardingViewport.addEventListener("pointerup", handleOnboardingPointerEnd);
+  onboardingViewport.addEventListener("pointercancel", handleOnboardingPointerCancel);
+  onboardingViewport.addEventListener("lostpointercapture", handleOnboardingPointerCancel);
 }
 
 if (walkthroughOverlay) {
@@ -4519,6 +4531,90 @@ function openExpenseModalForEdit(item, trigger = null) {
   openExpenseModal(trigger);
 }
 
+function resetOnboardingGesture() {
+  onboardingGestureState = null;
+}
+
+function handleOnboardingPointerDown(event) {
+  if (!onboardingModal?.classList.contains("show")) {
+    return;
+  }
+
+  if (event.button !== undefined && event.button !== 0) {
+    return;
+  }
+
+  const target = event.target;
+  if (target instanceof HTMLElement && target.closest("button, a, input, select, textarea, label")) {
+    return;
+  }
+
+  onboardingGestureState = {
+    pointerId: event.pointerId,
+    startX: event.clientX,
+    startY: event.clientY,
+    deltaX: 0,
+    deltaY: 0,
+    isHorizontal: null
+  };
+}
+
+function handleOnboardingPointerMove(event) {
+  if (!onboardingGestureState || onboardingGestureState.pointerId !== event.pointerId) {
+    return;
+  }
+
+  onboardingGestureState.deltaX = event.clientX - onboardingGestureState.startX;
+  onboardingGestureState.deltaY = event.clientY - onboardingGestureState.startY;
+
+  if (onboardingGestureState.isHorizontal === null) {
+    const absX = Math.abs(onboardingGestureState.deltaX);
+    const absY = Math.abs(onboardingGestureState.deltaY);
+
+    if (absX < 8 && absY < 8) {
+      return;
+    }
+
+    onboardingGestureState.isHorizontal = absX > absY;
+  }
+}
+
+function handleOnboardingPointerEnd(event) {
+  if (!onboardingGestureState || onboardingGestureState.pointerId !== event.pointerId) {
+    return;
+  }
+
+  const gesture = onboardingGestureState;
+  resetOnboardingGesture();
+
+  if (!gesture.isHorizontal) {
+    return;
+  }
+
+  const absX = Math.abs(gesture.deltaX);
+  const absY = Math.abs(gesture.deltaY);
+  if (absX < ONBOARDING_SWIPE_THRESHOLD || absY > ONBOARDING_SWIPE_VERTICAL_TOLERANCE) {
+    return;
+  }
+
+  if (gesture.deltaX < 0 && onboardingStep < ONBOARDING_STEPS - 1) {
+    setOnboardingStep(onboardingStep + 1);
+    return;
+  }
+
+  if (gesture.deltaX > 0 && onboardingStep > 0) {
+    setOnboardingStep(onboardingStep - 1);
+  }
+}
+
+function handleOnboardingPointerCancel(event) {
+  if (!onboardingGestureState || onboardingGestureState.pointerId !== event.pointerId) {
+    return;
+  }
+
+  resetOnboardingGesture();
+}
+
 function setOnboardingStep(nextStep) {
   if (!onboardingStepCards.length) {
     return;
@@ -4563,6 +4659,7 @@ function openOnboarding({ force = false, trigger = null } = {}) {
   }
 
   onboardingTrigger = trigger instanceof HTMLElement ? trigger : null;
+  resetOnboardingGesture();
   onboardingModal.classList.add("show");
   onboardingModal.setAttribute("aria-hidden", "false");
   setOnboardingStep(0);
@@ -4581,6 +4678,7 @@ function closeOnboarding(markAsSeen) {
   }
 
   const wasOpen = onboardingModal.classList.contains("show");
+  resetOnboardingGesture();
   onboardingModal.classList.remove("show");
   onboardingModal.setAttribute("aria-hidden", "true");
   updateOverlayScrollLock();

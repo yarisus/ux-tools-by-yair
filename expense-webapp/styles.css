@@ -24303,6 +24303,8 @@ body.theme-dark .onboarding-modal .onboarding-card {
 .onboarding-viewport {
   width: 100%;
   max-width: 360px;
+  touch-action: pan-y;
+  user-select: none;
 }
 
 .onboarding-step {
