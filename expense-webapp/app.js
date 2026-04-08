@@ -149,8 +149,9 @@ const LEGACY_CATEGORY_MAP = {
   semifijos: "finanzas"
 };
 const ONBOARDING_STEPS = 3;
-const ONBOARDING_SWIPE_THRESHOLD = 48;
-const ONBOARDING_SWIPE_VERTICAL_TOLERANCE = 24;
+const ONBOARDING_SWIPE_THRESHOLD = 36;
+const ONBOARDING_SWIPE_VERTICAL_TOLERANCE = 36;
+const ONBOARDING_TRANSITION_MS = 260;
 const state = loadState();
 const cloudConfig = loadCloudConfig();
 const systemThemeMedia = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
@@ -262,6 +263,7 @@ const onboardingNextBtn = document.getElementById("onboardingNextBtn");
 const onboardingDoneBtn = document.getElementById("onboardingDoneBtn");
 const onboardingSkipBtn = document.getElementById("onboardingSkipBtn");
 const onboardingViewport = onboardingModal?.querySelector(".onboarding-viewport") || null;
+const onboardingGestureSurface = onboardingModal?.querySelector(".onboarding-card") || onboardingViewport;
 const onboardingStepDots = Array.from(document.querySelectorAll("[data-step-jump]"));
 const onboardingStepCards = Array.from(document.querySelectorAll(".onboarding-step"));
 const toast = document.getElementById("toast");
@@ -418,6 +420,7 @@ let onboardingTrigger = null;
 let onboardingStep = 0;
 let pendingOnboardingTimer = null;
 let onboardingGestureState = null;
+let onboardingTransitionToken = 0;
 let editingItemId = null;
 let editingProjectedItem = null;
 let salaryEditMode = false;
@@ -1393,12 +1396,12 @@ if (onboardingSkipBtn) {
   });
 }
 
-if (onboardingViewport) {
-  onboardingViewport.addEventListener("pointerdown", handleOnboardingPointerDown);
-  onboardingViewport.addEventListener("pointermove", handleOnboardingPointerMove);
-  onboardingViewport.addEventListener("pointerup", handleOnboardingPointerEnd);
-  onboardingViewport.addEventListener("pointercancel", handleOnboardingPointerCancel);
-  onboardingViewport.addEventListener("lostpointercapture", handleOnboardingPointerCancel);
+if (onboardingGestureSurface) {
+  onboardingGestureSurface.addEventListener("pointerdown", handleOnboardingPointerDown);
+  onboardingGestureSurface.addEventListener("pointermove", handleOnboardingPointerMove);
+  onboardingGestureSurface.addEventListener("pointerup", handleOnboardingPointerEnd);
+  onboardingGestureSurface.addEventListener("pointercancel", handleOnboardingPointerCancel);
+  onboardingGestureSurface.addEventListener("lostpointercapture", handleOnboardingPointerCancel);
 }
 
 if (walkthroughOverlay) {
@@ -4532,6 +4535,14 @@ function openExpenseModalForEdit(item, trigger = null) {
 }
 
 function resetOnboardingGesture() {
+  if (onboardingGestureState?.surface && onboardingGestureState.pointerId !== undefined) {
+    try {
+      if (onboardingGestureState.surface.hasPointerCapture?.(onboardingGestureState.pointerId)) {
+        onboardingGestureState.surface.releasePointerCapture(onboardingGestureState.pointerId);
+      }
+    } catch {}
+  }
+
   onboardingGestureState = null;
 }
 
@@ -4549,14 +4560,22 @@ function handleOnboardingPointerDown(event) {
     return;
   }
 
+  const surface = event.currentTarget instanceof HTMLElement ? event.currentTarget : null;
   onboardingGestureState = {
     pointerId: event.pointerId,
+    surface,
     startX: event.clientX,
     startY: event.clientY,
     deltaX: 0,
     deltaY: 0,
     isHorizontal: null
   };
+
+  if (surface?.setPointerCapture) {
+    try {
+      surface.setPointerCapture(event.pointerId);
+    } catch {}
+  }
 }
 
 function handleOnboardingPointerMove(event) {
@@ -4577,6 +4596,10 @@ function handleOnboardingPointerMove(event) {
 
     onboardingGestureState.isHorizontal = absX > absY;
   }
+
+  if (onboardingGestureState.isHorizontal && event.cancelable) {
+    event.preventDefault();
+  }
 }
 
 function handleOnboardingPointerEnd(event) {
@@ -4584,8 +4607,14 @@ function handleOnboardingPointerEnd(event) {
     return;
   }
 
+  onboardingGestureState.deltaX = event.clientX - onboardingGestureState.startX;
+  onboardingGestureState.deltaY = event.clientY - onboardingGestureState.startY;
   const gesture = onboardingGestureState;
   resetOnboardingGesture();
+
+  if (gesture.isHorizontal === null) {
+    gesture.isHorizontal = Math.abs(gesture.deltaX) > Math.abs(gesture.deltaY);
+  }
 
   if (!gesture.isHorizontal) {
     return;
@@ -4608,11 +4637,99 @@ function handleOnboardingPointerEnd(event) {
 }
 
 function handleOnboardingPointerCancel(event) {
-  if (!onboardingGestureState || onboardingGestureState.pointerId !== event.pointerId) {
+  if (!onboardingGestureState) {
+    return;
+  }
+
+  if (event.type !== "lostpointercapture" && onboardingGestureState.pointerId !== event.pointerId) {
     return;
   }
 
   resetOnboardingGesture();
+}
+
+function syncOnboardingStepUi(step) {
+  for (const card of onboardingStepCards) {
+    const cardStep = Number(card.dataset.step || 0);
+    const isActive = cardStep === step;
+    card.classList.toggle("is-active", isActive);
+    card.hidden = !isActive;
+  }
+
+  for (const dot of onboardingStepDots) {
+    const dotStep = Number(dot.dataset.stepJump || 0);
+    const isActive = dotStep === step;
+    dot.classList.toggle("is-active", isActive);
+    dot.setAttribute("aria-selected", String(isActive));
+  }
+
+  if (onboardingPrevBtn) {
+    onboardingPrevBtn.disabled = step === 0;
+    onboardingPrevBtn.classList.toggle("is-hidden", step === 0);
+  }
+
+  if (onboardingNextBtn && onboardingDoneBtn) {
+    const isLast = step === ONBOARDING_STEPS - 1;
+    onboardingNextBtn.classList.toggle("is-hidden", isLast);
+    onboardingDoneBtn.classList.toggle("is-hidden", !isLast);
+  }
+}
+
+function animateOnboardingStepChange(fromStep, toStep) {
+  const currentCard = onboardingStepCards.find((card) => Number(card.dataset.step || 0) === fromStep) || null;
+  const nextCard = onboardingStepCards.find((card) => Number(card.dataset.step || 0) === toStep) || null;
+
+  if (!currentCard || !nextCard || currentCard === nextCard || typeof currentCard.animate !== "function" || typeof nextCard.animate !== "function") {
+    syncOnboardingStepUi(toStep);
+    return;
+  }
+
+  const direction = toStep > fromStep ? 1 : -1;
+  const distance = Math.max(28, Math.min(52, (onboardingViewport?.clientWidth || 320) * 0.12));
+  const token = ++onboardingTransitionToken;
+
+  for (const card of onboardingStepCards) {
+    card.getAnimations?.().forEach((animation) => animation.cancel());
+    card.hidden = card !== currentCard && card !== nextCard;
+    card.classList.remove("is-active");
+  }
+
+  currentCard.hidden = false;
+  nextCard.hidden = false;
+  currentCard.classList.add("is-active");
+  nextCard.classList.add("is-active");
+
+  const animationOptions = {
+    duration: ONBOARDING_TRANSITION_MS,
+    easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+    fill: "forwards"
+  };
+
+  const currentAnimation = currentCard.animate(
+    [
+      { opacity: 1, transform: "translateX(0px)" },
+      { opacity: 0, transform: `translateX(${-direction * distance}px)` }
+    ],
+    animationOptions
+  );
+
+  const nextAnimation = nextCard.animate(
+    [
+      { opacity: 0, transform: `translateX(${direction * distance}px)` },
+      { opacity: 1, transform: "translateX(0px)" }
+    ],
+    animationOptions
+  );
+
+  Promise.allSettled([currentAnimation.finished, nextAnimation.finished]).then(() => {
+    if (token !== onboardingTransitionToken) {
+      return;
+    }
+
+    currentCard.getAnimations?.().forEach((animation) => animation.cancel());
+    nextCard.getAnimations?.().forEach((animation) => animation.cancel());
+    syncOnboardingStepUi(toStep);
+  });
 }
 
 function setOnboardingStep(nextStep) {
@@ -4620,33 +4737,16 @@ function setOnboardingStep(nextStep) {
     return;
   }
 
+  const previousStep = onboardingStep;
   const clamped = Math.max(0, Math.min(ONBOARDING_STEPS - 1, Number(nextStep) || 0));
   onboardingStep = clamped;
 
-  for (const card of onboardingStepCards) {
-    const cardStep = Number(card.dataset.step || 0);
-    const isActive = cardStep === onboardingStep;
-    card.classList.toggle("is-active", isActive);
-    card.hidden = !isActive;
+  if (previousStep === clamped) {
+    syncOnboardingStepUi(clamped);
+    return;
   }
 
-  for (const dot of onboardingStepDots) {
-    const dotStep = Number(dot.dataset.stepJump || 0);
-    const isActive = dotStep === onboardingStep;
-    dot.classList.toggle("is-active", isActive);
-    dot.setAttribute("aria-selected", String(isActive));
-  }
-
-  if (onboardingPrevBtn) {
-    onboardingPrevBtn.disabled = onboardingStep === 0;
-    onboardingPrevBtn.classList.toggle("is-hidden", onboardingStep === 0);
-  }
-
-  if (onboardingNextBtn && onboardingDoneBtn) {
-    const isLast = onboardingStep === ONBOARDING_STEPS - 1;
-    onboardingNextBtn.classList.toggle("is-hidden", isLast);
-    onboardingDoneBtn.classList.toggle("is-hidden", !isLast);
-  }
+  animateOnboardingStepChange(previousStep, clamped);
 }
 
 function openOnboarding({ force = false, trigger = null } = {}) {

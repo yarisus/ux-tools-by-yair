@@ -24301,16 +24301,23 @@ body.theme-dark .onboarding-modal .onboarding-card {
 }
 
 .onboarding-viewport {
+  position: relative;
+  display: grid;
   width: 100%;
   max-width: 360px;
+  min-height: 500px;
+  align-items: start;
   touch-action: pan-y;
   user-select: none;
 }
 
 .onboarding-step {
   display: none;
+  grid-area: 1 / 1;
   gap: 0;
   text-align: center;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 
 .onboarding-step.is-active {
@@ -24396,6 +24403,7 @@ body.theme-dark .onboarding-modal .onboarding-card {
   border-radius: 999px;
   background: #d1d5db;
   padding: 0;
+  transition: width 180ms ease, background-color 180ms ease, opacity 180ms ease;
 }
 
 .onboarding-dot.is-active {
@@ -24527,6 +24535,7 @@ body.theme-dark .onboarding-back-btn {
 
   .onboarding-viewport {
     max-width: 280px;
+    min-height: 480px;
   }
 
   .onboarding-step {
