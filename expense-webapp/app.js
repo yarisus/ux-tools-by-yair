@@ -413,6 +413,7 @@ let modalTrigger = null;
 let sheetTrigger = null;
 let onboardingTrigger = null;
 let onboardingStep = 0;
+let pendingOnboardingTimer = null;
 let editingItemId = null;
 let editingProjectedItem = null;
 let salaryEditMode = false;
@@ -4542,6 +4543,7 @@ function setOnboardingStep(nextStep) {
 
   if (onboardingPrevBtn) {
     onboardingPrevBtn.disabled = onboardingStep === 0;
+    onboardingPrevBtn.classList.toggle("is-hidden", onboardingStep === 0);
   }
 
   if (onboardingNextBtn && onboardingDoneBtn) {
@@ -4593,6 +4595,39 @@ function closeOnboarding(markAsSeen) {
   }
 
   onboardingTrigger = null;
+}
+
+function getMovementCount(snapshotLike = state) {
+  return Array.isArray(snapshotLike?.items) ? snapshotLike.items.length : 0;
+}
+
+function shouldAutoOpenOnboarding() {
+  return !previewMode && getMovementCount(state) === 0 && !state.onboardingSeen;
+}
+
+function scheduleInitialOnboarding() {
+  if (pendingOnboardingTimer) {
+    window.clearTimeout(pendingOnboardingTimer);
+    pendingOnboardingTimer = null;
+  }
+
+  if (!shouldAutoOpenOnboarding()) {
+    return;
+  }
+
+  pendingOnboardingTimer = window.setTimeout(() => {
+    pendingOnboardingTimer = null;
+
+    if (!shouldAutoOpenOnboarding()) {
+      return;
+    }
+
+    if (onboardingModal?.classList.contains("show")) {
+      return;
+    }
+
+    openOnboarding({ force: true });
+  }, 420);
 }
 
 function isDesktopWalkthroughViewport() {
@@ -6053,6 +6088,7 @@ function normalizeStateSnapshot(candidate, fallbackTimestamp = new Date().toISOS
 
 function applySnapshotToState(snapshot) {
   const preservedActiveMonth = normalizeMonthKey(state?.activeMonth || getCurrentMonthKey());
+  const preservedOnboardingSeen = Boolean(state?.onboardingSeen);
   const normalized = normalizeStateSnapshot(snapshot);
   state.salary = normalized.salary;
   state.monthlySalaries = normalized.monthlySalaries;
@@ -6065,7 +6101,8 @@ function applySnapshotToState(snapshot) {
   state.budgetPeriod = normalized.budgetPeriod;
   state.chartMode = normalized.chartMode;
   state.sidebarCollapsed = normalized.sidebarCollapsed;
-  state.onboardingSeen = normalized.onboardingSeen;
+  // Onboarding belongs to the local installation, not the synced finance state.
+  state.onboardingSeen = preservedOnboardingSeen;
   state.lastModifiedAt = normalized.lastModifiedAt;
 }
 
@@ -6076,7 +6113,24 @@ function snapshotFromState() {
   return snapshot;
 }
 
+function readPersistedStateSnapshot() {
+  try {
+    const raw = localStorage.getItem(STATE_STORAGE_KEY);
+    return raw ? normalizeStateSnapshot(JSON.parse(raw)) : null;
+  } catch {
+    return null;
+  }
+}
+
 function saveState({ preserveTimestamp = false, skipCloudSync = false } = {}) {
+  const previousSnapshot = readPersistedStateSnapshot();
+  const previousMovementCount = getMovementCount(previousSnapshot);
+  const nextMovementCount = getMovementCount(state);
+
+  if (previousMovementCount > 0 && nextMovementCount === 0) {
+    state.onboardingSeen = false;
+  }
+
   if (!preserveTimestamp) {
     state.lastModifiedAt = new Date().toISOString();
   }
@@ -6085,6 +6139,10 @@ function saveState({ preserveTimestamp = false, skipCloudSync = false } = {}) {
 
   if (!skipCloudSync) {
     scheduleCloudPush();
+  }
+
+  if (previousMovementCount > 0 && nextMovementCount === 0) {
+    scheduleInitialOnboarding();
   }
 }
 
@@ -7363,8 +7421,14 @@ function hasMeaningfulFinanceData(snapshot) {
   );
 }
 
+function snapshotForCloud(snapshot = snapshotFromState()) {
+  const normalized = normalizeStateSnapshot(snapshot);
+  delete normalized.onboardingSeen;
+  return normalized;
+}
+
 function stateSignature(snapshot) {
-  return JSON.stringify(normalizeStateSnapshot(snapshot));
+  return JSON.stringify(snapshotForCloud(snapshot));
 }
 
 function withTimeout(promise, label, timeoutMs = CLOUD_OP_TIMEOUT_MS) {
@@ -7406,7 +7470,7 @@ async function pushStateToCloud({ force = false, silent = true } = {}) {
     return false;
   }
 
-  const snapshot = snapshotFromState();
+  const snapshot = snapshotForCloud();
   const signature = stateSignature(snapshot);
   if (!force && signature === lastCloudSignature) {
     return true;
@@ -8209,6 +8273,7 @@ bindSheetHeaderSwipeClose(mobileFilterSheet?.querySelector(".mobile-filter-sheet
 
 render();
 syncMonthHistoryState(state.activeMonth, { replace: true });
+scheduleInitialOnboarding();
 
 if (!previewMode) {
   initializeCloudAuthClient().catch(() => {
