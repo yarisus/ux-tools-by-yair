@@ -353,6 +353,34 @@
           </div>
         </section>
 
+        <section id="initialUsageState" class="initial-usage-state is-hidden" aria-live="polite" aria-hidden="true">
+          <article id="initialUsageCard" class="initial-usage-card" data-state="empty">
+            <div class="initial-usage-copy">
+              <h2 id="initialUsageTitle" class="initial-usage-title">Empezá cargando tus ingresos y gastos</h2>
+              <p id="initialUsageDescription" class="initial-usage-description">Así vas a ver cuánto podés gastar este mes.</p>
+            </div>
+            <div class="initial-usage-actions">
+              <button
+                id="initialUsageCtaBtn"
+                type="button"
+                class="primary-btn initial-usage-cta inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#213196] bg-[#213196] px-4 py-2.5 text-white shadow-sm transition hover:bg-[#1B287A] hover:border-[#1B287A]"
+                data-add-type="expense"
+              >
+                Agregar gasto
+              </button>
+              <button
+                id="initialUsageDismissBtn"
+                type="button"
+                class="initial-usage-dismiss is-hidden"
+                aria-label="Cerrar aviso"
+                title="Cerrar aviso"
+              >
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+              </button>
+            </div>
+          </article>
+        </section>
+
         <section id="mobileStickySummary" class="mobile-sticky-summary md:hidden is-hidden" aria-hidden="true">
           <div class="mobile-sticky-summary-inner">
             <article class="mobile-sticky-metric">

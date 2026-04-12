@@ -5,6 +5,7 @@ const APP_VARIANT_HOST_IS_QA = /(^|[-.])qa([-.]|$)/i.test(globalThis.location?.h
 const APP_VARIANT = APP_VARIANT_HINT === "qa" || APP_VARIANT_HOST_IS_QA || /(?:^|\/)qa\.html$/i.test(globalThis.location?.pathname || "") ? "qa" : "production";
 const IS_QA_APP = APP_VARIANT === "qa";
 const STATE_STORAGE_KEY = IS_QA_APP ? `${STORAGE_KEY}_qa` : STORAGE_KEY;
+const LOCAL_UI_STORAGE_KEY = IS_QA_APP ? `${STORAGE_KEY}_ui_qa` : `${STORAGE_KEY}_ui`;
 const ACTIVE_CLOUD_CONFIG_KEY = IS_QA_APP ? `${CLOUD_CONFIG_KEY}_qa` : CLOUD_CONFIG_KEY;
 const CLOUD_TABLE_NAME = "user_app_states";
 const FEEDBACK_TABLE_NAME = "feedback_entries";
@@ -154,6 +155,7 @@ const ONBOARDING_SWIPE_VERTICAL_TOLERANCE = 36;
 const ONBOARDING_TRANSITION_MS = 260;
 const state = loadState();
 const cloudConfig = loadCloudConfig();
+let localUiState = loadLocalUiState();
 const systemThemeMedia = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
 const mobileViewportMedia = window.matchMedia ? window.matchMedia("(max-width: 767px)") : null;
 
@@ -345,6 +347,12 @@ const mobileStickyExpenseLabel = document.getElementById("mobileStickyExpenseLab
 const mobileStickyExpense = document.getElementById("mobileStickyExpense");
 const mobileStickyAvailableLabel = document.getElementById("mobileStickyAvailableLabel");
 const mobileStickyAvailable = document.getElementById("mobileStickyAvailable");
+const initialUsageState = document.getElementById("initialUsageState");
+const initialUsageCard = document.getElementById("initialUsageCard");
+const initialUsageTitle = document.getElementById("initialUsageTitle");
+const initialUsageDescription = document.getElementById("initialUsageDescription");
+const initialUsageCtaBtn = document.getElementById("initialUsageCtaBtn");
+const initialUsageDismissBtn = document.getElementById("initialUsageDismissBtn");
 const mobileQuickAddSheet = document.getElementById("mobileQuickAddSheet");
 const closeMobileQuickAddBtn = document.getElementById("closeMobileQuickAddBtn");
 const mobileQuickAddExpenseBtn = document.getElementById("mobileQuickAddExpenseBtn");
@@ -687,6 +695,21 @@ if (openExpenseModalBtn) {
       return;
     }
     openExpenseModalForCreate(openExpenseModalBtn);
+  });
+}
+
+if (initialUsageCtaBtn) {
+  initialUsageCtaBtn.addEventListener("click", (event) => {
+    event.stopPropagation();
+    openMovementCreateFlow(initialUsageCtaBtn, initialUsageCtaBtn.dataset.addType || "expense");
+  });
+}
+
+if (initialUsageDismissBtn) {
+  initialUsageDismissBtn.addEventListener("click", (event) => {
+    event.stopPropagation();
+    dismissIncomeMissingAlert(state.activeMonth);
+    renderInitialUsageState(getUsageStateForActiveMonth());
   });
 }
 
@@ -2003,6 +2026,15 @@ function normalizeMovementType(rawType) {
     return "income";
   }
   return "expense";
+}
+
+function openMovementCreateFlow(trigger = null, movementType = "expense") {
+  if (isViewingPastMonth()) {
+    return;
+  }
+
+  const nextType = normalizeMovementType(movementType);
+  openExpenseModalForCreate(trigger, nextType);
 }
 
 function normalizeBudgetPeriod(rawPeriod) {
@@ -6190,6 +6222,64 @@ function sanitizeItem(item) {
   };
 }
 
+function normalizeLocalUiState(candidate) {
+  const dismissedMonths = Array.isArray(candidate?.incomeMissingAlertDismissedMonths)
+    ? [...new Set(candidate.incomeMissingAlertDismissedMonths.map((month) => normalizeMonthKey(month)).filter(Boolean))]
+    : [];
+
+  return {
+    incomeMissingAlertDismissedMonths: dismissedMonths
+  };
+}
+
+function loadLocalUiState() {
+  try {
+    const raw = localStorage.getItem(LOCAL_UI_STORAGE_KEY);
+    return raw ? normalizeLocalUiState(JSON.parse(raw)) : normalizeLocalUiState();
+  } catch {
+    return normalizeLocalUiState();
+  }
+}
+
+function saveLocalUiState() {
+  try {
+    localStorage.setItem(LOCAL_UI_STORAGE_KEY, JSON.stringify(normalizeLocalUiState(localUiState)));
+  } catch {}
+}
+
+function isIncomeMissingAlertDismissed(monthKey = state.activeMonth) {
+  return normalizeLocalUiState(localUiState).incomeMissingAlertDismissedMonths.includes(normalizeMonthKey(monthKey));
+}
+
+function setIncomeMissingAlertDismissed(monthKey = state.activeMonth, dismissed = true) {
+  const normalizedMonth = normalizeMonthKey(monthKey);
+  const dismissedMonths = new Set(normalizeLocalUiState(localUiState).incomeMissingAlertDismissedMonths);
+
+  if (dismissed) {
+    dismissedMonths.add(normalizedMonth);
+  } else {
+    dismissedMonths.delete(normalizedMonth);
+  }
+
+  localUiState = {
+    ...normalizeLocalUiState(localUiState),
+    incomeMissingAlertDismissedMonths: [...dismissedMonths]
+  };
+  saveLocalUiState();
+}
+
+function dismissIncomeMissingAlert(monthKey = state.activeMonth) {
+  if (!isIncomeMissingAlertDismissed(monthKey)) {
+    setIncomeMissingAlertDismissed(monthKey, true);
+  }
+}
+
+function clearIncomeMissingAlertDismissal(monthKey = state.activeMonth) {
+  if (isIncomeMissingAlertDismissed(monthKey)) {
+    setIncomeMissingAlertDismissed(monthKey, false);
+  }
+}
+
 function loadState() {
   const fallbackTimestamp = new Date().toISOString();
   const raw = localStorage.getItem(STATE_STORAGE_KEY);
@@ -6311,24 +6401,7 @@ function snapshotFromState() {
   return snapshot;
 }
 
-function readPersistedStateSnapshot() {
-  try {
-    const raw = localStorage.getItem(STATE_STORAGE_KEY);
-    return raw ? normalizeStateSnapshot(JSON.parse(raw)) : null;
-  } catch {
-    return null;
-  }
-}
-
 function saveState({ preserveTimestamp = false, skipCloudSync = false } = {}) {
-  const previousSnapshot = readPersistedStateSnapshot();
-  const previousMovementCount = getMovementCount(previousSnapshot);
-  const nextMovementCount = getMovementCount(state);
-
-  if (previousMovementCount > 0 && nextMovementCount === 0) {
-    state.onboardingSeen = false;
-  }
-
   if (!preserveTimestamp) {
     state.lastModifiedAt = new Date().toISOString();
   }
@@ -6337,10 +6410,6 @@ function saveState({ preserveTimestamp = false, skipCloudSync = false } = {}) {
 
   if (!skipCloudSync) {
     scheduleCloudPush();
-  }
-
-  if (previousMovementCount > 0 && nextMovementCount === 0) {
-    scheduleInitialOnboarding();
   }
 }
 
@@ -6618,6 +6687,128 @@ function renderSummary() {
   ].forEach(applyMetricValueDensity);
 
   scheduleMetricValueFit();
+  renderInitialUsageState({
+    totalIncome: monthlyIncome,
+    totalExpenses: monthlySpend,
+    hasIncome: monthlyIncome > 0,
+    hasExpenses: monthlySpend > 0
+  });
+}
+
+function getUsageStateForActiveMonth() {
+  const { monthlyIncome: totalIncome, monthlySpend: totalExpenses } = getTotals();
+  return {
+    totalIncome,
+    totalExpenses,
+    hasIncome: totalIncome > 0,
+    hasExpenses: totalExpenses > 0
+  };
+}
+
+function isViewingFutureMonth(monthKey = state.activeMonth) {
+  return compareMonthKeys(normalizeMonthKey(monthKey), getCurrentMonthKey()) > 0;
+}
+
+function shouldShowTopMonthEmptyState(usageState = getUsageStateForActiveMonth()) {
+  return !isViewingPastMonth(state.activeMonth)
+    && usageState.hasExpenses === true
+    && usageState.hasIncome === false
+    && !isIncomeMissingAlertDismissed(state.activeMonth);
+}
+
+function getMovementsEmptyStateConfig(usageState = getUsageStateForActiveMonth()) {
+  if (isViewingPastMonth(state.activeMonth)) {
+    return null;
+  }
+
+  if (usageState.hasIncome === false && usageState.hasExpenses === false) {
+    if (isViewingFutureMonth(state.activeMonth)) {
+      return {
+        title: "Todavía no tenés movimientos para este mes",
+        description: "Podés adelantarte y cargar gastos o ingresos para organizarte mejor.",
+        ctaLabel: "Agregar movimiento",
+        addType: "expense"
+      };
+    }
+
+    return {
+      title: "Empezá cargando tus ingresos y gastos",
+      description: "Así vas a ver cuánto podés gastar este mes.",
+      ctaLabel: "Agregar gasto",
+      addType: "expense"
+    };
+  }
+
+  return null;
+}
+
+function appendMovementsEmptyState(container, config) {
+  if (!(container && config)) {
+    return;
+  }
+
+  const icon = document.createElement("i");
+  icon.className = "bi bi-inbox";
+  icon.setAttribute("aria-hidden", "true");
+
+  const copy = document.createElement("span");
+  copy.className = "empty-state-copy";
+
+  const title = document.createElement("strong");
+  title.textContent = config.title;
+
+  const description = document.createElement("span");
+  description.textContent = config.description;
+
+  copy.append(title, description);
+  container.append(icon, copy);
+
+  if (config.ctaLabel) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "primary-btn empty-state-action inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-white shadow-sm";
+    button.textContent = config.ctaLabel;
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      openMovementCreateFlow(button, config.addType || "expense");
+    });
+    container.appendChild(button);
+  }
+}
+
+function renderInitialUsageState({ totalIncome = 0, totalExpenses = 0, hasIncome = false, hasExpenses = false } = {}) {
+  if (!(initialUsageState && initialUsageCard && initialUsageTitle && initialUsageDescription && initialUsageCtaBtn && initialUsageDismissBtn)) {
+    return;
+  }
+
+  if (isViewingPastMonth(state.activeMonth)) {
+    initialUsageState.classList.add("is-hidden");
+    initialUsageState.setAttribute("aria-hidden", "true");
+    return;
+  }
+
+  if (hasIncome || !hasExpenses) {
+    clearIncomeMissingAlertDismissal(state.activeMonth);
+  }
+
+  const shouldShowIncomeAlert = hasExpenses === true
+    && hasIncome === false
+    && !isIncomeMissingAlertDismissed(state.activeMonth);
+
+  if (!shouldShowIncomeAlert) {
+    initialUsageState.classList.add("is-hidden");
+    initialUsageState.setAttribute("aria-hidden", "true");
+    return;
+  }
+
+  initialUsageState.classList.remove("is-hidden");
+  initialUsageState.setAttribute("aria-hidden", "false");
+  initialUsageCard.dataset.state = "missing-income";
+  initialUsageTitle.textContent = "Te falta cargar un ingreso";
+  initialUsageDescription.textContent = "Ya cargaste gastos. Sumá un ingreso para ver cuánto te queda este mes.";
+  initialUsageDescription.classList.remove("is-hidden");
+  initialUsageCtaBtn.classList.add("is-hidden");
+  initialUsageDismissBtn.classList.remove("is-hidden");
 }
 
 function applyMetricValueDensity(element) {
@@ -6756,6 +6947,8 @@ function getFilteredMobileItems() {
 function renderExpenseTable() {
   const filteredItems = getFilteredItems();
   const monthItems = getVisibleMonthExpenseItems(state.activeMonth);
+  const usageState = getUsageStateForActiveMonth();
+  const monthEmptyConfig = !monthItems.length ? getMovementsEmptyStateConfig(usageState) : null;
   expenseTableBody.innerHTML = "";
 
   if (!filteredItems.length) {
@@ -6765,9 +6958,13 @@ function renderExpenseTable() {
     const cell = document.createElement("td");
     cell.colSpan = 6;
     cell.className = "table-empty";
-    cell.innerHTML = monthItems.length
-      ? '<i class="bi bi-inbox"></i><span class="empty-state-copy"><strong>No encontramos gastos para este filtro</strong><span>Prueba otra fecha o cambia la categoria.</span></span>'
-      : `<i class="bi bi-inbox"></i><span class="empty-state-copy"><strong>${monthLabel} todavia no tiene gastos visibles</strong><span>Los gastos puntuales quedan en su mes y los recurrentes apareceran aqui automaticamente.</span></span>`;
+    if (monthEmptyConfig) {
+      appendMovementsEmptyState(cell, monthEmptyConfig);
+    } else {
+      cell.innerHTML = monthItems.length
+        ? '<i class="bi bi-inbox"></i><span class="empty-state-copy"><strong>No encontramos gastos para este filtro</strong><span>Prueba otra fecha o cambia la categoria.</span></span>'
+        : `<i class="bi bi-inbox"></i><span class="empty-state-copy"><strong>${monthLabel} todavia no tiene gastos visibles</strong><span>Los gastos puntuales quedan en su mes y los recurrentes apareceran aqui automaticamente.</span></span>`;
+    }
     row.appendChild(cell);
     expenseTableBody.appendChild(row);
     return;
@@ -6786,15 +6983,24 @@ function renderExpenseMobileList() {
     ...getVisibleMonthExpenseItems(state.activeMonth),
     ...getVisibleMonthIncomeItems(state.activeMonth)
   ];
+  const usageState = getUsageStateForActiveMonth();
+  const monthEmptyConfig = !monthItems.length ? getMovementsEmptyStateConfig(usageState) : null;
   expenseMobileList.innerHTML = "";
 
   if (!filteredItems.length) {
     const monthLabel = formatMonthLabel(state.activeMonth);
     const empty = document.createElement("article");
     empty.className = "mobile-expense-card";
-    empty.innerHTML = monthItems.length
-      ? '<p class="table-empty"><i class="bi bi-inbox"></i><span class="empty-state-copy"><strong>No encontramos movimientos para este filtro</strong><span>Prueba otra fecha o cambia la categoria.</span></span></p>'
-      : `<p class="table-empty"><i class="bi bi-inbox"></i><span class="empty-state-copy"><strong>${monthLabel} todavia no tiene movimientos</strong><span>Carga un gasto o ingreso para empezar a ver tu resumen del mes.</span></span></p>`;
+    const content = document.createElement("div");
+    content.className = "table-empty";
+    if (monthEmptyConfig) {
+      appendMovementsEmptyState(content, monthEmptyConfig);
+    } else {
+      content.innerHTML = monthItems.length
+        ? '<i class="bi bi-inbox"></i><span class="empty-state-copy"><strong>No encontramos movimientos para este filtro</strong><span>Prueba otra fecha o cambia la categoria.</span></span>'
+        : `<i class="bi bi-inbox"></i><span class="empty-state-copy"><strong>${monthLabel} todavia no tiene movimientos</strong><span>Carga un gasto o ingreso para empezar a ver tu resumen del mes.</span></span>`;
+    }
+    empty.appendChild(content);
     expenseMobileList.appendChild(empty);
     return;
   }
@@ -6885,18 +7091,25 @@ function populateItemNode(node, item) {
   const amountText = node.querySelector(".amount-text");
   if (amountText) {
     const amountLabel = money(item.amount);
+    const isPositive = itemType === "income";
+    const amountColor = isPositive ? "#067a31" : "#111827";
     if (isMobileRow) {
       const compactAmountLabel = amountLabel.replace("$ ", "$");
-      const isPositive = itemType === "income";
       const mobileAmountLabel = `${isPositive ? "+" : "-"}${compactAmountLabel}`;
       amountText.textContent = mobileAmountLabel;
       node.setAttribute("data-mobile-amount", mobileAmountLabel);
-      amountText.classList.toggle("is-positive", isPositive);
-      amountText.classList.toggle("is-negative", !isPositive);
     } else {
       amountText.textContent = amountLabel;
     }
+    amountText.classList.toggle("is-positive", isPositive);
+    amountText.classList.toggle("is-negative", !isPositive);
+    amountText.style.setProperty("color", amountColor, "important");
     amountText.setAttribute("title", amountLabel);
+  }
+
+  const amountWrap = node.querySelector(".mobile-item-amount-wrap");
+  if (amountWrap) {
+    amountWrap.style.setProperty("color", itemType === "income" ? "#067a31" : "#111827", "important");
   }
 
   const editItemBtn = node.querySelector(".edit-item-btn");
