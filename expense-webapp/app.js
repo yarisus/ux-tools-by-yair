@@ -2310,19 +2310,7 @@ function updateInstallButtonCopy(installContext = getInstallAvailabilityContext(
   }
 
   const iconName = installContext.isIOS ? "bi-share" : "bi-download";
-  let label = "Instalar app";
-
-  if (installContext.isIOS && installContext.isSafari) {
-    label = "Agregar a inicio";
-  } else if (installContext.isIOS) {
-    label = "Abrir en Safari";
-  } else if (installContext.isInAppBrowser) {
-    label = "Abrir para instalar";
-  } else if (installContext.isAndroid && !installContext.canPrompt) {
-    label = "Como instalar";
-  }
-
-  installAppBtn.innerHTML = `<i class="bi ${iconName}"></i> ${label}`;
+  installAppBtn.innerHTML = `<i class="bi ${iconName}"></i> Instalar app`;
 }
 
 function toDateInputValue(date) {
