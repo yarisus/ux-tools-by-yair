@@ -5398,9 +5398,7 @@ function syncInstallAvailability() {
   }
 
   const installContext = getInstallAvailabilityContext();
-  const canShow = installContext.isMobile
-    && !installContext.isInstalled
-    && (installContext.canPrompt || installContext.isIOS || installContext.isAndroid);
+  const canShow = installContext.isMobile && !installContext.isInstalled;
 
   updateInstallButtonCopy(installContext);
   installAppBtn.classList.toggle("is-hidden", !canShow);
