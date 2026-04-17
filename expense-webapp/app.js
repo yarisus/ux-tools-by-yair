@@ -156,7 +156,6 @@ const ONBOARDING_TRANSITION_MS = 260;
 const state = loadState();
 const cloudConfig = loadCloudConfig();
 let localUiState = loadLocalUiState();
-const systemThemeMedia = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
 const mobileViewportMedia = window.matchMedia ? window.matchMedia("(max-width: 767px)") : null;
 
 let deferredInstallPrompt = null;
@@ -1893,14 +1892,6 @@ document.addEventListener("visibilitychange", () => {
     syncInstallAvailability();
   }
 });
-
-if (systemThemeMedia?.addEventListener) {
-  systemThemeMedia.addEventListener("change", () => {
-    if (state.theme === "system") {
-      applyTheme();
-    }
-  });
-}
 
 function hideLaunchSplash() {
   if (!launchSplash || launchSplashHidden) {
@@ -5335,7 +5326,11 @@ function applyTheme() {
   const resolvedTheme = getResolvedTheme();
   const isDark = resolvedTheme === "dark";
   document.body.classList.toggle("theme-dark", isDark);
-  document.body.dataset.themePreference = state.theme;
+  document.body.dataset.themePreference = resolvedTheme;
+  console.log("[theme-debug]", {
+    theme: state.theme,
+    isDark: isDark
+  });
 
   const themeMeta = document.querySelector('meta[name="theme-color"]');
   if (themeMeta) {
@@ -5347,7 +5342,7 @@ function applyTheme() {
     themeToggleBtn.setAttribute("aria-label", isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro");
     themeToggleBtn.setAttribute(
       "title",
-      state.theme === "system" ? `Tema del sistema (${isDark ? "oscuro" : "claro"})` : isDark ? "Modo claro" : "Modo oscuro"
+      isDark ? "Modo claro" : "Modo oscuro"
     );
     themeToggleBtn.innerHTML = isDark
       ? '<i class="bi bi-sun"></i>'
@@ -5363,13 +5358,7 @@ function applyTheme() {
 }
 
 function getResolvedTheme() {
-  if (state.theme === "dark") {
-    return "dark";
-  }
-  if (state.theme === "light") {
-    return "light";
-  }
-  return systemThemeMedia?.matches ? "dark" : "light";
+  return state.theme === "dark" ? "dark" : "light";
 }
 
 function toggleThemePreference() {
@@ -6277,7 +6266,7 @@ function loadState() {
       recurringSkips: [],
       items: [],
       hideSalary: false,
-      theme: "system",
+      theme: "light",
       themeUserSet: false,
       budgetPeriod: "monthly",
       chartMode: "expense",
@@ -6298,7 +6287,7 @@ function loadState() {
       recurringSkips: [],
       items: [],
       hideSalary: false,
-      theme: "system",
+      theme: "light",
       themeUserSet: false,
       budgetPeriod: "monthly",
       chartMode: "expense",
@@ -6336,10 +6325,10 @@ function normalizeStateSnapshot(candidate, fallbackTimestamp = new Date().toISOS
   const themeUserSet = typeof candidate?.themeUserSet === "boolean"
     ? candidate.themeUserSet
     : rawTheme === "dark";
-  const normalizedTheme = rawTheme === "dark" || rawTheme === "light" || rawTheme === "system"
+  const normalizedTheme = rawTheme === "dark" || rawTheme === "light"
     ? rawTheme
-    : "system";
-  const theme = normalizedTheme === "light" && !themeUserSet ? "system" : normalizedTheme;
+    : "light";
+  const theme = normalizedTheme;
 
   return {
     salary: Object.prototype.hasOwnProperty.call(monthlySalaries, currentMonthKey)
@@ -6370,8 +6359,7 @@ function applySnapshotToState(snapshot) {
   state.recurringSkips = normalized.recurringSkips;
   state.items = normalized.items;
   state.hideSalary = normalized.hideSalary;
-  state.theme = normalized.theme;
-  state.themeUserSet = normalized.themeUserSet;
+  // Theme is intentionally NOT synced from cloud.
   state.budgetPeriod = normalized.budgetPeriod;
   state.chartMode = normalized.chartMode;
   state.sidebarCollapsed = normalized.sidebarCollapsed;
@@ -7821,6 +7809,8 @@ function hasMeaningfulFinanceData(snapshot) {
 function snapshotForCloud(snapshot = snapshotFromState()) {
   const normalized = normalizeStateSnapshot(snapshot);
   delete normalized.onboardingSeen;
+  delete normalized.theme;
+  delete normalized.themeUserSet;
   return normalized;
 }
 
