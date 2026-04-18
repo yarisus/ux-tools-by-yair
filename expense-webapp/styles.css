@@ -14517,7 +14517,7 @@ body.overflow-hidden .mobile-add-fab-wrap,
   }
 
   body .app-shell {
-    margin: 0 auto !important;
+    margin: 0 !important;
     padding: 0 0 calc(116px + env(safe-area-inset-bottom, 0px)) !important;
     background: #eeeeee !important;
     overflow-x: hidden !important;
