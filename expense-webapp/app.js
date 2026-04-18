@@ -5327,10 +5327,6 @@ function applyTheme() {
   const isDark = resolvedTheme === "dark";
   document.body.classList.toggle("theme-dark", isDark);
   document.body.dataset.themePreference = resolvedTheme;
-  console.log("[theme-debug]", {
-    theme: state.theme,
-    isDark: isDark
-  });
 
   const themeMeta = document.querySelector('meta[name="theme-color"]');
   if (themeMeta) {
