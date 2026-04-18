@@ -362,7 +362,13 @@ const mobileAmountScreen = document.getElementById("mobileAmountScreen");
 const closeMobileAmountScreenBtn = document.getElementById("closeMobileAmountScreenBtn");
 const mobileAmountExpenseTab = document.getElementById("mobileAmountExpenseTab");
 const mobileAmountIncomeTab = document.getElementById("mobileAmountIncomeTab");
+const mobileAmountDisplayValue = document.getElementById("mobileAmountDisplayValue");
 const mobileAmountInput = document.getElementById("mobileAmountInput");
+const mobileAmountDisplay = mobileAmountDisplayValue?.parentElement || null;
+const mobileAmountRecurringCard = document.getElementById("mobileAmountRecurringCard");
+const mobileAmountRecurring = document.getElementById("mobileAmountRecurring");
+const mobileAmountRecurringMonthsField = document.getElementById("mobileAmountRecurringMonthsField");
+const mobileAmountRecurringMonths = document.getElementById("mobileAmountRecurringMonths");
 const mobileAmountNextBtn = document.getElementById("mobileAmountNextBtn");
 const mobileAmountKeys = Array.from(document.querySelectorAll("[data-mobile-amount-key]"));
 const mobileQuickEntrySheet = document.getElementById("mobileQuickEntrySheet");
@@ -453,6 +459,9 @@ let expenseEditScope = "thisMonth";
 let mobileQuickEntryScope = "thisMonth";
 let mobileAmountMode = "expense";
 let mobileAmountValue = "";
+let mobileAmountRecurringEnabled = false;
+let mobileAmountRecurringDuration = "12";
+let mobileAmountScreenTransitionTimer = null;
 
 const WALKTHROUGH_STEPS = [
   {
@@ -793,11 +802,41 @@ if (mobileAmountInput) {
     renderMobileAmountDisplay();
   });
 
+  mobileAmountInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      commitMobileAmountFlow();
+    }
+  });
+
   mobileAmountInput.addEventListener("focus", () => {
     requestAnimationFrame(() => {
       const length = mobileAmountInput.value.length;
       mobileAmountInput.setSelectionRange(length, length);
     });
+  });
+}
+
+if (mobileAmountDisplay) {
+  mobileAmountDisplay.addEventListener("click", () => {
+    mobileAmountInput?.focus({ preventScroll: true });
+  });
+}
+
+if (mobileAmountRecurring) {
+  mobileAmountRecurring.addEventListener("change", () => {
+    mobileAmountRecurringEnabled = Boolean(mobileAmountRecurring.checked);
+    syncMobileAmountRecurringDurationState();
+  });
+}
+
+if (mobileAmountRecurringMonths) {
+  mobileAmountRecurringMonths.addEventListener("change", () => {
+    if (!(mobileAmountRecurringMonths instanceof HTMLSelectElement)) {
+      return;
+    }
+    populateRecurringDurationOptions(mobileAmountRecurringMonths, mobileAmountRecurringMonths.value || "12");
+    mobileAmountRecurringDuration = mobileAmountRecurringMonths.value || "12";
   });
 }
 
@@ -3552,17 +3591,45 @@ function setMobileAmountMode(movementType) {
   }
 }
 
+function syncMobileAmountRecurringDurationState() {
+  if (mobileAmountRecurring instanceof HTMLInputElement) {
+    mobileAmountRecurring.checked = mobileAmountRecurringEnabled;
+  }
+
+  if (mobileAmountRecurringCard) {
+    mobileAmountRecurringCard.classList.toggle("is-active", mobileAmountRecurringEnabled);
+  }
+
+  if (mobileAmountRecurringMonthsField) {
+    mobileAmountRecurringMonthsField.classList.toggle("is-disabled", !mobileAmountRecurringEnabled);
+  }
+
+  if (mobileAmountRecurringMonths instanceof HTMLSelectElement) {
+    populateRecurringDurationOptions(mobileAmountRecurringMonths, mobileAmountRecurringDuration || "12");
+    mobileAmountRecurringMonths.disabled = !mobileAmountRecurringEnabled;
+  }
+}
+
 function renderMobileAmountDisplay() {
   if (!mobileAmountInput) {
     return;
   }
   const numericValue = Number(mobileAmountValue || 0);
-  mobileAmountInput.value = formatAmountNumber(numericValue, { withSymbol: false }) || "0";
+  const formattedValue = formatAmountNumber(numericValue, { withSymbol: false }) || "0";
+  mobileAmountInput.value = mobileAmountValue || "";
+  if (mobileAmountDisplayValue) {
+    mobileAmountDisplayValue.textContent = formattedValue;
+  }
 }
 
 function updateMobileAmountValue(key) {
   const action = String(key || "").trim();
   if (!action) {
+    return;
+  }
+
+  if (action === "next") {
+    commitMobileAmountFlow();
     return;
   }
 
@@ -3590,7 +3657,7 @@ function openMobileQuickAddSheet() {
   if (!mobileQuickAddSheet) {
     return;
   }
-  closeMobileAmountScreen();
+  closeMobileAmountScreen({ immediate: true });
   closeMobileQuickEntrySheet();
   closeProfileDropdown();
   mobileQuickAddOpen = true;
@@ -3613,31 +3680,63 @@ function openMobileAmountScreen(movementType = "expense") {
   if (!mobileAmountScreen) {
     return;
   }
+  if (mobileAmountScreenTransitionTimer) {
+    clearTimeout(mobileAmountScreenTransitionTimer);
+    mobileAmountScreenTransitionTimer = null;
+  }
   closeMobileQuickAddSheet();
   closeMobileQuickEntrySheet();
   mobileAmountScreenOpen = true;
   mobileAmountScreen.classList.remove("is-hidden");
   mobileAmountScreen.setAttribute("aria-hidden", "false");
+  mobileAmountScreen.classList.remove("is-open");
   mobileAmountValue = "";
+  mobileAmountRecurringEnabled = false;
+  mobileAmountRecurringDuration = "12";
   setMobileAmountMode(movementType);
+  syncMobileAmountRecurringDurationState();
   renderMobileAmountDisplay();
-  updateOverlayScrollLock();
+  requestAnimationFrame(() => {
+    mobileAmountScreen.classList.add("is-open");
+  });
   window.setTimeout(() => {
-    mobileAmountInput?.focus();
-  }, 40);
+    if (!mobileAmountScreenOpen) {
+      return;
+    }
+    mobileAmountInput?.focus({ preventScroll: true });
+  }, 30);
+  updateOverlayScrollLock();
 }
 
-function closeMobileAmountScreen() {
+function closeMobileAmountScreen({ immediate = false } = {}) {
   if (!mobileAmountScreen) {
     return;
   }
+  if (mobileAmountScreenTransitionTimer) {
+    clearTimeout(mobileAmountScreenTransitionTimer);
+    mobileAmountScreenTransitionTimer = null;
+  }
   mobileAmountScreenOpen = false;
-  mobileAmountScreen.classList.add("is-hidden");
-  mobileAmountScreen.setAttribute("aria-hidden", "true");
+  mobileAmountScreen.classList.remove("is-open");
   mobileAmountValue = "";
   renderMobileAmountDisplay();
   mobileAmountInput?.blur();
   updateOverlayScrollLock();
+
+  if (immediate) {
+    mobileAmountScreen.classList.add("is-hidden");
+    mobileAmountScreen.setAttribute("aria-hidden", "true");
+    return;
+  }
+
+  mobileAmountScreenTransitionTimer = window.setTimeout(() => {
+    if (mobileAmountScreenOpen) {
+      return;
+    }
+    mobileAmountScreen.classList.add("is-hidden");
+    mobileAmountScreen.setAttribute("aria-hidden", "true");
+    mobileAmountScreenTransitionTimer = null;
+  }, 150);
 }
 
 function getDefaultItemDateForMonth(monthKey = state.activeMonth) {
@@ -3832,7 +3931,7 @@ function openMobileQuickEntrySheet(movementType = "expense", amount = 0, item = 
   }
 
   if (mobileQuickEntryRecurring instanceof HTMLInputElement) {
-    mobileQuickEntryRecurring.checked = editableItem ? Boolean(editableItem.isRecurring) : false;
+    mobileQuickEntryRecurring.checked = editableItem ? Boolean(editableItem.isRecurring) : mobileAmountRecurringEnabled;
   }
 
   if (mobileQuickEntryRecurringWrap) {
@@ -3841,7 +3940,7 @@ function openMobileQuickEntrySheet(movementType = "expense", amount = 0, item = 
   if (mobileQuickEntryRecurringMonths instanceof HTMLSelectElement) {
     const defaultDuration = editableItem
       ? getRecurringDurationSelectionForItem(editableItem, getMonthKeyFromItem(editableItem))
-      : "12";
+      : mobileAmountRecurringDuration;
     populateRecurringDurationOptions(mobileQuickEntryRecurringMonths, defaultDuration);
     mobileQuickEntryRecurringMonths.disabled = !mobileQuickEntryRecurring?.checked || isProjectedItem;
   }
@@ -3878,7 +3977,7 @@ function openMobileQuickEntrySheet(movementType = "expense", amount = 0, item = 
     backMobileQuickEntryBtn.classList.add("is-hidden");
   }
 
-  closeMobileAmountScreen();
+  closeMobileAmountScreen({ immediate: true });
   closeMobileQuickAddSheet();
   closeProfileDropdown();
   mobileQuickEntrySheet.classList.remove("is-hidden");

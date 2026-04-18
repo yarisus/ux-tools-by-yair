@@ -1344,61 +1344,112 @@
     </div>
 
     <div id="mobileAmountScreen" class="mobile-amount-screen is-hidden md:hidden" aria-hidden="true">
-      <section class="mobile-amount-screen-card" role="dialog" aria-modal="true" aria-labelledby="mobileAmountScreenTitle">
+      <section class="mobile-amount-screen-card" role="dialog" aria-modal="true" aria-labelledby="mobileAmountHeaderTitle">
         <header class="mobile-amount-screen-head">
-          <div class="mobile-amount-type-tabs" role="tablist" aria-label="Tipo de movimiento rapido">
-            <button id="mobileAmountExpenseTab" class="mobile-amount-type-tab is-active" type="button" role="tab" aria-selected="true" data-mobile-amount-type="expense">Gastos</button>
-            <button id="mobileAmountIncomeTab" class="mobile-amount-type-tab" type="button" role="tab" aria-selected="false" data-mobile-amount-type="income">Ingresos</button>
+          <div class="mobile-amount-frame-head-main">
+            <button
+              id="closeMobileAmountScreenBtn"
+              class="mobile-amount-frame-back-btn"
+              type="button"
+              aria-label="Cerrar carga de movimiento"
+            >
+              <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">arrow_back</span>
+            </button>
+            <h2 id="mobileAmountHeaderTitle" class="mobile-amount-frame-header-title">Agregar</h2>
           </div>
-          <button
-            id="closeMobileAmountScreenBtn"
-            class="icon-btn inline-grid h-11 w-11 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
-            type="button"
-            aria-label="Cerrar carga de monto"
-          >
-            <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">close</span>
-          </button>
         </header>
 
         <div class="mobile-amount-screen-body">
-          <p id="mobileAmountScreenTitle" class="mobile-amount-screen-title">Ingresa el monto</p>
-          <div class="mobile-amount-display" aria-live="polite">
-            <span class="mobile-amount-display-currency">$</span>
-            <input
-              id="mobileAmountInput"
-              class="mobile-amount-input font-space"
-              type="text"
-              inputmode="numeric"
-              pattern="[0-9]*"
-              autocomplete="off"
-              placeholder="0"
-              aria-label="Monto"
-            />
+          <div class="mobile-amount-frame-stage">
+            <div class="mobile-amount-frame-toggle" role="tablist" aria-label="Tipo de movimiento rapido">
+              <button id="mobileAmountExpenseTab" class="mobile-amount-frame-toggle-btn is-active" type="button" role="tab" aria-selected="true" data-mobile-amount-type="expense">
+                <span class="mobile-amount-frame-toggle-icon" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">south</span></span>
+                <span>Gasto</span>
+              </button>
+              <button id="mobileAmountIncomeTab" class="mobile-amount-frame-toggle-btn" type="button" role="tab" aria-selected="false" data-mobile-amount-type="income">
+                <span class="mobile-amount-frame-toggle-icon" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">north</span></span>
+                <span>Ingreso</span>
+              </button>
+            </div>
+
+            <div class="mobile-amount-frame-copy">
+              <p id="mobileAmountScreenTitle" class="mobile-amount-frame-title">Ingresar monto</p>
+              <div class="mobile-amount-frame-display" aria-live="polite">
+                <span class="mobile-amount-frame-display-currency">$</span>
+                <span id="mobileAmountDisplayValue" class="mobile-amount-frame-display-value font-space">0</span>
+                <input
+                  id="mobileAmountInput"
+                  class="mobile-amount-frame-input sr-only"
+                  type="tel"
+                  inputmode="numeric"
+                  pattern="[0-9]*"
+                  enterkeyhint="next"
+                  autocomplete="off"
+                  placeholder="0"
+                  aria-label="Monto"
+                />
+              </div>
+            </div>
+
+            <div class="mobile-amount-frame-settings">
+              <label id="mobileAmountRecurringCard" class="mobile-amount-frame-card mobile-amount-frame-card--toggle">
+                <input id="mobileAmountRecurring" type="checkbox" class="sr-only" />
+                <span class="mobile-amount-frame-card-copy">
+                  <strong>Se repite</strong>
+                  <small>Programar como recurrente</small>
+                </span>
+                <span class="mobile-amount-frame-switch" aria-hidden="true">
+                  <span class="mobile-amount-frame-switch-thumb"></span>
+                </span>
+              </label>
+
+              <label id="mobileAmountRecurringMonthsField" class="mobile-amount-frame-card mobile-amount-frame-card--duration is-disabled">
+                <span>Cuantos meses</span>
+                <span class="mobile-amount-frame-select-wrap">
+                  <select
+                    id="mobileAmountRecurringMonths"
+                    class="mobile-amount-frame-select"
+                    disabled
+                  ></select>
+                  <span class="mobile-amount-frame-select-icon" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">expand_more</span></span>
+                </span>
+              </label>
+            </div>
           </div>
         </div>
 
-        <div class="mobile-amount-keypad" aria-label="Teclado numerico">
-          <button class="mobile-amount-key" type="button" data-mobile-amount-key="1">1</button>
-          <button class="mobile-amount-key" type="button" data-mobile-amount-key="2">2</button>
-          <button class="mobile-amount-key" type="button" data-mobile-amount-key="3">3</button>
-          <button class="mobile-amount-key" type="button" data-mobile-amount-key="4">4</button>
-          <button class="mobile-amount-key" type="button" data-mobile-amount-key="5">5</button>
-          <button class="mobile-amount-key" type="button" data-mobile-amount-key="6">6</button>
-          <button class="mobile-amount-key" type="button" data-mobile-amount-key="7">7</button>
-          <button class="mobile-amount-key" type="button" data-mobile-amount-key="8">8</button>
-          <button class="mobile-amount-key" type="button" data-mobile-amount-key="9">9</button>
-          <button class="mobile-amount-key mobile-amount-key-soft" type="button" data-mobile-amount-key="000">000</button>
-          <button class="mobile-amount-key" type="button" data-mobile-amount-key="0">0</button>
-          <button class="mobile-amount-key mobile-amount-key-soft" type="button" data-mobile-amount-key="backspace" aria-label="Borrar ultimo digito">
-            <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">backspace</span>
-          </button>
-        </div>
-
         <footer class="mobile-amount-screen-footer">
-          <button id="mobileAmountNextBtn" class="primary-btn inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-[#213196] bg-[#213196] px-4 py-3 text-base font-semibold text-white" type="button">
-            Siguiente
+          <button id="mobileAmountNextBtn" class="mobile-amount-frame-next-btn" type="button">
+            <span>Siguiente</span>
+            <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">arrow_forward</span>
           </button>
         </footer>
+
+        <div class="mobile-amount-frame-keypad" aria-label="Teclado numerico">
+          <button class="mobile-amount-frame-key" type="button" data-mobile-amount-key="1"><span class="mobile-amount-frame-key-main">1</span></button>
+          <button class="mobile-amount-frame-key" type="button" data-mobile-amount-key="2"><span class="mobile-amount-frame-key-main">2</span><span class="mobile-amount-frame-key-meta">ABC</span></button>
+          <button class="mobile-amount-frame-key" type="button" data-mobile-amount-key="3"><span class="mobile-amount-frame-key-main">3</span><span class="mobile-amount-frame-key-meta">DEF</span></button>
+          <button class="mobile-amount-key mobile-amount-key-action" type="button" disabled aria-hidden="true"><span class="mobile-amount-key-main">-</span></button>
+
+          <button class="mobile-amount-frame-key" type="button" data-mobile-amount-key="4"><span class="mobile-amount-frame-key-main">4</span><span class="mobile-amount-frame-key-meta">GHI</span></button>
+          <button class="mobile-amount-frame-key" type="button" data-mobile-amount-key="5"><span class="mobile-amount-frame-key-main">5</span><span class="mobile-amount-frame-key-meta">JKL</span></button>
+          <button class="mobile-amount-frame-key" type="button" data-mobile-amount-key="6"><span class="mobile-amount-frame-key-main">6</span><span class="mobile-amount-frame-key-meta">MNO</span></button>
+          <button class="mobile-amount-key mobile-amount-key-action" type="button" disabled aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">keyboard_tab</span></button>
+
+          <button class="mobile-amount-frame-key" type="button" data-mobile-amount-key="7"><span class="mobile-amount-frame-key-main">7</span><span class="mobile-amount-frame-key-meta">PQRS</span></button>
+          <button class="mobile-amount-frame-key" type="button" data-mobile-amount-key="8"><span class="mobile-amount-frame-key-main">8</span><span class="mobile-amount-frame-key-meta">TUV</span></button>
+          <button class="mobile-amount-frame-key" type="button" data-mobile-amount-key="9"><span class="mobile-amount-frame-key-main">9</span><span class="mobile-amount-frame-key-meta">WXYZ</span></button>
+          <button class="mobile-amount-key mobile-amount-key-action" type="button" data-mobile-amount-key="backspace" aria-label="Borrar ultimo digito">
+            <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">backspace</span>
+          </button>
+
+          <button class="mobile-amount-key mobile-amount-key-action" type="button" disabled aria-hidden="true"><span class="mobile-amount-key-main">* #</span></button>
+          <button class="mobile-amount-frame-key" type="button" data-mobile-amount-key="0"><span class="mobile-amount-frame-key-main">0</span><span class="mobile-amount-frame-key-meta">+</span></button>
+          <button class="mobile-amount-key mobile-amount-key-action" type="button" disabled aria-hidden="true"><span class="mobile-amount-key-main">.</span></button>
+          <button class="mobile-amount-key mobile-amount-key-submit" type="button" data-mobile-amount-key="next" aria-label="Continuar al siguiente paso">
+            <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">keyboard_tab</span>
+          </button>
+        </div>
       </section>
     </div>
 
