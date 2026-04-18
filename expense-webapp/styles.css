@@ -13468,9 +13468,9 @@ body.theme-dark .mobile-period-pill.is-active {
 @media (max-width: 767px) {
   body .app-shell {
     width: 100% !important;
-    max-width: 390px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
   }
 
   body #movementsSection,
@@ -13492,8 +13492,8 @@ body.theme-dark .mobile-period-pill.is-active {
   body .app-shell {
     gap: 0 !important;
     width: 100% !important;
-    max-width: 360px !important;
-    margin: 0 auto !important;
+    max-width: none !important;
+    margin: 0 !important;
     padding: 0 0 calc(112px + env(safe-area-inset-bottom, 0px)) !important;
     background: #eeeeee !important;
     overflow-x: hidden !important;
