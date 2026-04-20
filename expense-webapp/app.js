@@ -462,6 +462,7 @@ let mobileAmountValue = "";
 let mobileAmountRecurringEnabled = false;
 let mobileAmountRecurringDuration = "12";
 let mobileAmountScreenTransitionTimer = null;
+let mobileAmountKeyboardLift = 0;
 
 const WALKTHROUGH_STEPS = [
   {
@@ -814,13 +815,27 @@ if (mobileAmountInput) {
       const length = mobileAmountInput.value.length;
       mobileAmountInput.setSelectionRange(length, length);
     });
+    syncMobileAmountEditingState();
+    syncMobileAmountKeyboardLift();
+  });
+
+  mobileAmountInput.addEventListener("blur", () => {
+    window.setTimeout(() => {
+      syncMobileAmountEditingState();
+      syncMobileAmountKeyboardLift();
+    }, 0);
   });
 }
 
 if (mobileAmountDisplay) {
   mobileAmountDisplay.addEventListener("click", () => {
-    mobileAmountInput?.focus({ preventScroll: true });
+    queueMobileAmountInputFocus();
   });
+}
+
+if (window.visualViewport) {
+  window.visualViewport.addEventListener("resize", syncMobileAmountKeyboardLift);
+  window.visualViewport.addEventListener("scroll", syncMobileAmountKeyboardLift);
 }
 
 if (mobileAmountRecurring) {
@@ -3610,6 +3625,72 @@ function syncMobileAmountRecurringDurationState() {
   }
 }
 
+function setMobileAmountKeyboardLift(nextLift) {
+  mobileAmountKeyboardLift = Math.max(0, Number(nextLift) || 0);
+  if (mobileAmountScreen) {
+    mobileAmountScreen.style.setProperty("--mobile-amount-keyboard-lift", `${mobileAmountKeyboardLift}px`);
+  }
+}
+
+function syncMobileAmountEditingState() {
+  if (!mobileAmountDisplay) {
+    return;
+  }
+  const isEditing = mobileAmountScreenOpen && document.activeElement === mobileAmountInput;
+  mobileAmountDisplay.classList.toggle("is-editing", isEditing);
+}
+
+function syncMobileAmountKeyboardLift() {
+  if (!mobileAmountScreenOpen || !mobileAmountInput || document.activeElement !== mobileAmountInput) {
+    setMobileAmountKeyboardLift(0);
+    return;
+  }
+
+  const viewport = window.visualViewport;
+  if (!viewport) {
+    setMobileAmountKeyboardLift(0);
+    return;
+  }
+
+  const keyboardHeight = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
+  setMobileAmountKeyboardLift(keyboardHeight > 0 ? keyboardHeight + 12 : 0);
+}
+
+function focusMobileAmountInput() {
+  if (!mobileAmountScreenOpen || !mobileAmountInput) {
+    return;
+  }
+
+  try {
+    mobileAmountInput.focus({ preventScroll: true });
+  } catch (_error) {
+    mobileAmountInput.focus();
+  }
+
+  try {
+    mobileAmountInput.click();
+  } catch (_error) {
+    // No-op: click only helps some mobile browsers surface the keyboard.
+  }
+
+  const length = mobileAmountInput.value.length;
+  try {
+    mobileAmountInput.setSelectionRange(length, length);
+  } catch (_error) {
+    // Ignore unsupported selection APIs.
+  }
+
+  syncMobileAmountEditingState();
+  syncMobileAmountKeyboardLift();
+}
+
+function queueMobileAmountInputFocus() {
+  requestAnimationFrame(() => {
+    focusMobileAmountInput();
+    window.setTimeout(focusMobileAmountInput, 120);
+  });
+}
+
 function renderMobileAmountDisplay() {
   if (!mobileAmountInput) {
     return;
@@ -3620,6 +3701,11 @@ function renderMobileAmountDisplay() {
   if (mobileAmountDisplayValue) {
     mobileAmountDisplayValue.textContent = formattedValue;
   }
+  if (mobileAmountDisplay) {
+    const isEmpty = !mobileAmountValue || numericValue <= 0;
+    mobileAmountDisplay.classList.toggle("is-empty", isEmpty);
+  }
+  syncMobileAmountEditingState();
 }
 
 function updateMobileAmountValue(key) {
@@ -3695,16 +3781,12 @@ function openMobileAmountScreen(movementType = "expense") {
   mobileAmountRecurringDuration = "12";
   setMobileAmountMode(movementType);
   syncMobileAmountRecurringDurationState();
+  setMobileAmountKeyboardLift(0);
   renderMobileAmountDisplay();
   requestAnimationFrame(() => {
     mobileAmountScreen.classList.add("is-open");
   });
-  window.setTimeout(() => {
-    if (!mobileAmountScreenOpen) {
-      return;
-    }
-    mobileAmountInput?.focus({ preventScroll: true });
-  }, 30);
+  queueMobileAmountInputFocus();
   updateOverlayScrollLock();
 }
 
@@ -3721,6 +3803,8 @@ function closeMobileAmountScreen({ immediate = false } = {}) {
   mobileAmountValue = "";
   renderMobileAmountDisplay();
   mobileAmountInput?.blur();
+  setMobileAmountKeyboardLift(0);
+  syncMobileAmountEditingState();
   updateOverlayScrollLock();
 
   if (immediate) {

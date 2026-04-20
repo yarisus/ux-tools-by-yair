@@ -829,7 +829,7 @@ body[data-design-system="dinaria-v2"] .icon-btn {
 
   body[data-design-system="dinaria-v2"] .mobile-amount-screen-card {
     min-height: 100dvh !important;
-    padding: calc(env(safe-area-inset-top, 0px) + 18px) 0 calc(20px + env(safe-area-inset-bottom, 0px)) !important;
+    padding: 0 !important;
     background:
       radial-gradient(circle at top, rgba(224, 231, 255, 0.6), transparent 36%),
       linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%) !important;
