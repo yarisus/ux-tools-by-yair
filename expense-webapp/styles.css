@@ -14058,8 +14058,8 @@ body.overflow-hidden .mobile-add-fab-wrap,
   body .mobile-amount-screen-card,
   body.theme-dark .mobile-amount-screen-card {
     position: relative !important;
-    height: 100dvh !important;
-    min-height: 100dvh !important;
+    height: calc(100dvh - var(--mobile-amount-keyboard-lift, 0px)) !important;
+    min-height: calc(100dvh - var(--mobile-amount-keyboard-lift, 0px)) !important;
     transform: translate3d(0, 100%, 0) !important;
     transition: transform 150ms cubic-bezier(0.22, 1, 0.36, 1) !important;
   }
@@ -14113,21 +14113,29 @@ body.overflow-hidden .mobile-add-fab-wrap,
     order: 1 !important;
     flex: 1 1 auto !important;
     margin: 0 !important;
-    padding: 4px 16px 0 !important;
+    padding: 0 16px 12px !important;
     background: #ffffff !important;
     text-align: left !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
   }
 
   body .mobile-amount-frame-stage {
-    display: block !important;
+    display: grid !important;
     width: 100% !important;
+    align-content: start !important;
+    min-height: 100% !important;
   }
 
   body .mobile-amount-frame-toggle {
     display: grid !important;
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 2 !important;
     width: 100% !important;
     padding: 4px !important;
+    margin: 0 !important;
     border-radius: 12px !important;
     background: #edf1fe !important;
     box-shadow: none !important;
@@ -14187,7 +14195,7 @@ body.overflow-hidden .mobile-add-fab-wrap,
     justify-items: start !important;
     row-gap: 12px !important;
     width: 100% !important;
-    margin: 16px 0 0 !important;
+    margin: 12px 0 0 !important;
     padding: 0 !important;
     background: transparent !important;
   }
@@ -14276,7 +14284,7 @@ body.overflow-hidden .mobile-add-fab-wrap,
     display: grid !important;
     row-gap: 12px !important;
     width: 100% !important;
-    margin-top: 36px !important;
+    margin-top: 24px !important;
   }
 
   body .mobile-amount-frame-card {
@@ -14303,6 +14311,8 @@ body.overflow-hidden .mobile-add-fab-wrap,
     flex: 1 1 auto !important;
     min-width: 0 !important;
     align-content: center !important;
+    justify-items: start !important;
+    text-align: left !important;
   }
 
   body .mobile-amount-frame-card-copy strong {
@@ -14311,6 +14321,7 @@ body.overflow-hidden .mobile-add-fab-wrap,
     font-size: 16px !important;
     line-height: 24px !important;
     font-weight: 600 !important;
+    text-align: left !important;
   }
 
   body .mobile-amount-frame-card-copy small {
@@ -14319,6 +14330,7 @@ body.overflow-hidden .mobile-add-fab-wrap,
     font-size: 12px !important;
     line-height: 16px !important;
     font-weight: 400 !important;
+    text-align: left !important;
   }
 
   body .mobile-amount-frame-switch {
@@ -14357,9 +14369,11 @@ body.overflow-hidden .mobile-add-fab-wrap,
   body .mobile-amount-frame-card--duration {
     display: grid !important;
     justify-content: stretch !important;
+    justify-items: stretch !important;
     align-items: center !important;
     row-gap: 6px !important;
     opacity: 0.4 !important;
+    text-align: left !important;
   }
 
   body .mobile-amount-frame-card--duration > span:first-child {
@@ -14369,6 +14383,8 @@ body.overflow-hidden .mobile-add-fab-wrap,
     line-height: 24px !important;
     font-weight: 600 !important;
     margin: 0 !important;
+    text-align: left !important;
+    justify-self: start !important;
   }
 
   body .mobile-amount-frame-card--duration.is-disabled {
@@ -14386,6 +14402,7 @@ body.overflow-hidden .mobile-add-fab-wrap,
     gap: 12px !important;
     min-height: 24px !important;
     width: 100% !important;
+    text-align: left !important;
   }
 
   body .mobile-amount-frame-select {
@@ -14422,8 +14439,6 @@ body.overflow-hidden .mobile-add-fab-wrap,
     z-index: 2 !important;
     padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)) !important;
     background: #ffffff !important;
-    transform: translateY(calc(-1 * var(--mobile-amount-keyboard-lift, 0px))) !important;
-    transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1) !important;
   }
 
   body .mobile-amount-frame-next-btn {
