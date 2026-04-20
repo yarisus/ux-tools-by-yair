@@ -364,6 +364,7 @@ const mobileAmountIncomeTab = document.getElementById("mobileAmountIncomeTab");
 const mobileAmountDisplayValue = document.getElementById("mobileAmountDisplayValue");
 const mobileAmountInput = document.getElementById("mobileAmountInput");
 const mobileAmountDisplay = mobileAmountDisplayValue?.parentElement || null;
+const mobileAmountScreenBody = mobileAmountScreen?.querySelector(".mobile-amount-screen-body") || null;
 const mobileAmountRecurringCard = document.getElementById("mobileAmountRecurringCard");
 const mobileAmountRecurring = document.getElementById("mobileAmountRecurring");
 const mobileAmountRecurringMonthsField = document.getElementById("mobileAmountRecurringMonthsField");
@@ -462,6 +463,7 @@ let mobileAmountRecurringEnabled = false;
 let mobileAmountRecurringDuration = "12";
 let mobileAmountScreenTransitionTimer = null;
 let mobileAmountKeyboardLift = 0;
+let mobileAmountFocusTimer = null;
 
 const WALKTHROUGH_STEPS = [
   {
@@ -779,12 +781,16 @@ if (mobileAmountScreen) {
 
 if (mobileAmountExpenseTab) {
   mobileAmountExpenseTab.addEventListener("click", () => {
+    cancelMobileAmountInputFocusQueue();
+    mobileAmountInput?.blur();
     setMobileAmountMode("expense");
   });
 }
 
 if (mobileAmountIncomeTab) {
   mobileAmountIncomeTab.addEventListener("click", () => {
+    cancelMobileAmountInputFocusQueue();
+    mobileAmountInput?.blur();
     setMobileAmountMode("income");
   });
 }
@@ -3623,6 +3629,13 @@ function setMobileAmountKeyboardLift(nextLift) {
   }
 }
 
+function cancelMobileAmountInputFocusQueue() {
+  if (mobileAmountFocusTimer) {
+    window.clearTimeout(mobileAmountFocusTimer);
+    mobileAmountFocusTimer = null;
+  }
+}
+
 function syncMobileAmountEditingState() {
   if (!mobileAmountDisplay) {
     return;
@@ -3645,6 +3658,9 @@ function syncMobileAmountKeyboardLift() {
 
   const keyboardHeight = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
   setMobileAmountKeyboardLift(keyboardHeight > 0 ? keyboardHeight + 12 : 0);
+  if (mobileAmountScreenBody) {
+    mobileAmountScreenBody.scrollTop = 0;
+  }
 }
 
 function focusMobileAmountInput() {
@@ -3676,9 +3692,13 @@ function focusMobileAmountInput() {
 }
 
 function queueMobileAmountInputFocus() {
+  cancelMobileAmountInputFocusQueue();
   requestAnimationFrame(() => {
     focusMobileAmountInput();
-    window.setTimeout(focusMobileAmountInput, 120);
+    mobileAmountFocusTimer = window.setTimeout(() => {
+      mobileAmountFocusTimer = null;
+      focusMobileAmountInput();
+    }, 120);
   });
 }
 
@@ -3774,6 +3794,9 @@ function openMobileAmountScreen(movementType = "expense") {
   syncMobileAmountRecurringDurationState();
   setMobileAmountKeyboardLift(0);
   renderMobileAmountDisplay();
+  if (mobileAmountScreenBody) {
+    mobileAmountScreenBody.scrollTop = 0;
+  }
   requestAnimationFrame(() => {
     mobileAmountScreen.classList.add("is-open");
   });
@@ -3789,6 +3812,7 @@ function closeMobileAmountScreen({ immediate = false } = {}) {
     clearTimeout(mobileAmountScreenTransitionTimer);
     mobileAmountScreenTransitionTimer = null;
   }
+  cancelMobileAmountInputFocusQueue();
   mobileAmountScreenOpen = false;
   mobileAmountScreen.classList.remove("is-open");
   mobileAmountValue = "";
