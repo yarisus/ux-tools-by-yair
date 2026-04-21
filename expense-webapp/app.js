@@ -3673,7 +3673,7 @@ function syncMobileAmountKeyboardLift() {
   }
 
   const keyboardHeight = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
-  setMobileAmountKeyboardLift(keyboardHeight > 0 ? keyboardHeight + 12 : 0);
+  setMobileAmountKeyboardLift(keyboardHeight > 0 ? keyboardHeight + 8 : 0);
   if (mobileAmountScreenBody) {
     mobileAmountScreenBody.scrollTop = 0;
   }
