@@ -14103,7 +14103,7 @@ body.overflow-hidden .mobile-add-fab-wrap,
     display: flex !important;
     align-items: center !important;
     gap: 12px !important;
-    padding: 12px 0 0 !important;
+    padding: 0 !important;
     background: #ffffff !important;
   }
 
@@ -14201,7 +14201,7 @@ body.overflow-hidden .mobile-add-fab-wrap,
     justify-items: start !important;
     row-gap: 12px !important;
     width: 100% !important;
-    margin: 24px 0 0 !important;
+    margin: 8px 0 0 !important;
     padding: 0 !important;
     background: transparent !important;
   }
@@ -14290,7 +14290,7 @@ body.overflow-hidden .mobile-add-fab-wrap,
     display: grid !important;
     row-gap: 12px !important;
     width: 100% !important;
-    margin-top: 24px !important;
+    margin-top: 12px !important;
   }
 
   body .mobile-amount-frame-card {
