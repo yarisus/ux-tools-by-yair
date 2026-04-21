@@ -14143,6 +14143,7 @@ body.overflow-hidden .mobile-add-fab-wrap,
     top: 0 !important;
     z-index: 2 !important;
     width: 100% !important;
+    min-height: 48px !important;
     padding: 4px !important;
     margin: 0 !important;
     border-radius: 12px !important;
@@ -14303,7 +14304,7 @@ body.overflow-hidden .mobile-add-fab-wrap,
     gap: 12px !important;
     width: 100% !important;
     min-height: 56px !important;
-    padding: 12px !important;
+    padding: 8px 12px !important;
     border-radius: 12px !important;
     background: #edf1fe !important;
     box-sizing: border-box !important;
