@@ -1344,31 +1344,28 @@
     </div>
 
     <div id="mobileAmountScreen" class="mobile-amount-screen is-hidden md:hidden" aria-hidden="true">
-      <section class="mobile-amount-screen-card" role="dialog" aria-modal="true" aria-labelledby="mobileAmountHeaderTitle">
-        <header class="mobile-amount-screen-head">
-          <div class="mobile-amount-frame-head-main">
-            <button
-              id="closeMobileAmountScreenBtn"
-              class="mobile-amount-frame-back-btn"
-              type="button"
-              aria-label="Cerrar carga de movimiento"
-            >
-              <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">arrow_back</span>
-            </button>
-            <h2 id="mobileAmountHeaderTitle" class="mobile-amount-frame-header-title">Agregar</h2>
-          </div>
-        </header>
-
+      <section class="mobile-amount-screen-card" role="dialog" aria-modal="true" aria-label="Agregar movimiento">
         <div class="mobile-amount-screen-body">
           <div class="mobile-amount-frame-stage">
-            <div class="mobile-amount-frame-toggle" role="tablist" aria-label="Tipo de movimiento rapido">
-              <button id="mobileAmountExpenseTab" class="mobile-amount-frame-toggle-btn is-active" type="button" role="tab" aria-selected="true" data-mobile-amount-type="expense">
-                <span class="mobile-amount-frame-toggle-icon" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">south</span></span>
-                <span>Gasto</span>
-              </button>
-              <button id="mobileAmountIncomeTab" class="mobile-amount-frame-toggle-btn" type="button" role="tab" aria-selected="false" data-mobile-amount-type="income">
-                <span class="mobile-amount-frame-toggle-icon" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">north</span></span>
-                <span>Ingreso</span>
+            <div class="mobile-amount-frame-toolbar">
+              <div class="mobile-amount-frame-toggle" role="tablist" aria-label="Tipo de movimiento rapido">
+                <button id="mobileAmountExpenseTab" class="mobile-amount-frame-toggle-btn is-active" type="button" role="tab" aria-selected="true" data-mobile-amount-type="expense">
+                  <span class="mobile-amount-frame-toggle-icon" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">south</span></span>
+                  <span>Gasto</span>
+                </button>
+                <button id="mobileAmountIncomeTab" class="mobile-amount-frame-toggle-btn" type="button" role="tab" aria-selected="false" data-mobile-amount-type="income">
+                  <span class="mobile-amount-frame-toggle-icon" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">north</span></span>
+                  <span>Ingreso</span>
+                </button>
+              </div>
+
+              <button
+                id="closeMobileAmountScreenBtn"
+                class="mobile-amount-frame-close-btn"
+                type="button"
+                aria-label="Cerrar carga de movimiento"
+              >
+                <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">close</span>
               </button>
             </div>
 
