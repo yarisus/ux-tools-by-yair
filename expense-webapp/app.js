@@ -465,6 +465,7 @@ let mobileAmountRecurringDuration = "12";
 let mobileAmountScreenTransitionTimer = null;
 let mobileAmountKeyboardLift = 0;
 let mobileAmountFocusTimer = null;
+let mobileAmountFocusSuppressedUntil = 0;
 
 function preserveMobileAmountInputFocus(event) {
   if (!mobileAmountScreenOpen || document.activeElement !== mobileAmountInput) {
@@ -855,7 +856,7 @@ if (mobileAmountScreenBody) {
     if (target.closest(".mobile-amount-frame-display")) {
       return;
     }
-    cancelMobileAmountInputFocusQueue();
+    suppressMobileAmountInputFocus();
     blurMobileAmountInput();
   });
 }
@@ -867,7 +868,7 @@ if (window.visualViewport) {
 
 if (mobileAmountRecurring) {
   mobileAmountRecurring.addEventListener("pointerdown", () => {
-    cancelMobileAmountInputFocusQueue();
+    suppressMobileAmountInputFocus();
     blurMobileAmountInput();
   });
 
@@ -880,23 +881,14 @@ if (mobileAmountRecurring) {
 if (mobileAmountRecurringMonths) {
   mobileAmountRecurringMonths.addEventListener("pointerdown", (event) => {
     event.stopPropagation();
-    cancelMobileAmountInputFocusQueue();
+    suppressMobileAmountInputFocus();
     blurMobileAmountInput();
   });
 
   mobileAmountRecurringMonths.addEventListener("click", (event) => {
     event.stopPropagation();
-    event.preventDefault();
-    cancelMobileAmountInputFocusQueue();
+    suppressMobileAmountInputFocus();
     if (!(mobileAmountRecurringMonths instanceof HTMLSelectElement) || mobileAmountRecurringMonths.disabled) {
-      return;
-    }
-    if (typeof mobileAmountRecurringMonths.showPicker === "function") {
-      try {
-        mobileAmountRecurringMonths.showPicker();
-      } catch (_error) {
-        mobileAmountRecurringMonths.focus({ preventScroll: true });
-      }
       return;
     }
     mobileAmountRecurringMonths.focus({ preventScroll: true });
@@ -912,6 +904,15 @@ if (mobileAmountRecurringMonths) {
 }
 
 if (mobileAmountRecurringMonthsField) {
+  mobileAmountRecurringMonthsField.addEventListener("pointerdown", (event) => {
+    const target = event.target;
+    if (target instanceof HTMLElement && target.closest("select")) {
+      return;
+    }
+    suppressMobileAmountInputFocus();
+    blurMobileAmountInput();
+  });
+
   mobileAmountRecurringMonthsField.addEventListener("click", (event) => {
     if (
       !(mobileAmountRecurringMonths instanceof HTMLSelectElement)
@@ -920,7 +921,7 @@ if (mobileAmountRecurringMonthsField) {
     ) {
       return;
     }
-    cancelMobileAmountInputFocusQueue();
+    suppressMobileAmountInputFocus();
     blurMobileAmountInput();
     if (typeof mobileAmountRecurringMonths.showPicker === "function") {
       try {
@@ -3719,6 +3720,15 @@ function cancelMobileAmountInputFocusQueue() {
   }
 }
 
+function suppressMobileAmountInputFocus(durationMs = 350) {
+  mobileAmountFocusSuppressedUntil = Date.now() + durationMs;
+  cancelMobileAmountInputFocusQueue();
+}
+
+function isMobileAmountInputFocusSuppressed() {
+  return Date.now() < mobileAmountFocusSuppressedUntil;
+}
+
 function blurMobileAmountInput() {
   if (!(mobileAmountInput instanceof HTMLInputElement)) {
     return;
@@ -3760,6 +3770,9 @@ function focusMobileAmountInput() {
   if (!mobileAmountScreenOpen || !mobileAmountInput) {
     return;
   }
+  if (isMobileAmountInputFocusSuppressed()) {
+    return;
+  }
 
   try {
     mobileAmountInput.focus({ preventScroll: true });
@@ -3785,6 +3798,9 @@ function focusMobileAmountInput() {
 }
 
 function queueMobileAmountInputFocus() {
+  if (isMobileAmountInputFocusSuppressed()) {
+    return;
+  }
   cancelMobileAmountInputFocusQueue();
   requestAnimationFrame(() => {
     focusMobileAmountInput();
