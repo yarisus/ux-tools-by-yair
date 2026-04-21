@@ -14078,7 +14078,7 @@ body.overflow-hidden .mobile-add-fab-wrap,
     justify-content: flex-start !important;
     min-height: 0 !important;
     margin: 0 !important;
-    padding: 0 16px calc(88px + env(safe-area-inset-bottom, 0px) + var(--mobile-amount-keyboard-lift, 0px)) !important;
+    padding: 0 16px 12px !important;
     background: #ffffff !important;
     text-align: left !important;
     overflow-y: auto !important;
@@ -14435,14 +14435,15 @@ body.overflow-hidden .mobile-add-fab-wrap,
 
   body .mobile-amount-screen-footer {
     order: 2 !important;
-    position: fixed !important;
-    left: 16px !important;
-    right: 16px !important;
-    bottom: calc(12px + env(safe-area-inset-bottom, 0px) + var(--mobile-amount-keyboard-lift, 0px)) !important;
+    flex: 0 0 auto !important;
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
     z-index: 3 !important;
     margin: 0 !important;
-    padding: 0 !important;
-    background: transparent !important;
+    padding: 12px 16px calc(env(safe-area-inset-bottom, 0px)) !important;
+    background: #ffffff !important;
   }
 
   body .mobile-amount-frame-next-btn {
