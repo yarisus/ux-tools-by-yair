@@ -466,6 +466,13 @@ let mobileAmountScreenTransitionTimer = null;
 let mobileAmountKeyboardLift = 0;
 let mobileAmountFocusTimer = null;
 
+function preserveMobileAmountInputFocus(event) {
+  if (!mobileAmountScreenOpen || document.activeElement !== mobileAmountInput) {
+    return;
+  }
+  event.preventDefault();
+}
+
 const WALKTHROUGH_STEPS = [
   {
     targetId: "activeMonthSection",
@@ -781,17 +788,17 @@ if (mobileAmountScreen) {
 }
 
 if (mobileAmountExpenseTab) {
+  mobileAmountExpenseTab.addEventListener("pointerdown", preserveMobileAmountInputFocus);
   mobileAmountExpenseTab.addEventListener("click", () => {
     cancelMobileAmountInputFocusQueue();
-    mobileAmountInput?.blur();
     setMobileAmountMode("expense");
   });
 }
 
 if (mobileAmountIncomeTab) {
+  mobileAmountIncomeTab.addEventListener("pointerdown", preserveMobileAmountInputFocus);
   mobileAmountIncomeTab.addEventListener("click", () => {
     cancelMobileAmountInputFocusQueue();
-    mobileAmountInput?.blur();
     setMobileAmountMode("income");
   });
 }
