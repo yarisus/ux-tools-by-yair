@@ -859,12 +859,57 @@ if (mobileAmountRecurring) {
 }
 
 if (mobileAmountRecurringMonths) {
+  mobileAmountRecurringMonths.addEventListener("pointerdown", (event) => {
+    event.stopPropagation();
+    cancelMobileAmountInputFocusQueue();
+  });
+
+  mobileAmountRecurringMonths.addEventListener("click", (event) => {
+    event.stopPropagation();
+    cancelMobileAmountInputFocusQueue();
+    if (!(mobileAmountRecurringMonths instanceof HTMLSelectElement) || mobileAmountRecurringMonths.disabled) {
+      return;
+    }
+    if (typeof mobileAmountRecurringMonths.showPicker === "function") {
+      try {
+        mobileAmountRecurringMonths.showPicker();
+      } catch (_error) {
+        mobileAmountRecurringMonths.focus({ preventScroll: true });
+      }
+      return;
+    }
+    mobileAmountRecurringMonths.focus({ preventScroll: true });
+  });
+
   mobileAmountRecurringMonths.addEventListener("change", () => {
     if (!(mobileAmountRecurringMonths instanceof HTMLSelectElement)) {
       return;
     }
     populateRecurringDurationOptions(mobileAmountRecurringMonths, mobileAmountRecurringMonths.value || "12");
     mobileAmountRecurringDuration = mobileAmountRecurringMonths.value || "12";
+  });
+}
+
+if (mobileAmountRecurringMonthsField) {
+  mobileAmountRecurringMonthsField.addEventListener("click", (event) => {
+    if (
+      !(mobileAmountRecurringMonths instanceof HTMLSelectElement)
+      || mobileAmountRecurringMonths.disabled
+      || event.target === mobileAmountRecurringMonths
+    ) {
+      return;
+    }
+    cancelMobileAmountInputFocusQueue();
+    if (typeof mobileAmountRecurringMonths.showPicker === "function") {
+      try {
+        mobileAmountRecurringMonths.showPicker();
+      } catch (_error) {
+        mobileAmountRecurringMonths.focus({ preventScroll: true });
+      }
+      return;
+    }
+    mobileAmountRecurringMonths.focus({ preventScroll: true });
+    mobileAmountRecurringMonths.click();
   });
 }
 

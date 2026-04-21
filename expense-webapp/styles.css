@@ -25303,6 +25303,24 @@ body .mobile-home-experience .mobile-expense-row[data-type="expense"] .mobile-it
   color: #111827 !important;
 }
 
+@media (max-width: 767px) {
+  body .mobile-amount-screen-footer {
+    left: 16px !important;
+    right: 16px !important;
+    padding: 0 !important;
+    width: auto !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+  }
+
+  body .mobile-amount-frame-next-btn {
+    display: flex !important;
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+  }
+}
+
 @media (min-width: 768px) {
   .initial-usage-state {
     width: 100%;
