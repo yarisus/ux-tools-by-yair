@@ -14103,7 +14103,7 @@ body.overflow-hidden .mobile-add-fab-wrap,
     display: flex !important;
     align-items: center !important;
     gap: 12px !important;
-    padding: 0 !important;
+    padding: 12px 0 0 !important;
     background: #ffffff !important;
   }
 
