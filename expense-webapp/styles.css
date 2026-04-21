@@ -14078,7 +14078,7 @@ body.overflow-hidden .mobile-add-fab-wrap,
     justify-content: flex-start !important;
     min-height: 0 !important;
     margin: 0 !important;
-    padding: 0 16px 12px !important;
+    padding: 0 16px calc(88px + env(safe-area-inset-bottom, 0px) + var(--mobile-amount-keyboard-lift, 0px)) !important;
     background: #ffffff !important;
     text-align: left !important;
     overflow-y: auto !important;
@@ -14103,7 +14103,7 @@ body.overflow-hidden .mobile-add-fab-wrap,
     display: flex !important;
     align-items: center !important;
     gap: 12px !important;
-    padding: calc(env(safe-area-inset-top, 0px) + 12px) 0 0 !important;
+    padding: 12px 0 0 !important;
     background: #ffffff !important;
   }
 
@@ -14140,11 +14140,11 @@ body.overflow-hidden .mobile-add-fab-wrap,
   }
 
   body .mobile-amount-frame-close-btn {
-    flex: 0 0 56px !important;
-    width: 56px !important;
-    min-width: 56px !important;
-    height: 56px !important;
-    min-height: 56px !important;
+    flex: 0 0 48px !important;
+    width: 48px !important;
+    min-width: 48px !important;
+    height: 48px !important;
+    min-height: 48px !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -14157,7 +14157,7 @@ body.overflow-hidden .mobile-add-fab-wrap,
   }
 
   body .mobile-amount-frame-close-btn .mobile-symbol {
-    font-size: 22px !important;
+    font-size: 20px !important;
     line-height: 1 !important;
   }
 
@@ -14435,13 +14435,14 @@ body.overflow-hidden .mobile-add-fab-wrap,
 
   body .mobile-amount-screen-footer {
     order: 2 !important;
-    flex-shrink: 0 !important;
+    position: fixed !important;
+    left: 16px !important;
+    right: 16px !important;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px) + var(--mobile-amount-keyboard-lift, 0px)) !important;
+    z-index: 3 !important;
     margin: 0 !important;
-    position: sticky !important;
-    bottom: 0 !important;
-    z-index: 2 !important;
-    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)) !important;
-    background: #ffffff !important;
+    padding: 0 !important;
+    background: transparent !important;
   }
 
   body .mobile-amount-frame-next-btn {
