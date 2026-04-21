@@ -846,12 +846,31 @@ if (mobileAmountDisplay) {
   });
 }
 
+if (mobileAmountScreenBody) {
+  mobileAmountScreenBody.addEventListener("pointerdown", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) {
+      return;
+    }
+    if (target.closest(".mobile-amount-frame-display")) {
+      return;
+    }
+    cancelMobileAmountInputFocusQueue();
+    blurMobileAmountInput();
+  });
+}
+
 if (window.visualViewport) {
   window.visualViewport.addEventListener("resize", syncMobileAmountKeyboardLift);
   window.visualViewport.addEventListener("scroll", syncMobileAmountKeyboardLift);
 }
 
 if (mobileAmountRecurring) {
+  mobileAmountRecurring.addEventListener("pointerdown", () => {
+    cancelMobileAmountInputFocusQueue();
+    blurMobileAmountInput();
+  });
+
   mobileAmountRecurring.addEventListener("change", () => {
     mobileAmountRecurringEnabled = Boolean(mobileAmountRecurring.checked);
     syncMobileAmountRecurringDurationState();
@@ -862,10 +881,12 @@ if (mobileAmountRecurringMonths) {
   mobileAmountRecurringMonths.addEventListener("pointerdown", (event) => {
     event.stopPropagation();
     cancelMobileAmountInputFocusQueue();
+    blurMobileAmountInput();
   });
 
   mobileAmountRecurringMonths.addEventListener("click", (event) => {
     event.stopPropagation();
+    event.preventDefault();
     cancelMobileAmountInputFocusQueue();
     if (!(mobileAmountRecurringMonths instanceof HTMLSelectElement) || mobileAmountRecurringMonths.disabled) {
       return;
@@ -900,6 +921,7 @@ if (mobileAmountRecurringMonthsField) {
       return;
     }
     cancelMobileAmountInputFocusQueue();
+    blurMobileAmountInput();
     if (typeof mobileAmountRecurringMonths.showPicker === "function") {
       try {
         mobileAmountRecurringMonths.showPicker();
@@ -3695,6 +3717,16 @@ function cancelMobileAmountInputFocusQueue() {
     window.clearTimeout(mobileAmountFocusTimer);
     mobileAmountFocusTimer = null;
   }
+}
+
+function blurMobileAmountInput() {
+  if (!(mobileAmountInput instanceof HTMLInputElement)) {
+    return;
+  }
+  if (document.activeElement !== mobileAmountInput) {
+    return;
+  }
+  mobileAmountInput.blur();
 }
 
 function syncMobileAmountEditingState() {

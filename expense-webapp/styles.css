@@ -25319,6 +25319,34 @@ body .mobile-home-experience .mobile-expense-row[data-type="expense"] .mobile-it
     max-width: none !important;
     box-sizing: border-box !important;
   }
+
+  body .mobile-amount-screen-body {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    padding: 0 16px calc(80px + env(safe-area-inset-bottom, 0px) + var(--mobile-amount-keyboard-lift, 0px)) !important;
+    text-align: left !important;
+    pointer-events: auto !important;
+  }
+
+  body .mobile-amount-frame-stage,
+  body .mobile-amount-frame-copy,
+  body .mobile-amount-frame-settings,
+  body .mobile-amount-frame-card,
+  body .mobile-amount-frame-select-wrap,
+  body .mobile-amount-frame-select {
+    width: 100% !important;
+    pointer-events: auto !important;
+  }
+
+  body .mobile-amount-frame-display {
+    width: auto !important;
+  }
+
+  body .mobile-amount-frame-select-icon {
+    pointer-events: none !important;
+  }
 }
 
 @media (min-width: 768px) {
