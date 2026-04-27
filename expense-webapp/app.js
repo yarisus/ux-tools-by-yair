@@ -3771,16 +3771,20 @@ function focusMobileAmountInput() {
     return;
   }
 
-  try {
-    mobileAmountInput.focus({ preventScroll: true });
-  } catch (_error) {
-    mobileAmountInput.focus();
-  }
+  const isAlreadyFocused = document.activeElement === mobileAmountInput;
 
-  try {
-    mobileAmountInput.click();
-  } catch (_error) {
-    // No-op: click only helps some mobile browsers surface the keyboard.
+  if (!isAlreadyFocused) {
+    try {
+      mobileAmountInput.focus({ preventScroll: true });
+    } catch (_error) {
+      mobileAmountInput.focus();
+    }
+
+    try {
+      mobileAmountInput.click();
+    } catch (_error) {
+      // No-op: click only helps some mobile browsers surface the keyboard.
+    }
   }
 
   const length = mobileAmountInput.value.length;
@@ -3801,10 +3805,6 @@ function queueMobileAmountInputFocus() {
   cancelMobileAmountInputFocusQueue();
   requestAnimationFrame(() => {
     focusMobileAmountInput();
-    mobileAmountFocusTimer = window.setTimeout(() => {
-      mobileAmountFocusTimer = null;
-      focusMobileAmountInput();
-    }, 120);
   });
 }
 
