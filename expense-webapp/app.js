@@ -853,7 +853,12 @@ if (mobileAmountScreenBody) {
     if (!(target instanceof HTMLElement)) {
       return;
     }
-    if (target.closest(".mobile-amount-frame-display")) {
+    if (
+      target.closest(".mobile-amount-frame-display")
+      || target.closest(".mobile-amount-frame-toolbar")
+      || target.closest(".mobile-amount-frame-settings")
+      || target.closest(".mobile-amount-screen-footer")
+    ) {
       return;
     }
     suppressMobileAmountInputFocus();
@@ -866,11 +871,12 @@ if (window.visualViewport) {
   window.visualViewport.addEventListener("scroll", syncMobileAmountKeyboardLift);
 }
 
+if (mobileAmountRecurringCard) {
+  mobileAmountRecurringCard.addEventListener("pointerdown", preserveMobileAmountInputFocus);
+}
+
 if (mobileAmountRecurring) {
-  mobileAmountRecurring.addEventListener("pointerdown", () => {
-    suppressMobileAmountInputFocus();
-    blurMobileAmountInput();
-  });
+  mobileAmountRecurring.addEventListener("pointerdown", preserveMobileAmountInputFocus);
 
   mobileAmountRecurring.addEventListener("change", () => {
     mobileAmountRecurringEnabled = Boolean(mobileAmountRecurring.checked);
