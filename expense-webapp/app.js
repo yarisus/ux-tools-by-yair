@@ -873,14 +873,24 @@ if (window.visualViewport) {
 
 if (mobileAmountRecurringCard) {
   mobileAmountRecurringCard.addEventListener("pointerdown", preserveMobileAmountInputFocus);
+  mobileAmountRecurringCard.addEventListener("click", (event) => {
+    if (!(mobileAmountRecurring instanceof HTMLInputElement)) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    mobileAmountRecurringEnabled = !mobileAmountRecurringEnabled;
+    syncMobileAmountRecurringDurationState();
+    syncMobileAmountEditingState();
+    syncMobileAmountKeyboardLift();
+  });
 }
 
 if (mobileAmountRecurring) {
   mobileAmountRecurring.addEventListener("pointerdown", preserveMobileAmountInputFocus);
-
-  mobileAmountRecurring.addEventListener("change", () => {
-    mobileAmountRecurringEnabled = Boolean(mobileAmountRecurring.checked);
-    syncMobileAmountRecurringDurationState();
+  mobileAmountRecurring.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
   });
 }
 
