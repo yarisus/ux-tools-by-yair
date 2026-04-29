@@ -1004,6 +1004,37 @@ if (mobileDetailNameInput) {
   });
 }
 
+if (mobileDetailCategory) {
+  mobileDetailCategory.addEventListener("pointerdown", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+  });
+
+  mobileDetailCategory.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!(mobileDetailCategory instanceof HTMLSelectElement)) {
+      return;
+    }
+    if (typeof mobileDetailCategory.showPicker === "function") {
+      try {
+        mobileDetailCategory.showPicker();
+        return;
+      } catch (_error) {
+        // Fall through to focus/click fallback.
+      }
+    }
+    mobileDetailCategory.focus({ preventScroll: true });
+    mobileDetailCategory.click();
+  });
+
+  mobileDetailCategory.addEventListener("change", () => {
+    window.setTimeout(() => {
+      focusMobileDetailNameInput();
+    }, 0);
+  });
+}
+
 if (mobileDetailSaveBtn) {
   mobileDetailSaveBtn.addEventListener("click", () => {
     saveMobileDetailScreen();
@@ -3781,8 +3812,9 @@ function populateMobileDetailCategories(movementType = "expense") {
 
   const normalizedType = normalizeMovementType(movementType);
   const categoryKeys = getCategoryKeysForType(normalizedType);
+  const fallbackCategory = normalizedType === "income" ? "otros_ingresos" : "otros";
   const selectedCategory = normalizeCategoryKeyForType(
-    mobileDetailCategory.value || getDefaultCategoryKeyForType(normalizedType),
+    mobileDetailCategory.value || fallbackCategory,
     normalizedType
   );
 
@@ -3795,7 +3827,7 @@ function populateMobileDetailCategories(movementType = "expense") {
 
   mobileDetailCategory.value = categoryKeys.includes(selectedCategory)
     ? selectedCategory
-    : getDefaultCategoryKeyForType(normalizedType);
+    : fallbackCategory;
 }
 
 function updateMobileDetailSaveButton() {
@@ -3889,7 +3921,7 @@ function syncMobileDetailKeyboardLift() {
   }
 
   const keyboardHeight = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
-  setMobileDetailKeyboardLift(keyboardHeight > 0 ? keyboardHeight + 12 : 0);
+  setMobileDetailKeyboardLift(keyboardHeight > 0 ? keyboardHeight : 0);
 }
 
 function focusMobileAmountInput() {
@@ -3942,16 +3974,20 @@ function focusMobileDetailNameInput() {
     return;
   }
 
-  try {
-    mobileDetailNameInput.focus({ preventScroll: true });
-  } catch (_error) {
-    mobileDetailNameInput.focus();
-  }
+  const isAlreadyFocused = document.activeElement === mobileDetailNameInput;
 
-  try {
-    mobileDetailNameInput.click();
-  } catch (_error) {
-    // No-op: click helps some mobile browsers surface the keyboard.
+  if (!isAlreadyFocused) {
+    try {
+      mobileDetailNameInput.focus({ preventScroll: true });
+    } catch (_error) {
+      mobileDetailNameInput.focus();
+    }
+
+    try {
+      mobileDetailNameInput.click();
+    } catch (_error) {
+      // No-op: click helps some mobile browsers surface the keyboard.
+    }
   }
 
   const length = mobileDetailNameInput.value.length;
@@ -4130,6 +4166,9 @@ function openMobileDetailScreen({ reset = true } = {}) {
   if (reset && mobileDetailNameInput instanceof HTMLInputElement) {
     mobileDetailNameInput.value = "";
   }
+  if (reset && mobileDetailCategory instanceof HTMLSelectElement) {
+    mobileDetailCategory.value = "";
+  }
   populateMobileDetailCategories(mobileAmountMode);
   updateMobileDetailSaveButton();
   setMobileDetailKeyboardLift(0);
@@ -4150,6 +4189,9 @@ function closeMobileDetailScreen({ immediate = false, reset = true } = {}) {
   if (reset) {
     if (mobileDetailNameInput instanceof HTMLInputElement) {
       mobileDetailNameInput.value = "";
+    }
+    if (mobileDetailCategory instanceof HTMLSelectElement) {
+      mobileDetailCategory.value = "";
     }
     populateMobileDetailCategories(mobileAmountMode);
   }

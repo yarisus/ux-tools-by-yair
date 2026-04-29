@@ -22909,6 +22909,7 @@ body.overflow-hidden .mobile-add-fab-wrap,
     flex-direction: column !important;
     background: #ffffff !important;
     box-sizing: border-box !important;
+    overflow: hidden !important;
   }
 
   body .mobile-detail-screen-head {
@@ -22936,8 +22937,8 @@ body.overflow-hidden .mobile-add-fab-wrap,
   body .mobile-detail-screen-body {
     flex: 1 1 auto !important;
     min-height: 0 !important;
-    padding: 40px 16px calc(84px + env(safe-area-inset-bottom, 0px) + var(--mobile-detail-keyboard-lift, 0px)) !important;
-    overflow: auto !important;
+    padding: 40px 16px 0 !important;
+    overflow: hidden !important;
     text-align: left !important;
     box-sizing: border-box !important;
   }
@@ -22961,6 +22962,11 @@ body.overflow-hidden .mobile-add-fab-wrap,
     gap: 8px !important;
   }
 
+  body .mobile-detail-screen-field > span:first-child {
+    text-transform: none !important;
+    letter-spacing: normal !important;
+  }
+
   body .mobile-detail-screen-field .field-control > input,
   body .mobile-detail-screen-field .field-control--select > .form-select {
     width: 100% !important;
@@ -22981,12 +22987,17 @@ body.overflow-hidden .mobile-add-fab-wrap,
   }
 
   body .mobile-detail-screen-footer {
-    position: relative !important;
-    flex-shrink: 0 !important;
-    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)) !important;
-    background: #ffffff !important;
+    position: fixed !important;
+    left: 16px !important;
+    right: 16px !important;
+    bottom: calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+    width: auto !important;
+    max-width: none !important;
+    padding: 0 !important;
+    background: transparent !important;
     transform: translateY(calc(-1 * var(--mobile-detail-keyboard-lift, 0px))) !important;
     transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+    z-index: 2 !important;
   }
 
   body .mobile-amount-keypad {
