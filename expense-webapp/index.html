@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="./assets/fonts/fonts.css?v=20260313-02" />
     <link rel="stylesheet" href="./design-system/tokens.css?v=20260403-03" />
     <link rel="stylesheet" href="tailwind.generated.css?v=20260403-03" />
-    <link rel="stylesheet" href="styles.css?v=20260403-03" />
+    <link rel="stylesheet" href="styles.css?v=20260428-03" />
     <link rel="stylesheet" href="./design-system/app-mobile.css?v=20260403-03" />
   </head>
   <body class="min-h-screen bg-[#f6f8ff] text-slate-900 antialiased">
@@ -1569,6 +1569,68 @@
       </section>
     </div>
 
+    <div id="mobileDetailScreen" class="mobile-detail-screen is-hidden md:hidden" aria-hidden="true">
+      <section class="mobile-detail-screen-card" role="dialog" aria-modal="true" aria-labelledby="mobileDetailScreenTitle">
+        <header class="mobile-detail-screen-head">
+          <div class="mobile-detail-screen-toolbar">
+            <button
+              id="backMobileDetailScreenBtn"
+              class="icon-btn mobile-detail-screen-icon-btn"
+              type="button"
+              aria-label="Volver al monto"
+            >
+              <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">arrow_back</span>
+            </button>
+            <button
+              id="closeMobileDetailScreenBtn"
+              class="icon-btn mobile-detail-screen-icon-btn"
+              type="button"
+              aria-label="Cerrar carga de movimiento"
+            >
+              <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">close</span>
+            </button>
+          </div>
+        </header>
+
+        <div class="mobile-detail-screen-body">
+          <div class="mobile-detail-screen-copy">
+            <h2 id="mobileDetailScreenTitle" class="mobile-amount-frame-title">Ingresar detalle</h2>
+          </div>
+
+          <div class="mobile-detail-screen-fields">
+            <label class="mobile-quick-entry-field mobile-detail-screen-field">
+              <span>Detalle</span>
+              <span class="field-control">
+                <input
+                  id="mobileDetailNameInput"
+                  type="text"
+                  autocomplete="off"
+                  maxlength="60"
+                  placeholder="Ej: Café"
+                  enterkeyhint="done"
+                />
+              </span>
+            </label>
+
+            <label class="mobile-quick-entry-field mobile-detail-screen-field">
+              <span>Categoria</span>
+              <span class="field-control field-control--select">
+                <select id="mobileDetailCategory" class="form-select"></select>
+                <span class="field-control-icon" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">expand_more</span></span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <footer class="mobile-detail-screen-footer">
+          <button id="mobileDetailSaveBtn" class="mobile-amount-frame-next-btn" type="button">
+            <span>Cargar gasto</span>
+            <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">arrow_forward</span>
+          </button>
+        </footer>
+      </section>
+    </div>
+
     <div id="mobileFilterSheet" class="mobile-filter-sheet is-hidden md:hidden" aria-hidden="true">
       <div class="mobile-filter-sheet-backdrop" data-close-mobile-filter="true"></div>
       <section class="mobile-filter-sheet-card" role="dialog" aria-modal="true" aria-labelledby="mobileFilterSheetTitle">
@@ -1633,7 +1695,7 @@
       </section>
     </div>
     <div id="overlayInteractionBlocker" class="overlay-interaction-blocker is-hidden" aria-hidden="true"></div>
-    <script src="app.js?v=20260403-03"></script>
+    <script src="app.js?v=20260428-03"></script>
   </body>
 </html>
 
