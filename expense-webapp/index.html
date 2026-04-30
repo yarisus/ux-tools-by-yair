@@ -1690,6 +1690,89 @@
       </section>
     </div>
 
+    <div id="mobileExpenseEditScreen" class="mobile-expense-edit-screen is-hidden md:hidden" aria-hidden="true">
+      <section class="mobile-expense-edit-card" role="dialog" aria-modal="true" aria-labelledby="mobileExpenseEditTitle">
+        <header class="mobile-expense-edit-head">
+          <div class="mobile-expense-edit-toolbar">
+            <button
+              id="backMobileExpenseEditBtn"
+              class="mobile-detail-screen-icon-btn mobile-expense-edit-icon-btn"
+              type="button"
+              aria-label="Volver al detalle"
+            >
+              <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">arrow_back</span>
+            </button>
+            <button
+              id="closeMobileExpenseEditBtn"
+              class="mobile-detail-screen-icon-btn mobile-expense-edit-icon-btn"
+              type="button"
+              aria-label="Cerrar edición"
+            >
+              <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">close</span>
+            </button>
+          </div>
+          <h2 id="mobileExpenseEditTitle" class="mobile-expense-edit-title font-space">Editar Gasto</h2>
+        </header>
+
+        <div class="mobile-expense-edit-body">
+          <label class="mobile-quick-entry-field mobile-expense-edit-field">
+            <span>Monto</span>
+            <span class="field-control">
+              <input
+                id="mobileExpenseEditAmountInput"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                placeholder="-$0"
+              />
+            </span>
+          </label>
+
+          <label class="mobile-quick-entry-field mobile-expense-edit-field">
+            <span>Detalle</span>
+            <span class="field-control">
+              <input
+                id="mobileExpenseEditNameInput"
+                type="text"
+                autocomplete="off"
+                maxlength="60"
+                placeholder="Detalle"
+              />
+            </span>
+          </label>
+
+          <label class="mobile-quick-entry-field mobile-expense-edit-field">
+            <span>Categoría</span>
+            <span class="field-control field-control--select">
+              <select id="mobileExpenseEditCategory" class="form-select"></select>
+              <span class="field-control-icon" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">expand_more</span></span>
+            </span>
+          </label>
+
+          <label class="mobile-quick-entry-field mobile-expense-edit-field">
+            <span>Fecha</span>
+            <span class="field-control field-control--text-icon">
+              <input
+                id="mobileExpenseEditDateInput"
+                type="date"
+                autocomplete="off"
+              />
+              <span class="field-control-icon" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">calendar_month</span></span>
+            </span>
+          </label>
+        </div>
+
+        <footer class="mobile-expense-edit-footer">
+          <button id="mobileExpenseEditCancelBtn" class="ghost-btn inline-flex w-full items-center justify-center rounded-xl px-4 py-3 text-base font-semibold" type="button">
+            Cancelar
+          </button>
+          <button id="mobileExpenseEditSaveBtn" class="primary-btn inline-flex w-full items-center justify-center rounded-xl px-4 py-3 text-base font-semibold" type="button">
+            Guardar
+          </button>
+        </footer>
+      </section>
+    </div>
+
     <div id="mobileFilterSheet" class="mobile-filter-sheet is-hidden md:hidden" aria-hidden="true">
       <div class="mobile-filter-sheet-backdrop" data-close-mobile-filter="true"></div>
       <section class="mobile-filter-sheet-card" role="dialog" aria-modal="true" aria-labelledby="mobileFilterSheetTitle">

@@ -377,6 +377,15 @@ const closeMobileDetailScreenBtn = document.getElementById("closeMobileDetailScr
 const mobileDetailNameInput = document.getElementById("mobileDetailNameInput");
 const mobileDetailCategory = document.getElementById("mobileDetailCategory");
 const mobileDetailSaveBtn = document.getElementById("mobileDetailSaveBtn");
+const mobileExpenseEditScreen = document.getElementById("mobileExpenseEditScreen");
+const backMobileExpenseEditBtn = document.getElementById("backMobileExpenseEditBtn");
+const closeMobileExpenseEditBtn = document.getElementById("closeMobileExpenseEditBtn");
+const mobileExpenseEditAmountInput = document.getElementById("mobileExpenseEditAmountInput");
+const mobileExpenseEditNameInput = document.getElementById("mobileExpenseEditNameInput");
+const mobileExpenseEditCategory = document.getElementById("mobileExpenseEditCategory");
+const mobileExpenseEditDateInput = document.getElementById("mobileExpenseEditDateInput");
+const mobileExpenseEditCancelBtn = document.getElementById("mobileExpenseEditCancelBtn");
+const mobileExpenseEditSaveBtn = document.getElementById("mobileExpenseEditSaveBtn");
 const mobileQuickEntrySheet = document.getElementById("mobileQuickEntrySheet");
 const backMobileQuickEntryBtn = document.getElementById("backMobileQuickEntryBtn");
 const closeMobileQuickEntryBtn = document.getElementById("closeMobileQuickEntryBtn");
@@ -469,6 +478,7 @@ let metricFitTimeoutId = null;
 let mobileQuickAddOpen = false;
 let mobileAmountScreenOpen = false;
 let mobileDetailScreenOpen = false;
+let mobileExpenseEditOpen = false;
 let mobileQuickEntryOpen = false;
 let mobileMovementDetailOpen = false;
 let mobileFilterSheetOpen = false;
@@ -478,6 +488,7 @@ let ignoreOverlayBackPopstate = false;
 let mobileQuickEntryAmount = 0;
 let mobileMovementDetailItem = null;
 let mobileMovementDetailTrigger = null;
+let mobileExpenseEditItem = null;
 let expenseEditScope = "thisMonth";
 let mobileQuickEntryScope = "thisMonth";
 let mobileAmountMode = "expense";
@@ -1053,6 +1064,46 @@ if (mobileDetailCategory) {
 if (mobileDetailSaveBtn) {
   mobileDetailSaveBtn.addEventListener("click", () => {
     saveMobileDetailScreen();
+  });
+}
+
+if (backMobileExpenseEditBtn) {
+  backMobileExpenseEditBtn.addEventListener("click", () => {
+    closeMobileExpenseEditScreen({ reopenDetail: true });
+  });
+}
+
+if (closeMobileExpenseEditBtn) {
+  closeMobileExpenseEditBtn.addEventListener("click", () => {
+    closeMobileExpenseEditScreen({ reopenDetail: true });
+  });
+}
+
+if (mobileExpenseEditCancelBtn) {
+  mobileExpenseEditCancelBtn.addEventListener("click", () => {
+    closeMobileExpenseEditScreen({ reopenDetail: true });
+  });
+}
+
+if (mobileExpenseEditSaveBtn) {
+  mobileExpenseEditSaveBtn.addEventListener("click", () => {
+    saveMobileExpenseEditScreen();
+  });
+}
+
+if (mobileExpenseEditAmountInput) {
+  mobileExpenseEditAmountInput.addEventListener("input", () => {
+    const parsed = parseCurrencyInput(mobileExpenseEditAmountInput.value || "");
+    mobileExpenseEditAmountInput.value = parsed > 0 ? formatPuntualExpenseEditAmount(parsed) : "";
+  });
+}
+
+if (mobileExpenseEditNameInput) {
+  mobileExpenseEditNameInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      saveMobileExpenseEditScreen();
+    }
   });
 }
 
@@ -2231,6 +2282,8 @@ document.addEventListener("keydown", (event) => {
   closeProfileDropdown();
   closeMobileQuickAddSheet();
   closeMobileAmountScreen();
+  closeMobileExpenseEditScreen({ reopenDetail: false });
+  closeMobileMovementDetailScreen({ restoreFocus: false });
   closeMobileFilterSheet();
   hideDownloadMenu();
   hideCategoryFilterMenu();
@@ -4133,6 +4186,7 @@ function openMobileQuickAddSheet() {
   if (!mobileQuickAddSheet) {
     return;
   }
+  closeMobileExpenseEditScreen({ reopenDetail: false });
   closeMobileMovementDetailScreen({ restoreFocus: false });
   closeMobileDetailScreen({ immediate: true });
   closeMobileAmountScreen({ immediate: true });
@@ -4162,6 +4216,7 @@ function openMobileAmountScreen(movementType = "expense", { reset = true } = {})
     clearTimeout(mobileAmountScreenTransitionTimer);
     mobileAmountScreenTransitionTimer = null;
   }
+  closeMobileExpenseEditScreen({ reopenDetail: false });
   closeMobileMovementDetailScreen({ restoreFocus: false });
   closeMobileDetailScreen({ immediate: true, reset });
   closeMobileQuickAddSheet();
@@ -4232,6 +4287,7 @@ function openMobileDetailScreen({ reset = true } = {}) {
     return;
   }
 
+  closeMobileExpenseEditScreen({ reopenDetail: false });
   closeMobileMovementDetailScreen({ restoreFocus: false });
   closeMobileQuickAddSheet();
   closeMobileQuickEntrySheet();
@@ -4283,6 +4339,146 @@ function setMovementDetailValue(element, value) {
   const nextValue = String(value || "").trim() || "-";
   element.textContent = nextValue;
   element.setAttribute("title", nextValue);
+}
+
+function isPuntualExpenseItem(item) {
+  return Boolean(item)
+    && normalizeMovementType(item.type) === "expense"
+    && !Boolean(item.isRecurring)
+    && !Boolean(item.isProjectedRecurring);
+}
+
+function formatPuntualExpenseEditAmount(value) {
+  return `-${money(Math.max(0, Number(value || 0))).replace("$ ", "$")}`;
+}
+
+function populateMobileExpenseEditCategories(selectedCategory = "") {
+  if (!(mobileExpenseEditCategory instanceof HTMLSelectElement)) {
+    return;
+  }
+
+  const selectedValue = normalizeCategoryKeyForType(selectedCategory || getDefaultCategoryKeyForType("expense"), "expense");
+  mobileExpenseEditCategory.replaceChildren();
+
+  getCategoryKeysForType("expense").forEach((key) => {
+    const option = document.createElement("option");
+    option.value = key;
+    option.textContent = getCategoryConfig(key).label;
+    mobileExpenseEditCategory.appendChild(option);
+  });
+
+  mobileExpenseEditCategory.value = selectedValue;
+}
+
+function resetMobileExpenseEditState() {
+  mobileExpenseEditItem = null;
+  editingItemId = null;
+  editingProjectedItem = null;
+  pendingMovementType = "expense";
+
+  if (mobileExpenseEditAmountInput instanceof HTMLInputElement) {
+    mobileExpenseEditAmountInput.value = "";
+  }
+  if (mobileExpenseEditNameInput instanceof HTMLInputElement) {
+    mobileExpenseEditNameInput.value = "";
+  }
+  if (mobileExpenseEditDateInput instanceof HTMLInputElement) {
+    mobileExpenseEditDateInput.value = "";
+  }
+  populateMobileExpenseEditCategories(getDefaultCategoryKeyForType("expense"));
+}
+
+function openMobileExpenseEditScreen(item) {
+  if (!mobileExpenseEditScreen || !isPuntualExpenseItem(item)) {
+    openMobileQuickEntrySheet(item?.type || "expense", item?.amount || 0, item || null);
+    return;
+  }
+
+  mobileExpenseEditItem = item;
+  editingItemId = item.id;
+  editingProjectedItem = null;
+  pendingMovementType = "expense";
+
+  if (mobileExpenseEditAmountInput instanceof HTMLInputElement) {
+    mobileExpenseEditAmountInput.value = formatPuntualExpenseEditAmount(item.amount);
+  }
+  if (mobileExpenseEditNameInput instanceof HTMLInputElement) {
+    mobileExpenseEditNameInput.value = item.name || "";
+  }
+  if (mobileExpenseEditDateInput instanceof HTMLInputElement) {
+    mobileExpenseEditDateInput.value = normalizeItemDate(item.date);
+  }
+  populateMobileExpenseEditCategories(item.category);
+
+  closeMobileMovementDetailScreen({ restoreFocus: false, preserveItem: true });
+  closeProfileDropdown();
+  closeMobileQuickAddSheet();
+  closeMobileAmountScreen({ immediate: true, preserveState: true });
+  closeMobileDetailScreen({ immediate: true });
+  closeMobileExpenseEditScreen({ reopenDetail: false });
+  closeMobileQuickEntrySheet();
+  closeMobileFilterSheet();
+
+  mobileExpenseEditOpen = true;
+  mobileExpenseEditScreen.classList.remove("is-hidden");
+  mobileExpenseEditScreen.setAttribute("aria-hidden", "false");
+  updateOverlayScrollLock();
+}
+
+function closeMobileExpenseEditScreen({ reopenDetail = true } = {}) {
+  if (!mobileExpenseEditScreen) {
+    return;
+  }
+
+  const item = mobileExpenseEditItem;
+  mobileExpenseEditOpen = false;
+  mobileExpenseEditScreen.classList.add("is-hidden");
+  mobileExpenseEditScreen.setAttribute("aria-hidden", "true");
+  resetMobileExpenseEditState();
+  updateOverlayScrollLock();
+
+  if (reopenDetail && isPuntualExpenseItem(item)) {
+    openMobileMovementDetailScreen(item, mobileMovementDetailTrigger);
+  }
+}
+
+function saveMobileExpenseEditScreen() {
+  if (
+    !(mobileExpenseEditAmountInput instanceof HTMLInputElement)
+    || !(mobileExpenseEditNameInput instanceof HTMLInputElement)
+    || !(mobileExpenseEditCategory instanceof HTMLSelectElement)
+    || !(mobileExpenseEditDateInput instanceof HTMLInputElement)
+    || !mobileExpenseEditItem
+  ) {
+    return;
+  }
+
+  const editedItemId = editingItemId;
+  const didSave = saveMovementRecord({
+    movementType: "expense",
+    rawMovementDate: mobileExpenseEditDateInput.value,
+    category: mobileExpenseEditCategory.value,
+    name: mobileExpenseEditNameInput.value,
+    amount: parseCurrencyInput(mobileExpenseEditAmountInput.value || ""),
+    isRecurring: false,
+    recurringMonths: null,
+    editScope: "thisMonth"
+  });
+
+  if (!didSave) {
+    return;
+  }
+
+  const updatedItem = state.items.find((entry) => entry.id === editedItemId) || null;
+  mobileExpenseEditOpen = false;
+  mobileExpenseEditScreen.classList.add("is-hidden");
+  mobileExpenseEditScreen.setAttribute("aria-hidden", "true");
+  resetMobileExpenseEditState();
+  updateOverlayScrollLock();
+
+  if (isPuntualExpenseItem(updatedItem)) {
+    openMobileMovementDetailScreen(updatedItem, mobileMovementDetailTrigger);
+  }
 }
 
 function renderMobileMovementDetailScreen(item = mobileMovementDetailItem) {
@@ -4401,9 +4597,7 @@ function openEditFlowFromMobileMovementDetail() {
     return;
   }
 
-  const item = mobileMovementDetailItem;
-  closeMobileMovementDetailScreen({ restoreFocus: false });
-  openMobileQuickEntrySheet(item.type, item.amount, item);
+  openMobileExpenseEditScreen(mobileMovementDetailItem);
 }
 
 function openDeleteFlowFromMobileMovementDetail() {
@@ -4657,6 +4851,7 @@ function openMobileQuickEntrySheet(movementType = "expense", amount = 0, item = 
     backMobileQuickEntryBtn.classList.add("is-hidden");
   }
 
+  closeMobileExpenseEditScreen({ reopenDetail: false });
   closeMobileMovementDetailScreen({ restoreFocus: false });
   closeMobileDetailScreen({ immediate: true });
   closeMobileAmountScreen({ immediate: true });
@@ -5117,6 +5312,7 @@ function openMobileFilterSheet() {
   if (!mobileFilterSheet) {
     return;
   }
+  closeMobileExpenseEditScreen({ reopenDetail: false });
   closeMobileMovementDetailScreen({ restoreFocus: false });
   closeProfileDropdown();
   closeMobileQuickEntrySheet();
@@ -6805,6 +7001,7 @@ function hasOpenOverlayState() {
     || mobileQuickAddOpen
     || mobileAmountScreenOpen
     || mobileDetailScreenOpen
+    || mobileExpenseEditOpen
     || mobileQuickEntryOpen
     || mobileMovementDetailOpen
     || mobileFilterSheetOpen
@@ -6814,6 +7011,11 @@ function hasOpenOverlayState() {
 function closeActiveOverlayState() {
   if (mobileDetailScreenOpen) {
     closeMobileDetailScreen();
+    return true;
+  }
+
+  if (mobileExpenseEditOpen) {
+    closeMobileExpenseEditScreen({ reopenDetail: true });
     return true;
   }
 
@@ -9591,6 +9793,24 @@ if (previewMode === "month-model") {
       });
       if (previewItem) {
         openMobileMovementDetailScreen(previewItem);
+      }
+    });
+  }
+  if (previewMode === "mobile-expense-edit") {
+    requestAnimationFrame(() => {
+      const previewItem = getVisibleMonthExpenseItems(state.activeMonth).find((item) => !item?.isRecurring) || sanitizeItem({
+        id: "preview-edit-item",
+        type: "expense",
+        date: getDefaultItemDateForMonth(state.activeMonth),
+        category: "compras",
+        name: "Campera",
+        amount: 155000,
+        isRecurring: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+      if (previewItem) {
+        openMobileExpenseEditScreen(previewItem);
       }
     });
   }
