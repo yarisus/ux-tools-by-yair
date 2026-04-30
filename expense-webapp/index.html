@@ -1581,65 +1581,49 @@
             >
               <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">arrow_back</span>
             </button>
-            <div class="mobile-movement-detail-toolbar-slot" aria-hidden="true"></div>
+            <button
+              id="closeMobileMovementDetailBtn"
+              class="mobile-detail-screen-icon-btn mobile-movement-detail-icon-btn"
+              type="button"
+              aria-label="Cerrar detalle"
+            >
+              <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">close</span>
+            </button>
           </div>
-          <h2 id="mobileMovementDetailTitle" class="mobile-movement-detail-title font-space">Detalle del gasto</h2>
+          <h2 id="mobileMovementDetailTitle" class="mobile-movement-detail-title font-space">Detalle de Gasto</h2>
         </header>
 
         <div class="mobile-movement-detail-body">
-          <section class="mobile-movement-detail-hero" aria-labelledby="mobileMovementDetailTypePill">
-            <div class="mobile-movement-detail-hero-top">
-              <span id="mobileMovementDetailTypePill" class="mobile-quick-entry-type-pill">Gasto</span>
+          <section class="mobile-movement-detail-hero" aria-labelledby="mobileMovementDetailAmount">
+            <div class="mobile-movement-detail-hero-content">
               <span class="mobile-movement-detail-hero-icon" aria-hidden="true">
-                <span id="mobileMovementDetailIcon" class="material-symbols-rounded mobile-symbol">receipt_long</span>
+                <span id="mobileMovementDetailIcon" class="material-symbols-rounded mobile-symbol">shopping_cart</span>
               </span>
+              <div class="mobile-movement-detail-hero-copy">
+                <strong id="mobileMovementDetailAmount" class="mobile-movement-detail-amount font-space">-0</strong>
+                <span id="mobileMovementDetailTimestamp" class="mobile-movement-detail-timestamp">00:00 - 1 Enero 2026</span>
+              </div>
             </div>
-            <strong id="mobileMovementDetailAmount" class="mobile-movement-detail-amount font-space">$0</strong>
-            <span id="mobileMovementDetailCategoryTag" class="category-chip mobile-movement-detail-category-tag">Otros</span>
           </section>
 
           <dl class="mobile-movement-detail-info-list">
             <div class="mobile-movement-detail-info-row">
-              <dt>Categoría</dt>
-              <dd id="mobileMovementDetailCategoryValue">Otros</dd>
-            </div>
-            <div class="mobile-movement-detail-info-row">
-              <dt>Descripción</dt>
+              <dt>Detalle</dt>
               <dd id="mobileMovementDetailDescriptionValue">-</dd>
             </div>
             <div class="mobile-movement-detail-info-row">
-              <dt>Fecha</dt>
-              <dd id="mobileMovementDetailDateValue">-</dd>
-            </div>
-            <div class="mobile-movement-detail-info-row">
-              <dt>Hora</dt>
-              <dd id="mobileMovementDetailTimeValue">-</dd>
-            </div>
-            <div class="mobile-movement-detail-info-row">
-              <dt>Repetición</dt>
-              <dd id="mobileMovementDetailRecurringValue">No se repite</dd>
-            </div>
-            <div class="mobile-movement-detail-info-row">
-              <dt>Duración</dt>
-              <dd id="mobileMovementDetailDurationValue">No aplica</dd>
-            </div>
-            <div class="mobile-movement-detail-info-row">
-              <dt>Creado el</dt>
-              <dd id="mobileMovementDetailCreatedValue">-</dd>
-            </div>
-            <div class="mobile-movement-detail-info-row">
-              <dt>Última modificación</dt>
-              <dd id="mobileMovementDetailUpdatedValue">-</dd>
+              <dt>Categoría</dt>
+              <dd id="mobileMovementDetailCategoryValue">Otros</dd>
             </div>
           </dl>
         </div>
 
         <footer class="mobile-movement-detail-footer">
-          <button id="mobileMovementDetailEditBtn" class="primary-btn inline-flex w-full items-center justify-center rounded-xl px-4 py-3 text-base font-semibold" type="button">
-            Editar gasto
+          <button id="mobileMovementDetailEditBtn" class="ghost-btn inline-flex w-full items-center justify-center rounded-xl px-4 py-3 text-base font-semibold" type="button">
+            Editar
           </button>
-          <button id="mobileMovementDetailDeleteBtn" class="ghost-btn inline-flex w-full items-center justify-center rounded-xl px-4 py-3 text-base font-semibold" type="button">
-            Eliminar gasto
+          <button id="mobileMovementDetailDeleteBtn" class="primary-btn inline-flex w-full items-center justify-center rounded-xl px-4 py-3 text-base font-semibold" type="button">
+            Eliminar
           </button>
         </footer>
       </section>

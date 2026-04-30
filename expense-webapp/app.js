@@ -398,21 +398,15 @@ const mobileQuickEntrySaveBtn = document.getElementById("mobileQuickEntrySaveBtn
 const mobileQuickEntryDeleteBtn = document.getElementById("mobileQuickEntryDeleteBtn");
 const mobileMovementDetailScreen = document.getElementById("mobileMovementDetailScreen");
 const backMobileMovementDetailBtn = document.getElementById("backMobileMovementDetailBtn");
+const closeMobileMovementDetailBtn = document.getElementById("closeMobileMovementDetailBtn");
 const mobileMovementDetailTitle = document.getElementById("mobileMovementDetailTitle");
-const mobileMovementDetailTypePill = document.getElementById("mobileMovementDetailTypePill");
 const mobileMovementDetailIcon = document.getElementById("mobileMovementDetailIcon");
 const mobileMovementDetailAmount = document.getElementById("mobileMovementDetailAmount");
-const mobileMovementDetailCategoryTag = document.getElementById("mobileMovementDetailCategoryTag");
+const mobileMovementDetailTimestamp = document.getElementById("mobileMovementDetailTimestamp");
 const mobileMovementDetailHeroIcon = mobileMovementDetailScreen?.querySelector(".mobile-movement-detail-hero-icon") || null;
 const mobileMovementDetailBody = mobileMovementDetailScreen?.querySelector(".mobile-movement-detail-body") || null;
 const mobileMovementDetailCategoryValue = document.getElementById("mobileMovementDetailCategoryValue");
 const mobileMovementDetailDescriptionValue = document.getElementById("mobileMovementDetailDescriptionValue");
-const mobileMovementDetailDateValue = document.getElementById("mobileMovementDetailDateValue");
-const mobileMovementDetailTimeValue = document.getElementById("mobileMovementDetailTimeValue");
-const mobileMovementDetailRecurringValue = document.getElementById("mobileMovementDetailRecurringValue");
-const mobileMovementDetailDurationValue = document.getElementById("mobileMovementDetailDurationValue");
-const mobileMovementDetailCreatedValue = document.getElementById("mobileMovementDetailCreatedValue");
-const mobileMovementDetailUpdatedValue = document.getElementById("mobileMovementDetailUpdatedValue");
 const mobileMovementDetailEditBtn = document.getElementById("mobileMovementDetailEditBtn");
 const mobileMovementDetailDeleteBtn = document.getElementById("mobileMovementDetailDeleteBtn");
 const mobileFilterSheet = document.getElementById("mobileFilterSheet");
@@ -1064,6 +1058,12 @@ if (mobileDetailSaveBtn) {
 
 if (backMobileMovementDetailBtn) {
   backMobileMovementDetailBtn.addEventListener("click", () => {
+    closeMobileMovementDetailScreen();
+  });
+}
+
+if (closeMobileMovementDetailBtn) {
+  closeMobileMovementDetailBtn.addEventListener("click", () => {
     closeMobileMovementDetailScreen();
   });
 }
@@ -2935,6 +2935,26 @@ function formatItemDateTime(rawValue, fallbackDate = "") {
   return `${datePart} · ${timePart}`;
 }
 
+function formatItemLongDate(rawDate) {
+  const normalized = normalizeItemDate(rawDate);
+  const parsed = new Date(`${normalized}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) {
+    return normalized;
+  }
+
+  const parts = new Intl.DateTimeFormat("es-AR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  }).formatToParts(parsed);
+
+  const day = parts.find((part) => part.type === "day")?.value || "";
+  const monthRaw = parts.find((part) => part.type === "month")?.value || "";
+  const year = parts.find((part) => part.type === "year")?.value || "";
+  const month = monthRaw ? `${monthRaw.charAt(0).toUpperCase()}${monthRaw.slice(1)}` : "";
+  return [day, month, year].filter(Boolean).join(" ");
+}
+
 function getCategoryConfig(categoryKey) {
   const key = normalizeCategoryKey(categoryKey);
   return CATEGORY_CONFIG[key] || CATEGORY_CONFIG[FALLBACK_CATEGORY_KEY];
@@ -4255,28 +4275,6 @@ function closeMobileDetailScreen({ immediate = false, reset = true } = {}) {
   updateOverlayScrollLock();
 }
 
-function getMovementDetailNoun(movementType = "expense") {
-  return normalizeMovementType(movementType) === "income" ? "ingreso" : "gasto";
-}
-
-function getMovementDetailRecurringLabel(item) {
-  return item?.isRecurring ? "Mensual" : "No se repite";
-}
-
-function getMovementDetailDurationLabel(item) {
-  if (!item?.isRecurring) {
-    return "No aplica";
-  }
-
-  const duration = getRecurringDurationSelectionForItem(item, getMonthKeyFromItem(item));
-  if (duration === "always") {
-    return "Hasta cancelarlo";
-  }
-
-  const months = clampRecurringMonths(duration, { min: 1, fallback: 1 });
-  return months === 1 ? "1 mes" : `${months} meses`;
-}
-
 function setMovementDetailValue(element, value) {
   if (!(element instanceof HTMLElement)) {
     return;
@@ -4293,19 +4291,17 @@ function renderMobileMovementDetailScreen(item = mobileMovementDetailItem) {
   }
 
   const movementType = normalizeMovementType(item.type);
-  const movementNoun = getMovementDetailNoun(movementType);
   const categoryKey = normalizeCategoryKeyForType(item.category, movementType);
   const categoryConfig = getCategoryConfig(categoryKey);
-  const createdAtLabel = formatItemDateTime(item.createdAt, item.date);
-  const updatedAtLabel = formatItemDateTime(item.updatedAt || item.createdAt, item.date);
+  const timeLabel = formatItemCreatedTime(item.createdAt, item.date) || "--:--";
+  const dateLabel = formatItemLongDate(item.date);
+  const amountValue = Math.max(0, Number(item.amount || 0));
+  const signedAmountLabel = movementType === "income"
+    ? `+${formatAmountNumber(amountValue, { withSymbol: false })}`
+    : `-${formatAmountNumber(amountValue, { withSymbol: false })}`;
 
   if (mobileMovementDetailTitle) {
-    mobileMovementDetailTitle.textContent = `Detalle del ${movementNoun}`;
-  }
-
-  if (mobileMovementDetailTypePill) {
-    mobileMovementDetailTypePill.textContent = movementType === "income" ? "INGRESO" : "GASTO";
-    mobileMovementDetailTypePill.dataset.type = movementType;
+    mobileMovementDetailTitle.textContent = "Detalle de Gasto";
   }
 
   if (mobileMovementDetailIcon) {
@@ -4318,37 +4314,35 @@ function renderMobileMovementDetailScreen(item = mobileMovementDetailItem) {
   }
 
   if (mobileMovementDetailAmount) {
-    const amountLabel = money(Math.max(0, Number(item.amount || 0))).replace("$ ", "$");
-    mobileMovementDetailAmount.textContent = amountLabel;
-    mobileMovementDetailAmount.setAttribute("title", amountLabel);
+    mobileMovementDetailAmount.textContent = signedAmountLabel;
+    mobileMovementDetailAmount.setAttribute("title", signedAmountLabel);
   }
 
-  if (mobileMovementDetailCategoryTag) {
-    mobileMovementDetailCategoryTag.textContent = categoryConfig.label;
-    mobileMovementDetailCategoryTag.dataset.category = categoryKey;
-    styleCategoryChip(mobileMovementDetailCategoryTag, categoryKey);
+  if (mobileMovementDetailTimestamp) {
+    const timestampLabel = `${timeLabel} - ${dateLabel}`;
+    mobileMovementDetailTimestamp.textContent = timestampLabel;
+    mobileMovementDetailTimestamp.setAttribute("title", timestampLabel);
   }
 
-  setMovementDetailValue(mobileMovementDetailCategoryValue, categoryConfig.label);
   setMovementDetailValue(mobileMovementDetailDescriptionValue, item.name);
-  setMovementDetailValue(mobileMovementDetailDateValue, formatItemDate(item.date));
-  setMovementDetailValue(mobileMovementDetailTimeValue, formatItemCreatedTime(item.createdAt, item.date));
-  setMovementDetailValue(mobileMovementDetailRecurringValue, getMovementDetailRecurringLabel(item));
-  setMovementDetailValue(mobileMovementDetailDurationValue, getMovementDetailDurationLabel(item));
-  setMovementDetailValue(mobileMovementDetailCreatedValue, createdAtLabel);
-  setMovementDetailValue(mobileMovementDetailUpdatedValue, updatedAtLabel);
+  setMovementDetailValue(mobileMovementDetailCategoryValue, categoryConfig.label);
 
   if (mobileMovementDetailEditBtn) {
-    mobileMovementDetailEditBtn.textContent = `Editar ${movementNoun}`;
+    mobileMovementDetailEditBtn.textContent = "Editar";
   }
 
   if (mobileMovementDetailDeleteBtn) {
-    mobileMovementDetailDeleteBtn.textContent = `Eliminar ${movementNoun}`;
+    mobileMovementDetailDeleteBtn.textContent = "Eliminar";
   }
 }
 
 function openMobileMovementDetailScreen(item, trigger = null) {
   if (!mobileMovementDetailScreen || !item) {
+    return;
+  }
+
+  if (normalizeMovementType(item.type) !== "expense" || Boolean(item.isRecurring)) {
+    openMobileQuickEntrySheet(item.type, item.amount, item);
     return;
   }
 
@@ -9584,14 +9578,14 @@ if (previewMode === "month-model") {
   }
   if (previewMode === "mobile-movement-detail") {
     requestAnimationFrame(() => {
-      const previewItem = getVisibleMonthExpenseItems(state.activeMonth)[0] || sanitizeItem({
+      const previewItem = getVisibleMonthExpenseItems(state.activeMonth).find((item) => !item?.isRecurring) || sanitizeItem({
         id: "preview-detail-item",
         type: "expense",
         date: getDefaultItemDateForMonth(state.activeMonth),
-        category: "otros",
-        name: "Cafe",
-        amount: 4542,
-        isRecurring: true,
+        category: "compras",
+        name: "Campera",
+        amount: 155000,
+        isRecurring: false,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       });
