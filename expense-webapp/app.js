@@ -396,6 +396,25 @@ const mobileQuickEntryScopeThisMonthBtn = document.getElementById("mobileQuickEn
 const mobileQuickEntryScopeAllMonthsBtn = document.getElementById("mobileQuickEntryScopeAllMonthsBtn");
 const mobileQuickEntrySaveBtn = document.getElementById("mobileQuickEntrySaveBtn");
 const mobileQuickEntryDeleteBtn = document.getElementById("mobileQuickEntryDeleteBtn");
+const mobileMovementDetailScreen = document.getElementById("mobileMovementDetailScreen");
+const backMobileMovementDetailBtn = document.getElementById("backMobileMovementDetailBtn");
+const mobileMovementDetailTitle = document.getElementById("mobileMovementDetailTitle");
+const mobileMovementDetailTypePill = document.getElementById("mobileMovementDetailTypePill");
+const mobileMovementDetailIcon = document.getElementById("mobileMovementDetailIcon");
+const mobileMovementDetailAmount = document.getElementById("mobileMovementDetailAmount");
+const mobileMovementDetailCategoryTag = document.getElementById("mobileMovementDetailCategoryTag");
+const mobileMovementDetailHeroIcon = mobileMovementDetailScreen?.querySelector(".mobile-movement-detail-hero-icon") || null;
+const mobileMovementDetailBody = mobileMovementDetailScreen?.querySelector(".mobile-movement-detail-body") || null;
+const mobileMovementDetailCategoryValue = document.getElementById("mobileMovementDetailCategoryValue");
+const mobileMovementDetailDescriptionValue = document.getElementById("mobileMovementDetailDescriptionValue");
+const mobileMovementDetailDateValue = document.getElementById("mobileMovementDetailDateValue");
+const mobileMovementDetailTimeValue = document.getElementById("mobileMovementDetailTimeValue");
+const mobileMovementDetailRecurringValue = document.getElementById("mobileMovementDetailRecurringValue");
+const mobileMovementDetailDurationValue = document.getElementById("mobileMovementDetailDurationValue");
+const mobileMovementDetailCreatedValue = document.getElementById("mobileMovementDetailCreatedValue");
+const mobileMovementDetailUpdatedValue = document.getElementById("mobileMovementDetailUpdatedValue");
+const mobileMovementDetailEditBtn = document.getElementById("mobileMovementDetailEditBtn");
+const mobileMovementDetailDeleteBtn = document.getElementById("mobileMovementDetailDeleteBtn");
 const mobileFilterSheet = document.getElementById("mobileFilterSheet");
 const closeMobileFilterSheetBtn = document.getElementById("closeMobileFilterSheetBtn");
 const mobileFilterSearchInput = document.getElementById("mobileFilterSearchInput");
@@ -457,11 +476,14 @@ let mobileQuickAddOpen = false;
 let mobileAmountScreenOpen = false;
 let mobileDetailScreenOpen = false;
 let mobileQuickEntryOpen = false;
+let mobileMovementDetailOpen = false;
 let mobileFilterSheetOpen = false;
 let overlayBackStateActive = false;
 let overlayBackStateSyncScheduled = false;
 let ignoreOverlayBackPopstate = false;
 let mobileQuickEntryAmount = 0;
+let mobileMovementDetailItem = null;
+let mobileMovementDetailTrigger = null;
 let expenseEditScope = "thisMonth";
 let mobileQuickEntryScope = "thisMonth";
 let mobileAmountMode = "expense";
@@ -1037,6 +1059,24 @@ if (mobileDetailCategory) {
 if (mobileDetailSaveBtn) {
   mobileDetailSaveBtn.addEventListener("click", () => {
     saveMobileDetailScreen();
+  });
+}
+
+if (backMobileMovementDetailBtn) {
+  backMobileMovementDetailBtn.addEventListener("click", () => {
+    closeMobileMovementDetailScreen();
+  });
+}
+
+if (mobileMovementDetailEditBtn) {
+  mobileMovementDetailEditBtn.addEventListener("click", () => {
+    openEditFlowFromMobileMovementDetail();
+  });
+}
+
+if (mobileMovementDetailDeleteBtn) {
+  mobileMovementDetailDeleteBtn.addEventListener("click", () => {
+    openDeleteFlowFromMobileMovementDetail();
   });
 }
 
@@ -2872,6 +2912,29 @@ function formatItemCreatedTime(rawValue, fallbackDate = "") {
   });
 }
 
+function normalizeItemUpdatedAt(rawValue, fallbackCreatedAt = "", fallbackDate = "") {
+  return normalizeItemCreatedAt(rawValue, fallbackCreatedAt || fallbackDate);
+}
+
+function formatItemDateTime(rawValue, fallbackDate = "") {
+  const normalizedValue = normalizeItemCreatedAt(rawValue, fallbackDate);
+  if (!normalizedValue) {
+    return "";
+  }
+
+  const parsed = new Date(normalizedValue);
+  if (Number.isNaN(parsed.getTime())) {
+    return "";
+  }
+
+  const datePart = parsed.toLocaleDateString("es-AR");
+  const timePart = parsed.toLocaleTimeString("es-AR", {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+  return `${datePart} · ${timePart}`;
+}
+
 function getCategoryConfig(categoryKey) {
   const key = normalizeCategoryKey(categoryKey);
   return CATEGORY_CONFIG[key] || CATEGORY_CONFIG[FALLBACK_CATEGORY_KEY];
@@ -4050,6 +4113,7 @@ function openMobileQuickAddSheet() {
   if (!mobileQuickAddSheet) {
     return;
   }
+  closeMobileMovementDetailScreen({ restoreFocus: false });
   closeMobileDetailScreen({ immediate: true });
   closeMobileAmountScreen({ immediate: true });
   closeMobileQuickEntrySheet();
@@ -4078,6 +4142,7 @@ function openMobileAmountScreen(movementType = "expense", { reset = true } = {})
     clearTimeout(mobileAmountScreenTransitionTimer);
     mobileAmountScreenTransitionTimer = null;
   }
+  closeMobileMovementDetailScreen({ restoreFocus: false });
   closeMobileDetailScreen({ immediate: true, reset });
   closeMobileQuickAddSheet();
   closeMobileQuickEntrySheet();
@@ -4147,6 +4212,7 @@ function openMobileDetailScreen({ reset = true } = {}) {
     return;
   }
 
+  closeMobileMovementDetailScreen({ restoreFocus: false });
   closeMobileQuickAddSheet();
   closeMobileQuickEntrySheet();
   closeProfileDropdown();
@@ -4187,6 +4253,176 @@ function closeMobileDetailScreen({ immediate = false, reset = true } = {}) {
     populateMobileDetailCategories(mobileAmountMode);
   }
   updateOverlayScrollLock();
+}
+
+function getMovementDetailNoun(movementType = "expense") {
+  return normalizeMovementType(movementType) === "income" ? "ingreso" : "gasto";
+}
+
+function getMovementDetailRecurringLabel(item) {
+  return item?.isRecurring ? "Mensual" : "No se repite";
+}
+
+function getMovementDetailDurationLabel(item) {
+  if (!item?.isRecurring) {
+    return "No aplica";
+  }
+
+  const duration = getRecurringDurationSelectionForItem(item, getMonthKeyFromItem(item));
+  if (duration === "always") {
+    return "Hasta cancelarlo";
+  }
+
+  const months = clampRecurringMonths(duration, { min: 1, fallback: 1 });
+  return months === 1 ? "1 mes" : `${months} meses`;
+}
+
+function setMovementDetailValue(element, value) {
+  if (!(element instanceof HTMLElement)) {
+    return;
+  }
+
+  const nextValue = String(value || "").trim() || "-";
+  element.textContent = nextValue;
+  element.setAttribute("title", nextValue);
+}
+
+function renderMobileMovementDetailScreen(item = mobileMovementDetailItem) {
+  if (!item) {
+    return;
+  }
+
+  const movementType = normalizeMovementType(item.type);
+  const movementNoun = getMovementDetailNoun(movementType);
+  const categoryKey = normalizeCategoryKeyForType(item.category, movementType);
+  const categoryConfig = getCategoryConfig(categoryKey);
+  const createdAtLabel = formatItemDateTime(item.createdAt, item.date);
+  const updatedAtLabel = formatItemDateTime(item.updatedAt || item.createdAt, item.date);
+
+  if (mobileMovementDetailTitle) {
+    mobileMovementDetailTitle.textContent = `Detalle del ${movementNoun}`;
+  }
+
+  if (mobileMovementDetailTypePill) {
+    mobileMovementDetailTypePill.textContent = movementType === "income" ? "INGRESO" : "GASTO";
+    mobileMovementDetailTypePill.dataset.type = movementType;
+  }
+
+  if (mobileMovementDetailIcon) {
+    mobileMovementDetailIcon.textContent = getCategorySymbol(categoryKey, movementType);
+  }
+
+  if (mobileMovementDetailHeroIcon instanceof HTMLElement) {
+    mobileMovementDetailHeroIcon.style.setProperty("color", categoryConfig.color, "important");
+    mobileMovementDetailHeroIcon.style.setProperty("background", `${categoryConfig.color}1A`, "important");
+  }
+
+  if (mobileMovementDetailAmount) {
+    const amountLabel = money(Math.max(0, Number(item.amount || 0))).replace("$ ", "$");
+    mobileMovementDetailAmount.textContent = amountLabel;
+    mobileMovementDetailAmount.setAttribute("title", amountLabel);
+  }
+
+  if (mobileMovementDetailCategoryTag) {
+    mobileMovementDetailCategoryTag.textContent = categoryConfig.label;
+    mobileMovementDetailCategoryTag.dataset.category = categoryKey;
+    styleCategoryChip(mobileMovementDetailCategoryTag, categoryKey);
+  }
+
+  setMovementDetailValue(mobileMovementDetailCategoryValue, categoryConfig.label);
+  setMovementDetailValue(mobileMovementDetailDescriptionValue, item.name);
+  setMovementDetailValue(mobileMovementDetailDateValue, formatItemDate(item.date));
+  setMovementDetailValue(mobileMovementDetailTimeValue, formatItemCreatedTime(item.createdAt, item.date));
+  setMovementDetailValue(mobileMovementDetailRecurringValue, getMovementDetailRecurringLabel(item));
+  setMovementDetailValue(mobileMovementDetailDurationValue, getMovementDetailDurationLabel(item));
+  setMovementDetailValue(mobileMovementDetailCreatedValue, createdAtLabel);
+  setMovementDetailValue(mobileMovementDetailUpdatedValue, updatedAtLabel);
+
+  if (mobileMovementDetailEditBtn) {
+    mobileMovementDetailEditBtn.textContent = `Editar ${movementNoun}`;
+  }
+
+  if (mobileMovementDetailDeleteBtn) {
+    mobileMovementDetailDeleteBtn.textContent = `Eliminar ${movementNoun}`;
+  }
+}
+
+function openMobileMovementDetailScreen(item, trigger = null) {
+  if (!mobileMovementDetailScreen || !item) {
+    return;
+  }
+
+  mobileMovementDetailItem = item;
+  mobileMovementDetailTrigger = trigger instanceof HTMLElement
+    ? trigger
+    : document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+
+  closeProfileDropdown();
+  closeMobileQuickAddSheet();
+  closeMobileAmountScreen({ immediate: true, preserveState: true });
+  closeMobileDetailScreen({ immediate: true });
+  closeMobileQuickEntrySheet();
+  closeMobileFilterSheet();
+
+  renderMobileMovementDetailScreen(item);
+  mobileMovementDetailOpen = true;
+  mobileMovementDetailScreen.classList.remove("is-hidden");
+  mobileMovementDetailScreen.setAttribute("aria-hidden", "false");
+  if (mobileMovementDetailBody) {
+    mobileMovementDetailBody.scrollTop = 0;
+  }
+  updateOverlayScrollLock();
+}
+
+function closeMobileMovementDetailScreen({ restoreFocus = true, preserveItem = false } = {}) {
+  if (!mobileMovementDetailScreen) {
+    return;
+  }
+
+  mobileMovementDetailOpen = false;
+  mobileMovementDetailScreen.classList.add("is-hidden");
+  mobileMovementDetailScreen.setAttribute("aria-hidden", "true");
+  updateOverlayScrollLock();
+
+  const focusTarget = restoreFocus && mobileMovementDetailTrigger instanceof HTMLElement
+    ? mobileMovementDetailTrigger
+    : null;
+
+  if (!preserveItem) {
+    mobileMovementDetailItem = null;
+    mobileMovementDetailTrigger = null;
+  }
+
+  if (focusTarget) {
+    requestAnimationFrame(() => {
+      focusTarget.focus();
+    });
+  }
+}
+
+function openEditFlowFromMobileMovementDetail() {
+  if (!mobileMovementDetailItem) {
+    return;
+  }
+
+  const item = mobileMovementDetailItem;
+  closeMobileMovementDetailScreen({ restoreFocus: false });
+  openMobileQuickEntrySheet(item.type, item.amount, item);
+}
+
+function openDeleteFlowFromMobileMovementDetail() {
+  if (!mobileMovementDetailItem) {
+    return;
+  }
+
+  const item = mobileMovementDetailItem;
+  const deleteTrigger = mobileMovementDetailTrigger instanceof HTMLElement
+    ? mobileMovementDetailTrigger
+    : mobileMovementDetailDeleteBtn;
+  closeMobileMovementDetailScreen({ restoreFocus: false });
+  openDeleteConfirmModal(item, deleteTrigger);
 }
 
 function getDefaultItemDateForMonth(monthKey = state.activeMonth) {
@@ -4427,6 +4663,7 @@ function openMobileQuickEntrySheet(movementType = "expense", amount = 0, item = 
     backMobileQuickEntryBtn.classList.add("is-hidden");
   }
 
+  closeMobileMovementDetailScreen({ restoreFocus: false });
   closeMobileDetailScreen({ immediate: true });
   closeMobileAmountScreen({ immediate: true });
   closeMobileQuickAddSheet();
@@ -4514,6 +4751,7 @@ function saveMovementRecord({
   let didMutate = false;
   let nextActiveMonthAfterSave = "";
   const viewedMonthAtSave = normalizeMonthKey(state.activeMonth);
+  const mutationTimestamp = new Date().toISOString();
 
   if (editingItemId) {
     const item = state.items.find((entry) => entry.id === editingItemId);
@@ -4579,6 +4817,7 @@ function saveMovementRecord({
         item.isRecurring = false;
         item.recurringSeriesId = previousSeriesId;
         item.createdAt = normalizeItemCreatedAt(item.createdAt, item.date);
+        item.updatedAt = mutationTimestamp;
         clearRecurringWindow(item);
         removeRecurringSkip(previousSeriesId, previousMonthKey);
 
@@ -4599,6 +4838,7 @@ function saveMovementRecord({
       item.amount = numericAmount;
       item.isRecurring = effectiveRecurring;
       item.createdAt = normalizeItemCreatedAt(item.createdAt, item.date);
+      item.updatedAt = mutationTimestamp;
 
       const nextMonthKey = getMonthKeyFromItem(item);
       if (previousSeriesId && previousMonthKey !== nextMonthKey) {
@@ -4666,6 +4906,7 @@ function saveMovementRecord({
         recurringSourceMonth: projectionContext.sourceMonthKey || projectionContext.monthKey,
         sortAnchorId: String(projectionContext.sourceItemId || "").trim() || undefined,
         createdAt: new Date().toISOString(),
+        updatedAt: mutationTimestamp,
         recurringMonths: projectionContext.endMonth
           ? Math.max(1, getMonthOffsetBetween(projectionContext.monthKey, projectionContext.endMonth) + 1)
           : undefined,
@@ -4691,6 +4932,7 @@ function saveMovementRecord({
           amount: numericAmount,
           isRecurring: false,
           createdAt: new Date().toISOString(),
+          updatedAt: mutationTimestamp,
           recurringSeriesId: projectionContext.seriesId,
           sortAnchorId: String(projectionContext.sourceItemId || "").trim() || undefined
         });
@@ -4720,7 +4962,8 @@ function saveMovementRecord({
         name: trimmedName,
         amount: numericAmount,
         isRecurring: recurring,
-        createdAt: new Date().toISOString(),
+        createdAt: mutationTimestamp,
+        updatedAt: mutationTimestamp,
         recurringSeriesId: recurring ? newItemId : undefined,
         recurringMonths: recurring && newRecurringDuration !== "always" ? newRecurringDuration : undefined,
         recurringEndMonth: recurring && newRecurringDuration !== "always"
@@ -4880,6 +5123,7 @@ function openMobileFilterSheet() {
   if (!mobileFilterSheet) {
     return;
   }
+  closeMobileMovementDetailScreen({ restoreFocus: false });
   closeProfileDropdown();
   closeMobileQuickEntrySheet();
   hideCategoryFilterMenu();
@@ -6568,6 +6812,7 @@ function hasOpenOverlayState() {
     || mobileAmountScreenOpen
     || mobileDetailScreenOpen
     || mobileQuickEntryOpen
+    || mobileMovementDetailOpen
     || mobileFilterSheetOpen
   );
 }
@@ -6580,6 +6825,11 @@ function closeActiveOverlayState() {
 
   if (mobileQuickEntryOpen) {
     closeMobileQuickEntrySheet();
+    return true;
+  }
+
+  if (mobileMovementDetailOpen) {
+    closeMobileMovementDetailScreen();
     return true;
   }
 
@@ -6762,6 +7012,7 @@ function sanitizeItem(item) {
   const amount = Number.isFinite(Number(item?.amount)) ? Math.max(0, Number(item.amount)) : 0;
   const isRecurring = Boolean(item?.isRecurring || item?.isRecurringMonthly || false);
   const createdAt = normalizeItemCreatedAt(item?.createdAt, date);
+  const updatedAt = normalizeItemUpdatedAt(item?.updatedAt, createdAt, date);
   const recurringMonths = Number.isFinite(Number(item?.recurringMonths))
     ? clampRecurringMonths(item.recurringMonths, { min: 1, fallback: 1 })
     : undefined;
@@ -6777,6 +7028,7 @@ function sanitizeItem(item) {
     amount,
     isRecurring,
     createdAt: createdAt || undefined,
+    updatedAt: updatedAt || createdAt || undefined,
     recurringSeriesId: item?.recurringSeriesId ? String(item.recurringSeriesId) : undefined,
     sortAnchorId: item?.sortAnchorId ? String(item.sortAnchorId) : undefined,
     recurringSourceMonth: isRecurring && recurringSourceMonth ? recurringSourceMonth : undefined,
@@ -7693,7 +7945,7 @@ function populateItemNode(node, item) {
   if (isMobileRow) {
     node.addEventListener("click", () => {
       if (isMobileViewport()) {
-        openMobileQuickEntrySheet(item.type, item.amount, item);
+        openMobileMovementDetailScreen(item, node);
         return;
       }
       openExpenseModalForEdit(item, node);
@@ -7702,7 +7954,7 @@ function populateItemNode(node, item) {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
         if (isMobileViewport()) {
-          openMobileQuickEntrySheet(item.type, item.amount, item);
+          openMobileMovementDetailScreen(item, node);
           return;
         }
         openExpenseModalForEdit(item, node);
@@ -9328,6 +9580,24 @@ if (previewMode === "month-model") {
       mobileAmountRecurringEnabled = false;
       mobileAmountRecurringDuration = "12";
       openMobileDetailScreen({ reset: true });
+    });
+  }
+  if (previewMode === "mobile-movement-detail") {
+    requestAnimationFrame(() => {
+      const previewItem = getVisibleMonthExpenseItems(state.activeMonth)[0] || sanitizeItem({
+        id: "preview-detail-item",
+        type: "expense",
+        date: getDefaultItemDateForMonth(state.activeMonth),
+        category: "otros",
+        name: "Cafe",
+        amount: 4542,
+        isRecurring: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+      if (previewItem) {
+        openMobileMovementDetailScreen(previewItem);
+      }
     });
   }
 if (previewMode === "mobile-filter") {

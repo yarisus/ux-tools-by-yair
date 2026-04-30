@@ -1569,6 +1569,82 @@
       </section>
     </div>
 
+    <div id="mobileMovementDetailScreen" class="mobile-movement-detail-screen is-hidden md:hidden" aria-hidden="true">
+      <section class="mobile-movement-detail-card" role="dialog" aria-modal="true" aria-labelledby="mobileMovementDetailTitle">
+        <header class="mobile-movement-detail-head">
+          <div class="mobile-movement-detail-toolbar">
+            <button
+              id="backMobileMovementDetailBtn"
+              class="mobile-detail-screen-icon-btn mobile-movement-detail-icon-btn"
+              type="button"
+              aria-label="Volver"
+            >
+              <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">arrow_back</span>
+            </button>
+            <div class="mobile-movement-detail-toolbar-slot" aria-hidden="true"></div>
+          </div>
+          <h2 id="mobileMovementDetailTitle" class="mobile-movement-detail-title font-space">Detalle del gasto</h2>
+        </header>
+
+        <div class="mobile-movement-detail-body">
+          <section class="mobile-movement-detail-hero" aria-labelledby="mobileMovementDetailTypePill">
+            <div class="mobile-movement-detail-hero-top">
+              <span id="mobileMovementDetailTypePill" class="mobile-quick-entry-type-pill">Gasto</span>
+              <span class="mobile-movement-detail-hero-icon" aria-hidden="true">
+                <span id="mobileMovementDetailIcon" class="material-symbols-rounded mobile-symbol">receipt_long</span>
+              </span>
+            </div>
+            <strong id="mobileMovementDetailAmount" class="mobile-movement-detail-amount font-space">$0</strong>
+            <span id="mobileMovementDetailCategoryTag" class="category-chip mobile-movement-detail-category-tag">Otros</span>
+          </section>
+
+          <dl class="mobile-movement-detail-info-list">
+            <div class="mobile-movement-detail-info-row">
+              <dt>Categoría</dt>
+              <dd id="mobileMovementDetailCategoryValue">Otros</dd>
+            </div>
+            <div class="mobile-movement-detail-info-row">
+              <dt>Descripción</dt>
+              <dd id="mobileMovementDetailDescriptionValue">-</dd>
+            </div>
+            <div class="mobile-movement-detail-info-row">
+              <dt>Fecha</dt>
+              <dd id="mobileMovementDetailDateValue">-</dd>
+            </div>
+            <div class="mobile-movement-detail-info-row">
+              <dt>Hora</dt>
+              <dd id="mobileMovementDetailTimeValue">-</dd>
+            </div>
+            <div class="mobile-movement-detail-info-row">
+              <dt>Repetición</dt>
+              <dd id="mobileMovementDetailRecurringValue">No se repite</dd>
+            </div>
+            <div class="mobile-movement-detail-info-row">
+              <dt>Duración</dt>
+              <dd id="mobileMovementDetailDurationValue">No aplica</dd>
+            </div>
+            <div class="mobile-movement-detail-info-row">
+              <dt>Creado el</dt>
+              <dd id="mobileMovementDetailCreatedValue">-</dd>
+            </div>
+            <div class="mobile-movement-detail-info-row">
+              <dt>Última modificación</dt>
+              <dd id="mobileMovementDetailUpdatedValue">-</dd>
+            </div>
+          </dl>
+        </div>
+
+        <footer class="mobile-movement-detail-footer">
+          <button id="mobileMovementDetailEditBtn" class="primary-btn inline-flex w-full items-center justify-center rounded-xl px-4 py-3 text-base font-semibold" type="button">
+            Editar gasto
+          </button>
+          <button id="mobileMovementDetailDeleteBtn" class="ghost-btn inline-flex w-full items-center justify-center rounded-xl px-4 py-3 text-base font-semibold" type="button">
+            Eliminar gasto
+          </button>
+        </footer>
+      </section>
+    </div>
+
     <div id="mobileDetailScreen" class="mobile-detail-screen is-hidden md:hidden" aria-hidden="true">
       <section class="mobile-detail-screen-card" role="dialog" aria-modal="true" aria-labelledby="mobileDetailScreenTitle">
         <header class="mobile-detail-screen-head">
