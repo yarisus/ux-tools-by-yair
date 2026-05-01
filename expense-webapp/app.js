@@ -4534,11 +4534,17 @@ function renderMobileMovementDetailScreen(item = mobileMovementDetailItem) {
   setMovementDetailValue(mobileMovementDetailCategoryValue, categoryConfig.label);
 
   if (mobileMovementDetailEditBtn) {
-    mobileMovementDetailEditBtn.textContent = "Editar";
+    const label = mobileMovementDetailEditBtn.querySelector("span:last-child");
+    if (label instanceof HTMLElement) {
+      label.textContent = "Editar";
+    }
   }
 
   if (mobileMovementDetailDeleteBtn) {
-    mobileMovementDetailDeleteBtn.textContent = "Eliminar";
+    const label = mobileMovementDetailDeleteBtn.querySelector("span:last-child");
+    if (label instanceof HTMLElement) {
+      label.textContent = "Eliminar";
+    }
   }
 }
 
