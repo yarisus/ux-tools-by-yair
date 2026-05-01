@@ -412,6 +412,7 @@ const mobileMovementDetailTitle = document.getElementById("mobileMovementDetailT
 const mobileMovementDetailIcon = document.getElementById("mobileMovementDetailIcon");
 const mobileMovementDetailAmount = document.getElementById("mobileMovementDetailAmount");
 const mobileMovementDetailTimestamp = document.getElementById("mobileMovementDetailTimestamp");
+const mobileMovementDetailAlert = document.getElementById("mobileMovementDetailAlert");
 const mobileMovementDetailHeroIcon = mobileMovementDetailScreen?.querySelector(".mobile-movement-detail-hero-icon") || null;
 const mobileMovementDetailBody = mobileMovementDetailScreen?.querySelector(".mobile-movement-detail-body") || null;
 const mobileMovementDetailCategoryValue = document.getElementById("mobileMovementDetailCategoryValue");
@@ -490,6 +491,7 @@ let mobileMovementDetailItem = null;
 let mobileMovementDetailTrigger = null;
 let mobileExpenseEditItem = null;
 let pendingMobileMovementDetailToast = "";
+let mobileMovementDetailAlertTimer = null;
 let expenseEditScope = "thisMonth";
 let mobileQuickEntryScope = "thisMonth";
 let mobileAmountMode = "expense";
@@ -4539,6 +4541,25 @@ function renderMobileMovementDetailScreen(item = mobileMovementDetailItem) {
   }
 }
 
+function showMobileMovementDetailAlert(message) {
+  if (!(mobileMovementDetailAlert instanceof HTMLElement)) {
+    return;
+  }
+
+  mobileMovementDetailAlert.textContent = String(message || "").trim() || "Cambios guardados";
+  mobileMovementDetailAlert.classList.remove("is-hidden");
+  mobileMovementDetailAlert.classList.add("show");
+
+  if (mobileMovementDetailAlertTimer) {
+    clearTimeout(mobileMovementDetailAlertTimer);
+  }
+
+  mobileMovementDetailAlertTimer = window.setTimeout(() => {
+    mobileMovementDetailAlert.classList.remove("show");
+    mobileMovementDetailAlert.classList.add("is-hidden");
+  }, 2600);
+}
+
 function openMobileMovementDetailScreen(item, trigger = null) {
   if (!mobileMovementDetailScreen || !item) {
     return;
@@ -4576,7 +4597,7 @@ function openMobileMovementDetailScreen(item, trigger = null) {
     const successMessage = pendingMobileMovementDetailToast;
     pendingMobileMovementDetailToast = "";
     requestAnimationFrame(() => {
-      showToast(successMessage);
+      showMobileMovementDetailAlert(successMessage);
     });
   }
 }
@@ -4590,6 +4611,15 @@ function closeMobileMovementDetailScreen({ restoreFocus = true, preserveItem = f
   mobileMovementDetailScreen.classList.add("is-hidden");
   mobileMovementDetailScreen.setAttribute("aria-hidden", "true");
   updateOverlayScrollLock();
+
+  if (mobileMovementDetailAlert instanceof HTMLElement) {
+    mobileMovementDetailAlert.classList.remove("show");
+    mobileMovementDetailAlert.classList.add("is-hidden");
+  }
+  if (mobileMovementDetailAlertTimer) {
+    clearTimeout(mobileMovementDetailAlertTimer);
+    mobileMovementDetailAlertTimer = null;
+  }
 
   const focusTarget = restoreFocus && mobileMovementDetailTrigger instanceof HTMLElement
     ? mobileMovementDetailTrigger
