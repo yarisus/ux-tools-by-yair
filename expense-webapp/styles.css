@@ -23268,8 +23268,10 @@ body.overflow-hidden .mobile-add-fab-wrap,
 
   body .mobile-expense-edit-field {
     gap: 8px !important;
+    text-transform: none !important;
   }
 
+  body .mobile-expense-edit-field label,
   body .mobile-expense-edit-field > span:first-child {
     color: #4b5563 !important;
     font-size: 12px !important;
@@ -23277,6 +23279,10 @@ body.overflow-hidden .mobile-add-fab-wrap,
     font-weight: 700 !important;
     text-transform: none !important;
     letter-spacing: normal !important;
+  }
+
+  body .mobile-expense-edit-field span {
+    text-transform: none !important;
   }
 
   body .mobile-quick-entry-field > span:first-child,
