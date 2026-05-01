@@ -24386,6 +24386,14 @@ body.overflow-hidden .mobile-add-fab-wrap,
     margin: auto !important;
     border-radius: 24px !important;
   }
+
+  body #deleteConfirmModal[data-mobile-presentation="dialog"].show {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 16px !important;
+    box-sizing: border-box !important;
+  }
 }
 
 /* 2026-03-28 Mobile native keyboard */
