@@ -489,6 +489,7 @@ let mobileQuickEntryAmount = 0;
 let mobileMovementDetailItem = null;
 let mobileMovementDetailTrigger = null;
 let mobileExpenseEditItem = null;
+let pendingMobileMovementDetailToast = "";
 let expenseEditScope = "thisMonth";
 let mobileQuickEntryScope = "thisMonth";
 let mobileAmountMode = "expense";
@@ -4482,6 +4483,7 @@ function saveMobileExpenseEditScreen() {
   updateOverlayScrollLock();
 
   if (isPuntualExpenseItem(updatedItem)) {
+    pendingMobileMovementDetailToast = "Cambios guardados";
     openMobileMovementDetailScreen(updatedItem, mobileMovementDetailTrigger);
   }
 }
@@ -4569,6 +4571,14 @@ function openMobileMovementDetailScreen(item, trigger = null) {
     mobileMovementDetailBody.scrollTop = 0;
   }
   updateOverlayScrollLock();
+
+  if (pendingMobileMovementDetailToast) {
+    const successMessage = pendingMobileMovementDetailToast;
+    pendingMobileMovementDetailToast = "";
+    requestAnimationFrame(() => {
+      showToast(successMessage);
+    });
+  }
 }
 
 function closeMobileMovementDetailScreen({ restoreFocus = true, preserveItem = false } = {}) {
