@@ -413,6 +413,7 @@ const mobileMovementDetailIcon = document.getElementById("mobileMovementDetailIc
 const mobileMovementDetailAmount = document.getElementById("mobileMovementDetailAmount");
 const mobileMovementDetailTimestamp = document.getElementById("mobileMovementDetailTimestamp");
 const mobileMovementDetailAlert = document.getElementById("mobileMovementDetailAlert");
+const mobileMovementDetailAlertMessage = document.getElementById("mobileMovementDetailAlertMessage");
 const mobileMovementDetailHeroIcon = mobileMovementDetailScreen?.querySelector(".mobile-movement-detail-hero-icon") || null;
 const mobileMovementDetailBody = mobileMovementDetailScreen?.querySelector(".mobile-movement-detail-body") || null;
 const mobileMovementDetailCategoryValue = document.getElementById("mobileMovementDetailCategoryValue");
@@ -4546,7 +4547,12 @@ function showMobileMovementDetailAlert(message) {
     return;
   }
 
-  mobileMovementDetailAlert.textContent = String(message || "").trim() || "Cambios guardados";
+  const nextMessage = String(message || "").trim() || "Cambios guardados";
+  if (mobileMovementDetailAlertMessage instanceof HTMLElement) {
+    mobileMovementDetailAlertMessage.textContent = nextMessage;
+  } else {
+    mobileMovementDetailAlert.textContent = nextMessage;
+  }
   mobileMovementDetailAlert.classList.remove("is-hidden");
   mobileMovementDetailAlert.classList.add("show");
 
