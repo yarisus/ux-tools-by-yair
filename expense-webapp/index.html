@@ -1575,7 +1575,7 @@
           <div class="mobile-movement-detail-toolbar">
             <button
               id="backMobileMovementDetailBtn"
-              class="mobile-detail-screen-icon-btn mobile-movement-detail-icon-btn"
+              class="mobile-amount-frame-close-btn mobile-movement-detail-icon-btn"
               type="button"
               aria-label="Volver"
             >
@@ -1583,14 +1583,14 @@
             </button>
             <button
               id="closeMobileMovementDetailBtn"
-              class="mobile-detail-screen-icon-btn mobile-movement-detail-icon-btn"
+              class="mobile-amount-frame-close-btn mobile-movement-detail-icon-btn"
               type="button"
               aria-label="Cerrar detalle"
             >
               <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">close</span>
             </button>
           </div>
-          <h2 id="mobileMovementDetailTitle" class="mobile-movement-detail-title font-space">Detalle de Gasto</h2>
+          <h2 id="mobileMovementDetailTitle" class="mobile-amount-frame-title mobile-movement-detail-title font-space">Detalle de Gasto</h2>
         </header>
 
         <div class="mobile-movement-detail-body">
@@ -1619,11 +1619,13 @@
         </div>
 
         <footer class="mobile-movement-detail-footer">
-          <button id="mobileMovementDetailEditBtn" class="ghost-btn inline-flex w-full items-center justify-center rounded-xl px-4 py-3 text-base font-semibold" type="button">
-            Editar
+          <button id="mobileMovementDetailEditBtn" class="ghost-btn inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-base font-semibold" type="button">
+            <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">edit</span>
+            <span>Editar</span>
           </button>
-          <button id="mobileMovementDetailDeleteBtn" class="primary-btn inline-flex w-full items-center justify-center rounded-xl px-4 py-3 text-base font-semibold" type="button">
-            Eliminar
+          <button id="mobileMovementDetailDeleteBtn" class="primary-btn inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-base font-semibold" type="button">
+            <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">delete</span>
+            <span>Eliminar</span>
           </button>
         </footer>
       </section>

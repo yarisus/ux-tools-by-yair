@@ -23034,18 +23034,17 @@ body.overflow-hidden .mobile-add-fab-wrap,
   }
 
   body .mobile-movement-detail-icon-btn {
-    width: 44px !important;
-    min-width: 44px !important;
-    height: 44px !important;
-    min-height: 44px !important;
+    flex: 0 0 48px !important;
+    width: 48px !important;
+    min-width: 48px !important;
+    max-width: 48px !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    max-height: 48px !important;
   }
 
   body .mobile-movement-detail-title {
-    margin: 24px 0 0 !important;
-    color: #252732 !important;
-    font-size: 24px !important;
-    line-height: 32px !important;
-    letter-spacing: -0.02em !important;
+    margin-top: 24px !important;
   }
 
   body .mobile-movement-detail-body {
@@ -23069,7 +23068,7 @@ body.overflow-hidden .mobile-add-fab-wrap,
 
   body .mobile-movement-detail-hero-content {
     display: flex !important;
-    align-items: center !important;
+    align-items: flex-start !important;
     gap: 16px !important;
   }
 
@@ -23083,11 +23082,12 @@ body.overflow-hidden .mobile-add-fab-wrap,
     min-height: 44px !important;
     border-radius: 12px !important;
     flex-shrink: 0 !important;
+    margin-top: 4px !important;
   }
 
   body .mobile-movement-detail-hero-copy {
     display: grid !important;
-    gap: 8px !important;
+    gap: 4px !important;
     min-width: 0 !important;
   }
 
@@ -23117,7 +23117,7 @@ body.overflow-hidden .mobile-add-fab-wrap,
     justify-content: space-between !important;
     gap: 16px !important;
     padding: 12px 0 !important;
-    border-bottom: 1px solid #e2e8f0 !important;
+    border-bottom: 1px solid #edf1fe !important;
   }
 
   body .mobile-movement-detail-info-row:last-child {
@@ -23126,17 +23126,17 @@ body.overflow-hidden .mobile-add-fab-wrap,
 
   body .mobile-movement-detail-info-row dt {
     color: #64748b !important;
-    font-size: 12px !important;
-    line-height: 16px !important;
-    font-weight: 700 !important;
+    font-size: 14px !important;
+    line-height: 20px !important;
+    font-weight: 600 !important;
   }
 
   body .mobile-movement-detail-info-row dd {
     max-width: 60% !important;
     margin: 0 !important;
     color: #111827 !important;
-    font-size: 16px !important;
-    line-height: 24px !important;
+    font-size: 14px !important;
+    line-height: 20px !important;
     font-weight: 600 !important;
     text-align: right !important;
     word-break: break-word !important;
@@ -23153,6 +23153,12 @@ body.overflow-hidden .mobile-add-fab-wrap,
     padding: 0 !important;
     background: transparent !important;
     z-index: 2 !important;
+  }
+
+  body #mobileMovementDetailEditBtn .mobile-symbol,
+  body #mobileMovementDetailDeleteBtn .mobile-symbol {
+    font-size: 20px !important;
+    line-height: 1 !important;
   }
 
   body .mobile-expense-edit-screen {
@@ -24344,6 +24350,18 @@ body.overflow-hidden .mobile-add-fab-wrap,
     margin: 0 !important;
     border-radius: 24px 24px 0 0 !important;
     box-sizing: border-box !important;
+  }
+
+  body #deleteConfirmModal[data-mobile-presentation="dialog"] .modal-card {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    width: min(100% - 32px, 420px) !important;
+    max-width: min(100% - 32px, 420px) !important;
+    margin: auto !important;
+    border-radius: 24px !important;
   }
 }
 

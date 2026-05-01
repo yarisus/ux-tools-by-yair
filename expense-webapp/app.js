@@ -4493,8 +4493,8 @@ function renderMobileMovementDetailScreen(item = mobileMovementDetailItem) {
   const dateLabel = formatItemLongDate(item.date);
   const amountValue = Math.max(0, Number(item.amount || 0));
   const signedAmountLabel = movementType === "income"
-    ? `+${formatAmountNumber(amountValue, { withSymbol: false })}`
-    : `-${formatAmountNumber(amountValue, { withSymbol: false })}`;
+    ? `+$${new Intl.NumberFormat("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amountValue)}`
+    : `-$${new Intl.NumberFormat("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amountValue)}`;
 
   if (mobileMovementDetailTitle) {
     mobileMovementDetailTitle.textContent = "Detalle de Gasto";
@@ -4610,7 +4610,7 @@ function openDeleteFlowFromMobileMovementDetail() {
     ? mobileMovementDetailTrigger
     : mobileMovementDetailDeleteBtn;
   closeMobileMovementDetailScreen({ restoreFocus: false });
-  openDeleteConfirmModal(item, deleteTrigger);
+  openDeleteConfirmModal(item, deleteTrigger, { mobilePresentation: "dialog" });
 }
 
 function getDefaultItemDateForMonth(monthKey = state.activeMonth) {
@@ -6887,6 +6887,7 @@ function closeDeleteConfirmModal() {
     confirmDeleteSeriesBtn.textContent = "Eliminar en todos";
     confirmDeleteSeriesBtn.classList.add("is-hidden");
   }
+  deleteConfirmModal.dataset.mobilePresentation = "";
   updateOverlayScrollLock();
 
   if (wasOpen && modalTrigger) {
@@ -6894,12 +6895,13 @@ function closeDeleteConfirmModal() {
   }
 }
 
-function openDeleteConfirmModal(item, trigger = null) {
+function openDeleteConfirmModal(item, trigger = null, { mobilePresentation = "sheet" } = {}) {
   if (!deleteConfirmModal || !confirmDeleteBtn || !deleteConfirmText) {
     return;
   }
 
   modalTrigger = trigger instanceof HTMLElement ? trigger : null;
+  deleteConfirmModal.dataset.mobilePresentation = mobilePresentation;
   pendingDeleteKind = "item";
   pendingDeleteRecurringContext = getRecurringDeleteContext(item);
   pendingDeleteProjection = item?.isProjectedRecurring
