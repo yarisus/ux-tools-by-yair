@@ -4467,7 +4467,7 @@ function saveMobileExpenseEditScreen() {
     isRecurring: false,
     recurringMonths: null,
     editScope: "thisMonth",
-    showSuccessFeedback: false
+    successToastMessage: "Cambios guardados"
   });
 
   if (!didSave) {
@@ -4480,8 +4480,6 @@ function saveMobileExpenseEditScreen() {
   mobileExpenseEditScreen.setAttribute("aria-hidden", "true");
   resetMobileExpenseEditState();
   updateOverlayScrollLock();
-
-  window.alert("Datos modificados con exito.");
 
   if (isPuntualExpenseItem(updatedItem)) {
     openMobileMovementDetailScreen(updatedItem, mobileMovementDetailTrigger);
