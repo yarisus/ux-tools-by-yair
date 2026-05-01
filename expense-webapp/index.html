@@ -1694,11 +1694,11 @@
 
     <div id="mobileExpenseEditScreen" class="mobile-expense-edit-screen is-hidden md:hidden" aria-hidden="true">
       <section class="mobile-expense-edit-card" role="dialog" aria-modal="true" aria-labelledby="mobileExpenseEditTitle">
-        <header class="mobile-expense-edit-head">
-          <div class="mobile-expense-edit-toolbar">
+        <header class="mobile-movement-detail-head mobile-expense-edit-head">
+          <div class="mobile-movement-detail-toolbar mobile-expense-edit-toolbar">
             <button
               id="backMobileExpenseEditBtn"
-              class="mobile-detail-screen-icon-btn mobile-expense-edit-icon-btn"
+              class="mobile-amount-frame-close-btn mobile-movement-detail-icon-btn mobile-expense-edit-icon-btn"
               type="button"
               aria-label="Volver al detalle"
             >
@@ -1706,14 +1706,14 @@
             </button>
             <button
               id="closeMobileExpenseEditBtn"
-              class="mobile-detail-screen-icon-btn mobile-expense-edit-icon-btn"
+              class="mobile-amount-frame-close-btn mobile-movement-detail-icon-btn mobile-expense-edit-icon-btn"
               type="button"
               aria-label="Cerrar edición"
             >
               <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">close</span>
             </button>
           </div>
-          <h2 id="mobileExpenseEditTitle" class="mobile-expense-edit-title font-space">Editar Gasto</h2>
+          <h2 id="mobileExpenseEditTitle" class="mobile-amount-frame-title mobile-movement-detail-title mobile-expense-edit-title font-space">Editar Gasto</h2>
         </header>
 
         <div class="mobile-expense-edit-body">
@@ -1765,7 +1765,7 @@
         </div>
 
         <footer class="mobile-expense-edit-footer">
-          <button id="mobileExpenseEditCancelBtn" class="ghost-btn inline-flex w-full items-center justify-center rounded-xl px-4 py-3 text-base font-semibold" type="button">
+          <button id="mobileExpenseEditCancelBtn" class="ghost-btn mobile-movement-detail-secondary-btn inline-flex w-full items-center justify-center rounded-xl px-4 py-3 text-base font-semibold" type="button">
             Cancelar
           </button>
           <button id="mobileExpenseEditSaveBtn" class="primary-btn inline-flex w-full items-center justify-center rounded-xl px-4 py-3 text-base font-semibold" type="button">

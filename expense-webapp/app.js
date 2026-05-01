@@ -4466,7 +4466,8 @@ function saveMobileExpenseEditScreen() {
     amount: parseCurrencyInput(mobileExpenseEditAmountInput.value || ""),
     isRecurring: false,
     recurringMonths: null,
-    editScope: "thisMonth"
+    editScope: "thisMonth",
+    successToastMessage: "Cambios guardados"
   });
 
   if (!didSave) {
@@ -4925,7 +4926,8 @@ function saveMovementRecord({
   amount = 0,
   isRecurring = false,
   recurringMonths = null,
-  editScope = "thisMonth"
+  editScope = "thisMonth",
+  successToastMessage = ""
 }) {
   const normalizedType = normalizeMovementType(movementType);
   const movementDate = normalizeItemDate(rawMovementDate);
@@ -4935,6 +4937,11 @@ function saveMovementRecord({
   const recurring = Boolean(isRecurring);
   const requestedRecurringMonths = recurringMonths == null ? null : parseRecurringDurationSelection(recurringMonths);
   const normalizedEditScope = normalizeEditScope(editScope);
+  const successMessage = String(successToastMessage || "").trim();
+
+  const notifyMovementSaveSuccess = () => {
+    showToast(successMessage || (normalizedType === "income" ? "Ingreso actualizado correctamente." : "Gasto actualizado correctamente."));
+  };
 
   if (!trimmedName || numericAmount < 0 || !CATEGORY_CONFIG[normalizedCategory] || !hasValidItemDate(rawMovementDate)) {
     showToast("Revisa los campos: descripcion, fecha y monto validos.", true);
@@ -5021,7 +5028,7 @@ function saveMovementRecord({
         }
 
         didMutate = true;
-        showToast(normalizedType === "income" ? "Ingreso actualizado correctamente." : "Gasto actualizado correctamente.");
+        notifyMovementSaveSuccess();
       }
     } else {
       item.type = normalizedType;
@@ -5063,7 +5070,7 @@ function saveMovementRecord({
       }
 
       didMutate = true;
-      showToast(normalizedType === "income" ? "Ingreso actualizado correctamente." : "Gasto actualizado correctamente.");
+      notifyMovementSaveSuccess();
     }
   } else if (editingProjectedItem?.seriesId && editingProjectedItem?.monthKey) {
     const projectionContext = editingProjectedItem;
@@ -5143,7 +5150,7 @@ function saveMovementRecord({
       didMutate = true;
     }
 
-    showToast(normalizedType === "income" ? "Ingreso actualizado correctamente." : "Gasto actualizado correctamente.");
+    notifyMovementSaveSuccess();
   } else {
     const newItemId = createItemId();
     const newRecurringDuration = requestedRecurringMonths == null ? 12 : requestedRecurringMonths;
