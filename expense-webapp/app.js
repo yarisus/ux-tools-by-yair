@@ -4398,6 +4398,15 @@ function openMobileExpenseEditScreen(item) {
     return;
   }
 
+  closeMobileMovementDetailScreen({ restoreFocus: false, preserveItem: true });
+  closeProfileDropdown();
+  closeMobileQuickAddSheet();
+  closeMobileAmountScreen({ immediate: true, preserveState: true });
+  closeMobileDetailScreen({ immediate: true });
+  closeMobileExpenseEditScreen({ reopenDetail: false });
+  closeMobileQuickEntrySheet();
+  closeMobileFilterSheet();
+
   mobileExpenseEditItem = item;
   editingItemId = item.id;
   editingProjectedItem = null;
@@ -4413,15 +4422,6 @@ function openMobileExpenseEditScreen(item) {
     mobileExpenseEditDateInput.value = normalizeItemDate(item.date);
   }
   populateMobileExpenseEditCategories(item.category);
-
-  closeMobileMovementDetailScreen({ restoreFocus: false, preserveItem: true });
-  closeProfileDropdown();
-  closeMobileQuickAddSheet();
-  closeMobileAmountScreen({ immediate: true, preserveState: true });
-  closeMobileDetailScreen({ immediate: true });
-  closeMobileExpenseEditScreen({ reopenDetail: false });
-  closeMobileQuickEntrySheet();
-  closeMobileFilterSheet();
 
   mobileExpenseEditOpen = true;
   mobileExpenseEditScreen.classList.remove("is-hidden");
