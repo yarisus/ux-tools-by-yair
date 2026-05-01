@@ -374,6 +374,20 @@ body[data-design-system="dinaria-v2"] .ghost-btn {
   color: var(--ds-button-secondary-text) !important;
 }
 
+body[data-design-system="dinaria-v2"] .mobile-movement-detail-secondary-btn {
+  border-color: #edf1fe !important;
+  background: #edf1fe !important;
+  color: #213196 !important;
+}
+
+body[data-design-system="dinaria-v2"] .mobile-movement-detail-secondary-btn:hover,
+body[data-design-system="dinaria-v2"] .mobile-movement-detail-secondary-btn:focus-visible,
+body[data-design-system="dinaria-v2"] .mobile-movement-detail-secondary-btn:active {
+  border-color: #e8edff !important;
+  background: #e8edff !important;
+  color: #213196 !important;
+}
+
 body[data-design-system="dinaria-v2"] .icon-btn {
   border-color: var(--ds-button-secondary-border) !important;
   background: rgba(255, 255, 255, 0.96) !important;

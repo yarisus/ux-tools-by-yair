@@ -23171,8 +23171,12 @@ body.overflow-hidden .mobile-add-fab-wrap,
 
   body #mobileMovementDetailEditBtn .mobile-symbol,
   body #mobileMovementDetailDeleteBtn .mobile-symbol {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     font-size: 20px !important;
     line-height: 1 !important;
+    flex-shrink: 0 !important;
   }
 
   body .mobile-expense-edit-screen {
