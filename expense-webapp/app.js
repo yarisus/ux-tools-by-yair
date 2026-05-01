@@ -2352,6 +2352,10 @@ function openMovementCreateFlow(trigger = null, movementType = "expense") {
   }
 
   const nextType = normalizeMovementType(movementType);
+  if (isMobileViewport()) {
+    openMobileAmountScreen(nextType);
+    return;
+  }
   openExpenseModalForCreate(trigger, nextType);
 }
 
