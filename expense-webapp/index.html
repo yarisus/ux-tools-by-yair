@@ -1607,7 +1607,10 @@
                 <span id="mobileMovementDetailIcon" class="material-symbols-rounded mobile-symbol">shopping_cart</span>
               </span>
               <div class="mobile-movement-detail-hero-copy">
-                <strong id="mobileMovementDetailAmount" class="mobile-movement-detail-amount font-space">-0</strong>
+                <div class="mobile-movement-detail-amount-row">
+                  <strong id="mobileMovementDetailAmount" class="mobile-movement-detail-amount font-space">-0</strong>
+                  <span id="mobileMovementDetailRecurringIcon" class="material-symbols-rounded mobile-movement-detail-recurring-icon is-hidden" aria-hidden="true">sync</span>
+                </div>
                 <span id="mobileMovementDetailTimestamp" class="mobile-movement-detail-timestamp">00:00 - 1 Enero 2026</span>
               </div>
             </div>
@@ -1621,6 +1624,14 @@
             <div class="mobile-movement-detail-info-row">
               <dt>Categoría</dt>
               <dd id="mobileMovementDetailCategoryValue">Otros</dd>
+            </div>
+            <div id="mobileMovementDetailRepetitionRow" class="mobile-movement-detail-info-row is-hidden">
+              <dt>Repetición</dt>
+              <dd id="mobileMovementDetailRepetitionValue">-</dd>
+            </div>
+            <div id="mobileMovementDetailDurationRow" class="mobile-movement-detail-info-row is-hidden">
+              <dt>Duración</dt>
+              <dd id="mobileMovementDetailDurationValue">-</dd>
             </div>
           </dl>
         </div>
