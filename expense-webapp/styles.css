@@ -23155,6 +23155,20 @@ body.overflow-hidden .mobile-add-fab-wrap,
     z-index: 2 !important;
   }
 
+  body .mobile-movement-detail-secondary-btn {
+    background: #edf1fe !important;
+    border-color: #edf1fe !important;
+    color: #213196 !important;
+  }
+
+  body .mobile-movement-detail-secondary-btn:hover,
+  body .mobile-movement-detail-secondary-btn:focus-visible,
+  body .mobile-movement-detail-secondary-btn:active {
+    background: #e8edff !important;
+    border-color: #e8edff !important;
+    color: #213196 !important;
+  }
+
   body #mobileMovementDetailEditBtn .mobile-symbol,
   body #mobileMovementDetailDeleteBtn .mobile-symbol {
     font-size: 20px !important;
