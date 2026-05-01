@@ -23279,6 +23279,13 @@ body.overflow-hidden .mobile-add-fab-wrap,
     letter-spacing: normal !important;
   }
 
+  body .mobile-quick-entry-field > span:first-child,
+  body .mobile-detail-screen-field > span:first-child,
+  body .mobile-expense-edit-field > span:first-child {
+    text-transform: none !important;
+    letter-spacing: normal !important;
+  }
+
   body .mobile-expense-edit-field .field-control > input,
   body .mobile-expense-edit-field .field-control--select > .form-select {
     width: 100% !important;
