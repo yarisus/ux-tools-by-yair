@@ -1015,8 +1015,8 @@ body[data-design-system="dinaria-v2"] .icon-btn {
     width: 100% !important;
     min-height: 52px !important;
     border: 1px solid var(--ds-input-border) !important;
-    border-radius: 16px !important;
-    background: #ffffff !important;
+    border-radius: inherit !important;
+    background: transparent !important;
     color: var(--ds-text-primary) !important;
     box-shadow: none !important;
     font-size: 16px !important;
