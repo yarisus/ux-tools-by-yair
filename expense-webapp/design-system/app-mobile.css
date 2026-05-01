@@ -990,7 +990,15 @@ body[data-design-system="dinaria-v2"] .icon-btn {
     gap: 8px !important;
   }
 
-  body[data-design-system="dinaria-v2"] .mobile-quick-entry-field > span:first-child,
+  body[data-design-system="dinaria-v2"] .mobile-quick-entry-field > span:first-child {
+    color: var(--ds-text-muted) !important;
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    font-weight: 700 !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+  }
+
   body[data-design-system="dinaria-v2"] .mobile-filter-sheet-section h3,
   body[data-design-system="dinaria-v2"] .mobile-filter-sheet-section-title h3 {
     color: var(--ds-text-muted) !important;
