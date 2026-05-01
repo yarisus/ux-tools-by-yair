@@ -4467,7 +4467,7 @@ function saveMobileExpenseEditScreen() {
     isRecurring: false,
     recurringMonths: null,
     editScope: "thisMonth",
-    successToastMessage: "Cambios guardados"
+    showSuccessFeedback: false
   });
 
   if (!didSave) {
@@ -4480,6 +4480,8 @@ function saveMobileExpenseEditScreen() {
   mobileExpenseEditScreen.setAttribute("aria-hidden", "true");
   resetMobileExpenseEditState();
   updateOverlayScrollLock();
+
+  window.alert("Datos modificados con exito.");
 
   if (isPuntualExpenseItem(updatedItem)) {
     openMobileMovementDetailScreen(updatedItem, mobileMovementDetailTrigger);
@@ -4927,7 +4929,8 @@ function saveMovementRecord({
   isRecurring = false,
   recurringMonths = null,
   editScope = "thisMonth",
-  successToastMessage = ""
+  successToastMessage = "",
+  showSuccessFeedback = true
 }) {
   const normalizedType = normalizeMovementType(movementType);
   const movementDate = normalizeItemDate(rawMovementDate);
@@ -4938,8 +4941,12 @@ function saveMovementRecord({
   const requestedRecurringMonths = recurringMonths == null ? null : parseRecurringDurationSelection(recurringMonths);
   const normalizedEditScope = normalizeEditScope(editScope);
   const successMessage = String(successToastMessage || "").trim();
+  const shouldShowSuccessFeedback = showSuccessFeedback !== false;
 
   const notifyMovementSaveSuccess = () => {
+    if (!shouldShowSuccessFeedback) {
+      return;
+    }
     showToast(successMessage || (normalizedType === "income" ? "Ingreso actualizado correctamente." : "Gasto actualizado correctamente."));
   };
 
