@@ -23085,6 +23085,11 @@ body.overflow-hidden .mobile-add-fab-wrap,
     margin-top: 4px !important;
   }
 
+  body .mobile-movement-detail-hero-icon .mobile-symbol {
+    font-size: 24px !important;
+    line-height: 1 !important;
+  }
+
   body .mobile-movement-detail-hero-copy {
     display: grid !important;
     gap: 4px !important;
@@ -23100,7 +23105,7 @@ body.overflow-hidden .mobile-add-fab-wrap,
   body .mobile-movement-detail-timestamp {
     color: #6b7280 !important;
     font-size: 16px !important;
-    line-height: 24px !important;
+    line-height: 20px !important;
     font-weight: 500 !important;
   }
 
