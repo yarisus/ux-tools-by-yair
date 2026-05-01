@@ -4657,10 +4657,9 @@ function openDeleteFlowFromMobileMovementDetail() {
   }
 
   const item = mobileMovementDetailItem;
-  const deleteTrigger = mobileMovementDetailTrigger instanceof HTMLElement
-    ? mobileMovementDetailTrigger
-    : mobileMovementDetailDeleteBtn;
-  closeMobileMovementDetailScreen({ restoreFocus: false });
+  const deleteTrigger = mobileMovementDetailDeleteBtn instanceof HTMLElement
+    ? mobileMovementDetailDeleteBtn
+    : mobileMovementDetailTrigger;
   openDeleteConfirmModal(item, deleteTrigger, { mobilePresentation: "dialog" });
 }
 
