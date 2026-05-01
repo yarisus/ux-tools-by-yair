@@ -3203,6 +3203,10 @@ h3,
   z-index: 40;
 }
 
+#deleteConfirmModal {
+  z-index: 120 !important;
+}
+
 .sheet {
   z-index: 50;
 }
