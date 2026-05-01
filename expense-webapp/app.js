@@ -4466,6 +4466,7 @@ function openMobileExpenseEditScreen(item) {
   mobileExpenseEditScreen.classList.remove("is-hidden");
   mobileExpenseEditScreen.setAttribute("aria-hidden", "false");
   updateOverlayScrollLock();
+  ensureCurrentOverlayHistoryEntry();
 }
 
 function closeMobileExpenseEditScreen({ reopenDetail = true } = {}) {
@@ -4655,6 +4656,7 @@ function openMobileMovementDetailScreen(item, trigger = null) {
     mobileMovementDetailBody.scrollTop = 0;
   }
   updateOverlayScrollLock();
+  ensureCurrentOverlayHistoryEntry();
 
   if (pendingMobileMovementDetailToast) {
     const successMessage = pendingMobileMovementDetailToast;
@@ -7240,6 +7242,21 @@ function closeActiveOverlayState() {
   }
 
   return false;
+}
+
+function ensureCurrentOverlayHistoryEntry() {
+  if (!hasOpenOverlayState()) {
+    return;
+  }
+
+  const currentState = history.state && typeof history.state === "object" ? history.state : {};
+  if (currentState.dinariaOverlay) {
+    overlayBackStateActive = true;
+    return;
+  }
+
+  history.pushState({ ...currentState, dinariaOverlay: true }, "", location.href);
+  overlayBackStateActive = true;
 }
 
 function syncOverlayBackState(hasOpenOverlay = hasOpenOverlayState()) {
