@@ -4658,7 +4658,7 @@ function closeMobileExpenseEditScreen({ reopenDetail = true } = {}) {
   updateOverlayScrollLock();
 
   if (reopenDetail && normalizeMovementType(item?.type) === "expense") {
-    openMobileMovementDetailScreen(item, mobileMovementDetailTrigger);
+    openMobileMovementDetailScreen(item, mobileMovementDetailTrigger, { forceOverlayHistoryEntry: true });
   }
 }
 
@@ -4725,7 +4725,7 @@ function saveMobileExpenseEditScreen() {
 
   if (normalizeMovementType(updatedItem?.type) === "expense") {
     pendingMobileMovementDetailToast = "Cambios guardados";
-    openMobileMovementDetailScreen(updatedItem, mobileMovementDetailTrigger);
+    openMobileMovementDetailScreen(updatedItem, mobileMovementDetailTrigger, { forceOverlayHistoryEntry: true });
   }
 }
 
@@ -4826,7 +4826,7 @@ function showMobileMovementDetailAlert(message) {
   }, 2600);
 }
 
-function openMobileMovementDetailScreen(item, trigger = null) {
+function openMobileMovementDetailScreen(item, trigger = null, { forceOverlayHistoryEntry = false } = {}) {
   if (!mobileMovementDetailScreen || !item) {
     return;
   }
@@ -4858,7 +4858,13 @@ function openMobileMovementDetailScreen(item, trigger = null) {
     mobileMovementDetailBody.scrollTop = 0;
   }
   updateOverlayScrollLock();
-  ensureCurrentOverlayHistoryEntry();
+  if (forceOverlayHistoryEntry) {
+    const currentState = history.state && typeof history.state === "object" ? history.state : {};
+    history.pushState({ ...currentState, dinariaOverlay: true }, "", location.href);
+    overlayBackStateActive = true;
+  } else {
+    ensureCurrentOverlayHistoryEntry();
+  }
 
   if (pendingMobileMovementDetailToast) {
     const successMessage = pendingMobileMovementDetailToast;
