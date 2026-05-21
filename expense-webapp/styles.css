@@ -23329,6 +23329,10 @@ body.overflow-hidden .mobile-add-fab-wrap,
     text-transform: none !important;
   }
 
+  body #mobileExpenseEditDateField.is-hidden {
+    display: none !important;
+  }
+
   body .mobile-expense-edit-field label,
   body .mobile-expense-edit-field > span:first-child {
     color: #4b5563 !important;
