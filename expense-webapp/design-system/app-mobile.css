@@ -374,6 +374,20 @@ body[data-design-system="dinaria-v2"] .ghost-btn {
   color: var(--ds-button-secondary-text) !important;
 }
 
+body[data-design-system="dinaria-v2"] .mobile-movement-detail-secondary-btn {
+  border-color: #edf1fe !important;
+  background: #edf1fe !important;
+  color: #213196 !important;
+}
+
+body[data-design-system="dinaria-v2"] .mobile-movement-detail-secondary-btn:hover,
+body[data-design-system="dinaria-v2"] .mobile-movement-detail-secondary-btn:focus-visible,
+body[data-design-system="dinaria-v2"] .mobile-movement-detail-secondary-btn:active {
+  border-color: #e8edff !important;
+  background: #e8edff !important;
+  color: #213196 !important;
+}
+
 body[data-design-system="dinaria-v2"] .icon-btn {
   border-color: var(--ds-button-secondary-border) !important;
   background: rgba(255, 255, 255, 0.96) !important;
@@ -976,7 +990,15 @@ body[data-design-system="dinaria-v2"] .icon-btn {
     gap: 8px !important;
   }
 
-  body[data-design-system="dinaria-v2"] .mobile-quick-entry-field > span:first-child,
+  body[data-design-system="dinaria-v2"] .mobile-quick-entry-field > span:first-child {
+    color: var(--ds-text-muted) !important;
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    font-weight: 700 !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+  }
+
   body[data-design-system="dinaria-v2"] .mobile-filter-sheet-section h3,
   body[data-design-system="dinaria-v2"] .mobile-filter-sheet-section-title h3 {
     color: var(--ds-text-muted) !important;
@@ -992,9 +1014,9 @@ body[data-design-system="dinaria-v2"] .icon-btn {
   body[data-design-system="dinaria-v2"] .mobile-filter-search-wrap input {
     width: 100% !important;
     min-height: 52px !important;
-    border: 1px solid var(--ds-input-border) !important;
-    border-radius: 16px !important;
-    background: #ffffff !important;
+    border: none !important;
+    border-radius: inherit !important;
+    background: transparent !important;
     color: var(--ds-text-primary) !important;
     box-shadow: none !important;
     font-size: 16px !important;

@@ -156,7 +156,6 @@ const ONBOARDING_TRANSITION_MS = 260;
 const state = loadState();
 const cloudConfig = loadCloudConfig();
 let localUiState = loadLocalUiState();
-const systemThemeMedia = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
 const mobileViewportMedia = window.matchMedia ? window.matchMedia("(max-width: 767px)") : null;
 
 let deferredInstallPrompt = null;
@@ -369,15 +368,37 @@ const mobileAmountScreenBody = mobileAmountScreen?.querySelector(".mobile-amount
 const mobileAmountRecurringCard = document.getElementById("mobileAmountRecurringCard");
 const mobileAmountRecurring = document.getElementById("mobileAmountRecurring");
 const mobileAmountRecurringMonthsField = document.getElementById("mobileAmountRecurringMonthsField");
-const mobileAmountRecurringMonths = document.getElementById("mobileAmountRecurringMonths");
+const mobileAmountRecurringSummary = document.getElementById("mobileAmountRecurringSummary");
 const mobileAmountNextBtn = document.getElementById("mobileAmountNextBtn");
 const mobileAmountKeys = Array.from(document.querySelectorAll("[data-mobile-amount-key]"));
+const mobileAmountRecurrenceSheet = document.getElementById("mobileAmountRecurrenceSheet");
+const mobileAmountRecurrenceBackdrop = document.getElementById("mobileAmountRecurrenceBackdrop");
+const mobileAmountRecurrenceSubtitle = document.getElementById("mobileAmountRecurrenceSubtitle");
+const mobileAmountRecurrenceAlwaysOption = document.getElementById("mobileAmountRecurrenceAlwaysOption");
+const mobileAmountRecurrenceMonthsOption = document.getElementById("mobileAmountRecurrenceMonthsOption");
+const mobileAmountRecurrenceMonthsPanel = document.getElementById("mobileAmountRecurrenceMonthsPanel");
+const mobileAmountRecurrenceMinusBtn = document.getElementById("mobileAmountRecurrenceMinusBtn");
+const mobileAmountRecurrencePlusBtn = document.getElementById("mobileAmountRecurrencePlusBtn");
+const mobileAmountRecurrenceMonthsValue = document.getElementById("mobileAmountRecurrenceMonthsValue");
+const mobileAmountRecurrenceCancelBtn = document.getElementById("mobileAmountRecurrenceCancelBtn");
+const mobileAmountRecurrenceConfirmBtn = document.getElementById("mobileAmountRecurrenceConfirmBtn");
+const mobileAmountRecurrenceChipButtons = Array.from(document.querySelectorAll("[data-mobile-recurrence-chip]"));
 const mobileDetailScreen = document.getElementById("mobileDetailScreen");
 const backMobileDetailScreenBtn = document.getElementById("backMobileDetailScreenBtn");
 const closeMobileDetailScreenBtn = document.getElementById("closeMobileDetailScreenBtn");
 const mobileDetailNameInput = document.getElementById("mobileDetailNameInput");
 const mobileDetailCategory = document.getElementById("mobileDetailCategory");
 const mobileDetailSaveBtn = document.getElementById("mobileDetailSaveBtn");
+const mobileExpenseEditScreen = document.getElementById("mobileExpenseEditScreen");
+const backMobileExpenseEditBtn = document.getElementById("backMobileExpenseEditBtn");
+const closeMobileExpenseEditBtn = document.getElementById("closeMobileExpenseEditBtn");
+const mobileExpenseEditAmountInput = document.getElementById("mobileExpenseEditAmountInput");
+const mobileExpenseEditNameInput = document.getElementById("mobileExpenseEditNameInput");
+const mobileExpenseEditCategory = document.getElementById("mobileExpenseEditCategory");
+const mobileExpenseEditDateInput = document.getElementById("mobileExpenseEditDateInput");
+const mobileExpenseEditDateField = document.getElementById("mobileExpenseEditDateField");
+const mobileExpenseEditCancelBtn = document.getElementById("mobileExpenseEditCancelBtn");
+const mobileExpenseEditSaveBtn = document.getElementById("mobileExpenseEditSaveBtn");
 const mobileQuickEntrySheet = document.getElementById("mobileQuickEntrySheet");
 const backMobileQuickEntryBtn = document.getElementById("backMobileQuickEntryBtn");
 const closeMobileQuickEntryBtn = document.getElementById("closeMobileQuickEntryBtn");
@@ -397,6 +418,26 @@ const mobileQuickEntryScopeThisMonthBtn = document.getElementById("mobileQuickEn
 const mobileQuickEntryScopeAllMonthsBtn = document.getElementById("mobileQuickEntryScopeAllMonthsBtn");
 const mobileQuickEntrySaveBtn = document.getElementById("mobileQuickEntrySaveBtn");
 const mobileQuickEntryDeleteBtn = document.getElementById("mobileQuickEntryDeleteBtn");
+const mobileMovementDetailScreen = document.getElementById("mobileMovementDetailScreen");
+const backMobileMovementDetailBtn = document.getElementById("backMobileMovementDetailBtn");
+const closeMobileMovementDetailBtn = document.getElementById("closeMobileMovementDetailBtn");
+const mobileMovementDetailTitle = document.getElementById("mobileMovementDetailTitle");
+const mobileMovementDetailIcon = document.getElementById("mobileMovementDetailIcon");
+const mobileMovementDetailAmount = document.getElementById("mobileMovementDetailAmount");
+const mobileMovementDetailTimestamp = document.getElementById("mobileMovementDetailTimestamp");
+const mobileMovementDetailAlert = document.getElementById("mobileMovementDetailAlert");
+const mobileMovementDetailAlertMessage = document.getElementById("mobileMovementDetailAlertMessage");
+const mobileMovementDetailRecurringIcon = document.getElementById("mobileMovementDetailRecurringIcon");
+const mobileMovementDetailHeroIcon = mobileMovementDetailScreen?.querySelector(".mobile-movement-detail-hero-icon") || null;
+const mobileMovementDetailBody = mobileMovementDetailScreen?.querySelector(".mobile-movement-detail-body") || null;
+const mobileMovementDetailCategoryValue = document.getElementById("mobileMovementDetailCategoryValue");
+const mobileMovementDetailDescriptionValue = document.getElementById("mobileMovementDetailDescriptionValue");
+const mobileMovementDetailRepetitionRow = document.getElementById("mobileMovementDetailRepetitionRow");
+const mobileMovementDetailRepetitionValue = document.getElementById("mobileMovementDetailRepetitionValue");
+const mobileMovementDetailDurationRow = document.getElementById("mobileMovementDetailDurationRow");
+const mobileMovementDetailDurationValue = document.getElementById("mobileMovementDetailDurationValue");
+const mobileMovementDetailEditBtn = document.getElementById("mobileMovementDetailEditBtn");
+const mobileMovementDetailDeleteBtn = document.getElementById("mobileMovementDetailDeleteBtn");
 const mobileFilterSheet = document.getElementById("mobileFilterSheet");
 const closeMobileFilterSheetBtn = document.getElementById("closeMobileFilterSheetBtn");
 const mobileFilterSearchInput = document.getElementById("mobileFilterSearchInput");
@@ -457,18 +498,28 @@ let metricFitTimeoutId = null;
 let mobileQuickAddOpen = false;
 let mobileAmountScreenOpen = false;
 let mobileDetailScreenOpen = false;
+let mobileExpenseEditOpen = false;
 let mobileQuickEntryOpen = false;
+let mobileMovementDetailOpen = false;
 let mobileFilterSheetOpen = false;
 let overlayBackStateActive = false;
 let overlayBackStateSyncScheduled = false;
 let ignoreOverlayBackPopstate = false;
 let mobileQuickEntryAmount = 0;
+let mobileMovementDetailItem = null;
+let mobileMovementDetailTrigger = null;
+let mobileExpenseEditItem = null;
+let pendingMobileMovementDetailToast = "";
+let mobileMovementDetailAlertTimer = null;
 let expenseEditScope = "thisMonth";
 let mobileQuickEntryScope = "thisMonth";
 let mobileAmountMode = "expense";
 let mobileAmountValue = "";
 let mobileAmountRecurringEnabled = false;
-let mobileAmountRecurringDuration = "12";
+let mobileAmountRecurringDuration = "always";
+let mobileAmountRecurrenceSheetOpen = false;
+let mobileAmountRecurrenceDraftMode = "always";
+let mobileAmountRecurrenceDraftMonths = 2;
 let mobileAmountScreenTransitionTimer = null;
 let mobileAmountKeyboardLift = 0;
 let mobileDetailKeyboardLift = 0;
@@ -476,7 +527,7 @@ let mobileAmountFocusTimer = null;
 let mobileAmountFocusSuppressedUntil = 0;
 
 function preserveMobileAmountInputFocus(event) {
-  if (!mobileAmountScreenOpen || document.activeElement !== mobileAmountInput) {
+  if (!mobileAmountScreenOpen || mobileAmountRecurrenceSheetOpen || document.activeElement !== mobileAmountInput) {
     return;
   }
   event.preventDefault();
@@ -889,8 +940,16 @@ if (mobileAmountRecurringCard) {
     }
     event.preventDefault();
     event.stopPropagation();
-    mobileAmountRecurringEnabled = !mobileAmountRecurringEnabled;
-    syncMobileAmountRecurringDurationState();
+    if (mobileAmountRecurringEnabled) {
+      mobileAmountRecurringEnabled = false;
+      syncMobileAmountRecurringDurationState();
+    } else {
+      mobileAmountRecurringEnabled = true;
+      if (!mobileAmountRecurringDuration) {
+        mobileAmountRecurringDuration = "always";
+      }
+      syncMobileAmountRecurringDurationState();
+    }
     syncMobileAmountEditingState();
     syncMobileAmountKeyboardLift();
   });
@@ -904,61 +963,84 @@ if (mobileAmountRecurring) {
   });
 }
 
-if (mobileAmountRecurringMonths) {
-  mobileAmountRecurringMonths.addEventListener("pointerdown", (event) => {
-    event.stopPropagation();
-    suppressMobileAmountInputFocus();
-    blurMobileAmountInput();
-  });
-
-  mobileAmountRecurringMonths.addEventListener("click", (event) => {
-    event.stopPropagation();
-    suppressMobileAmountInputFocus();
-    if (!(mobileAmountRecurringMonths instanceof HTMLSelectElement) || mobileAmountRecurringMonths.disabled) {
-      return;
-    }
-    mobileAmountRecurringMonths.focus({ preventScroll: true });
-  });
-
-  mobileAmountRecurringMonths.addEventListener("change", () => {
-    if (!(mobileAmountRecurringMonths instanceof HTMLSelectElement)) {
-      return;
-    }
-    populateRecurringDurationOptions(mobileAmountRecurringMonths, mobileAmountRecurringMonths.value || "12");
-    mobileAmountRecurringDuration = mobileAmountRecurringMonths.value || "12";
-  });
-}
-
 if (mobileAmountRecurringMonthsField) {
   mobileAmountRecurringMonthsField.addEventListener("pointerdown", (event) => {
-    const target = event.target;
-    if (target instanceof HTMLElement && target.closest("select")) {
-      return;
-    }
     suppressMobileAmountInputFocus();
     blurMobileAmountInput();
   });
 
   mobileAmountRecurringMonthsField.addEventListener("click", (event) => {
-    if (
-      !(mobileAmountRecurringMonths instanceof HTMLSelectElement)
-      || mobileAmountRecurringMonths.disabled
-      || event.target === mobileAmountRecurringMonths
-    ) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!mobileAmountRecurringEnabled) {
       return;
     }
-    suppressMobileAmountInputFocus();
-    blurMobileAmountInput();
-    if (typeof mobileAmountRecurringMonths.showPicker === "function") {
-      try {
-        mobileAmountRecurringMonths.showPicker();
-      } catch (_error) {
-        mobileAmountRecurringMonths.focus({ preventScroll: true });
-      }
+    openMobileAmountRecurrenceSheet();
+  });
+}
+
+if (mobileAmountRecurrenceBackdrop) {
+  mobileAmountRecurrenceBackdrop.addEventListener("click", () => {
+    closeMobileAmountRecurrenceSheet();
+  });
+}
+
+if (mobileAmountRecurrenceAlwaysOption) {
+  mobileAmountRecurrenceAlwaysOption.addEventListener("click", () => {
+    mobileAmountRecurrenceDraftMode = "always";
+    syncMobileAmountRecurrenceSheetState();
+  });
+}
+
+if (mobileAmountRecurrenceMonthsOption) {
+  mobileAmountRecurrenceMonthsOption.addEventListener("click", () => {
+    mobileAmountRecurrenceDraftMode = "months";
+    syncMobileAmountRecurrenceSheetState();
+  });
+}
+
+if (mobileAmountRecurrenceMinusBtn) {
+  mobileAmountRecurrenceMinusBtn.addEventListener("click", () => {
+    mobileAmountRecurrenceDraftMode = "months";
+    mobileAmountRecurrenceDraftMonths = Math.max(2, mobileAmountRecurrenceDraftMonths - 1);
+    syncMobileAmountRecurrenceSheetState();
+  });
+}
+
+if (mobileAmountRecurrencePlusBtn) {
+  mobileAmountRecurrencePlusBtn.addEventListener("click", () => {
+    mobileAmountRecurrenceDraftMode = "months";
+    mobileAmountRecurrenceDraftMonths = Math.min(24, mobileAmountRecurrenceDraftMonths + 1);
+    syncMobileAmountRecurrenceSheetState();
+  });
+}
+
+mobileAmountRecurrenceChipButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const chipValue = Number(button.dataset.mobileRecurrenceChip || 0);
+    if (!Number.isFinite(chipValue) || chipValue < 2) {
       return;
     }
-    mobileAmountRecurringMonths.focus({ preventScroll: true });
-    mobileAmountRecurringMonths.click();
+    mobileAmountRecurrenceDraftMode = "months";
+    mobileAmountRecurrenceDraftMonths = Math.min(24, Math.max(2, chipValue));
+    syncMobileAmountRecurrenceSheetState();
+  });
+});
+
+if (mobileAmountRecurrenceCancelBtn) {
+  mobileAmountRecurrenceCancelBtn.addEventListener("click", () => {
+    closeMobileAmountRecurrenceSheet();
+  });
+}
+
+if (mobileAmountRecurrenceConfirmBtn) {
+  mobileAmountRecurrenceConfirmBtn.addEventListener("click", () => {
+    mobileAmountRecurringEnabled = true;
+    mobileAmountRecurringDuration = mobileAmountRecurrenceDraftMode === "months"
+      ? String(Math.min(24, Math.max(2, mobileAmountRecurrenceDraftMonths)))
+      : "always";
+    syncMobileAmountRecurringDurationState();
+    closeMobileAmountRecurrenceSheet();
   });
 }
 
@@ -1038,6 +1120,70 @@ if (mobileDetailCategory) {
 if (mobileDetailSaveBtn) {
   mobileDetailSaveBtn.addEventListener("click", () => {
     saveMobileDetailScreen();
+  });
+}
+
+if (backMobileExpenseEditBtn) {
+  backMobileExpenseEditBtn.addEventListener("click", () => {
+    closeMobileExpenseEditScreen({ reopenDetail: true });
+  });
+}
+
+if (closeMobileExpenseEditBtn) {
+  closeMobileExpenseEditBtn.addEventListener("click", () => {
+    closeMobileExpenseEditScreen({ reopenDetail: true });
+  });
+}
+
+if (mobileExpenseEditCancelBtn) {
+  mobileExpenseEditCancelBtn.addEventListener("click", () => {
+    closeMobileExpenseEditScreen({ reopenDetail: true });
+  });
+}
+
+if (mobileExpenseEditSaveBtn) {
+  mobileExpenseEditSaveBtn.addEventListener("click", () => {
+    saveMobileExpenseEditScreen();
+  });
+}
+
+if (mobileExpenseEditAmountInput) {
+  mobileExpenseEditAmountInput.addEventListener("input", () => {
+    const parsed = parseCurrencyInput(mobileExpenseEditAmountInput.value || "");
+    mobileExpenseEditAmountInput.value = parsed > 0 ? formatPuntualExpenseEditAmount(parsed) : "";
+  });
+}
+
+if (mobileExpenseEditNameInput) {
+  mobileExpenseEditNameInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      saveMobileExpenseEditScreen();
+    }
+  });
+}
+
+if (backMobileMovementDetailBtn) {
+  backMobileMovementDetailBtn.addEventListener("click", () => {
+    closeMobileMovementDetailScreen();
+  });
+}
+
+if (closeMobileMovementDetailBtn) {
+  closeMobileMovementDetailBtn.addEventListener("click", () => {
+    closeMobileMovementDetailScreen();
+  });
+}
+
+if (mobileMovementDetailEditBtn) {
+  mobileMovementDetailEditBtn.addEventListener("click", () => {
+    openEditFlowFromMobileMovementDetail();
+  });
+}
+
+if (mobileMovementDetailDeleteBtn) {
+  mobileMovementDetailDeleteBtn.addEventListener("click", () => {
+    openDeleteFlowFromMobileMovementDetail();
   });
 }
 
@@ -2128,14 +2274,6 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-if (systemThemeMedia?.addEventListener) {
-  systemThemeMedia.addEventListener("change", () => {
-    if (state.theme === "system") {
-      applyTheme();
-    }
-  });
-}
-
 function hideLaunchSplash() {
   if (!launchSplash || launchSplashHidden) {
     return;
@@ -2200,6 +2338,8 @@ document.addEventListener("keydown", (event) => {
   closeProfileDropdown();
   closeMobileQuickAddSheet();
   closeMobileAmountScreen();
+  closeMobileExpenseEditScreen({ reopenDetail: false });
+  closeMobileMovementDetailScreen({ restoreFocus: false });
   closeMobileFilterSheet();
   hideDownloadMenu();
   hideCategoryFilterMenu();
@@ -2268,6 +2408,10 @@ function openMovementCreateFlow(trigger = null, movementType = "expense") {
   }
 
   const nextType = normalizeMovementType(movementType);
+  if (isMobileViewport()) {
+    openMobileAmountScreen(nextType);
+    return;
+  }
   openExpenseModalForCreate(trigger, nextType);
 }
 
@@ -2879,6 +3023,49 @@ function formatItemCreatedTime(rawValue, fallbackDate = "") {
     hour: "2-digit",
     minute: "2-digit"
   });
+}
+
+function normalizeItemUpdatedAt(rawValue, fallbackCreatedAt = "", fallbackDate = "") {
+  return normalizeItemCreatedAt(rawValue, fallbackCreatedAt || fallbackDate);
+}
+
+function formatItemDateTime(rawValue, fallbackDate = "") {
+  const normalizedValue = normalizeItemCreatedAt(rawValue, fallbackDate);
+  if (!normalizedValue) {
+    return "";
+  }
+
+  const parsed = new Date(normalizedValue);
+  if (Number.isNaN(parsed.getTime())) {
+    return "";
+  }
+
+  const datePart = parsed.toLocaleDateString("es-AR");
+  const timePart = parsed.toLocaleTimeString("es-AR", {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+  return `${datePart} · ${timePart}`;
+}
+
+function formatItemLongDate(rawDate) {
+  const normalized = normalizeItemDate(rawDate);
+  const parsed = new Date(`${normalized}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) {
+    return normalized;
+  }
+
+  const parts = new Intl.DateTimeFormat("es-AR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  }).formatToParts(parsed);
+
+  const day = parts.find((part) => part.type === "day")?.value || "";
+  const monthRaw = parts.find((part) => part.type === "month")?.value || "";
+  const year = parts.find((part) => part.type === "year")?.value || "";
+  const month = monthRaw ? `${monthRaw.charAt(0).toUpperCase()}${monthRaw.slice(1)}` : "";
+  return [day, month, year].filter(Boolean).join(" ");
 }
 
 function getCategoryConfig(categoryKey) {
@@ -3799,10 +3986,97 @@ function syncMobileAmountRecurringDurationState() {
     mobileAmountRecurringMonthsField.classList.toggle("is-disabled", !mobileAmountRecurringEnabled);
   }
 
-  if (mobileAmountRecurringMonths instanceof HTMLSelectElement) {
-    populateRecurringDurationOptions(mobileAmountRecurringMonths, mobileAmountRecurringDuration || "12");
-    mobileAmountRecurringMonths.disabled = !mobileAmountRecurringEnabled;
+  if (mobileAmountRecurringSummary instanceof HTMLElement) {
+    if (!mobileAmountRecurringEnabled) {
+      mobileAmountRecurringSummary.textContent = "Elegir duración";
+    } else if (mobileAmountRecurringDuration === "always") {
+      mobileAmountRecurringSummary.textContent = "Hasta cancelar";
+    } else {
+      const totalMonths = Math.max(2, Math.min(24, Number(mobileAmountRecurringDuration || 2)));
+      mobileAmountRecurringSummary.textContent = `${totalMonths} meses`;
+    }
   }
+}
+
+function syncMobileAmountRecurrenceSheetState() {
+  const isMonthsMode = mobileAmountRecurrenceDraftMode === "months";
+
+  if (mobileAmountRecurrenceSubtitle) {
+    mobileAmountRecurrenceSubtitle.textContent = mobileAmountMode === "income"
+      ? "Elegí por cuánto tiempo se repetirá este ingreso."
+      : "Elegí por cuánto tiempo se repetirá este gasto.";
+  }
+
+  if (mobileAmountRecurrenceAlwaysOption) {
+    mobileAmountRecurrenceAlwaysOption.classList.toggle("is-selected", !isMonthsMode);
+  }
+
+  if (mobileAmountRecurrenceMonthsOption) {
+    mobileAmountRecurrenceMonthsOption.classList.toggle("is-selected", isMonthsMode);
+  }
+
+  if (mobileAmountRecurrenceMonthsPanel) {
+    mobileAmountRecurrenceMonthsPanel.classList.remove("is-hidden");
+    mobileAmountRecurrenceMonthsPanel.classList.toggle("is-active", isMonthsMode);
+  }
+
+  if (mobileAmountRecurrenceMonthsValue) {
+    mobileAmountRecurrenceMonthsValue.textContent = String(mobileAmountRecurrenceDraftMonths);
+  }
+
+  if (mobileAmountRecurrenceMinusBtn instanceof HTMLButtonElement) {
+    mobileAmountRecurrenceMinusBtn.disabled = mobileAmountRecurrenceDraftMonths <= 2;
+  }
+
+  if (mobileAmountRecurrencePlusBtn instanceof HTMLButtonElement) {
+    mobileAmountRecurrencePlusBtn.disabled = mobileAmountRecurrenceDraftMonths >= 24;
+  }
+
+  mobileAmountRecurrenceChipButtons.forEach((button) => {
+    const chipValue = Number(button.dataset.mobileRecurrenceChip || 0);
+    const isSelected = isMonthsMode && chipValue === mobileAmountRecurrenceDraftMonths;
+    button.classList.toggle("is-selected", isSelected);
+    button.setAttribute("aria-pressed", String(isSelected));
+  });
+}
+
+function openMobileAmountRecurrenceSheet() {
+  if (!mobileAmountRecurrenceSheet) {
+    return;
+  }
+
+  suppressMobileAmountInputFocus();
+  blurMobileAmountInput();
+
+  if (mobileAmountRecurringEnabled) {
+    if (mobileAmountRecurringDuration === "always") {
+      mobileAmountRecurrenceDraftMode = "always";
+      mobileAmountRecurrenceDraftMonths = 2;
+    } else {
+      mobileAmountRecurrenceDraftMode = "months";
+      mobileAmountRecurrenceDraftMonths = Math.max(2, Math.min(24, Number(mobileAmountRecurringDuration || 2)));
+    }
+  } else {
+    mobileAmountRecurrenceDraftMode = "always";
+    mobileAmountRecurrenceDraftMonths = 2;
+  }
+
+  mobileAmountRecurrenceSheetOpen = true;
+  mobileAmountRecurrenceSheet.classList.remove("is-hidden");
+  mobileAmountRecurrenceSheet.setAttribute("aria-hidden", "false");
+  syncMobileAmountRecurrenceSheetState();
+  updateOverlayScrollLock();
+}
+
+function closeMobileAmountRecurrenceSheet() {
+  if (!mobileAmountRecurrenceSheet) {
+    return;
+  }
+
+  mobileAmountRecurrenceSheetOpen = false;
+  mobileAmountRecurrenceSheet.classList.add("is-hidden");
+  mobileAmountRecurrenceSheet.setAttribute("aria-hidden", "true");
+  updateOverlayScrollLock();
 }
 
 function populateMobileDetailCategories(movementType = "expense") {
@@ -4059,6 +4333,8 @@ function openMobileQuickAddSheet() {
   if (!mobileQuickAddSheet) {
     return;
   }
+  closeMobileExpenseEditScreen({ reopenDetail: false });
+  closeMobileMovementDetailScreen({ restoreFocus: false });
   closeMobileDetailScreen({ immediate: true });
   closeMobileAmountScreen({ immediate: true });
   closeMobileQuickEntrySheet();
@@ -4087,6 +4363,8 @@ function openMobileAmountScreen(movementType = "expense", { reset = true } = {})
     clearTimeout(mobileAmountScreenTransitionTimer);
     mobileAmountScreenTransitionTimer = null;
   }
+  closeMobileExpenseEditScreen({ reopenDetail: false });
+  closeMobileMovementDetailScreen({ restoreFocus: false });
   closeMobileDetailScreen({ immediate: true, reset });
   closeMobileQuickAddSheet();
   closeMobileQuickEntrySheet();
@@ -4097,7 +4375,7 @@ function openMobileAmountScreen(movementType = "expense", { reset = true } = {})
   if (reset) {
     mobileAmountValue = "";
     mobileAmountRecurringEnabled = false;
-    mobileAmountRecurringDuration = "12";
+    mobileAmountRecurringDuration = "always";
   }
   setMobileAmountMode(movementType);
   syncMobileAmountRecurringDurationState();
@@ -4122,12 +4400,13 @@ function closeMobileAmountScreen({ immediate = false, preserveState = false } = 
     mobileAmountScreenTransitionTimer = null;
   }
   cancelMobileAmountInputFocusQueue();
+  closeMobileAmountRecurrenceSheet();
   mobileAmountScreenOpen = false;
   mobileAmountScreen.classList.remove("is-open");
   if (!preserveState) {
     mobileAmountValue = "";
     mobileAmountRecurringEnabled = false;
-    mobileAmountRecurringDuration = "12";
+    mobileAmountRecurringDuration = "always";
   }
   renderMobileAmountDisplay();
   mobileAmountInput?.blur();
@@ -4156,6 +4435,8 @@ function openMobileDetailScreen({ reset = true } = {}) {
     return;
   }
 
+  closeMobileExpenseEditScreen({ reopenDetail: false });
+  closeMobileMovementDetailScreen({ restoreFocus: false });
   closeMobileQuickAddSheet();
   closeMobileQuickEntrySheet();
   closeProfileDropdown();
@@ -4196,6 +4477,451 @@ function closeMobileDetailScreen({ immediate = false, reset = true } = {}) {
     populateMobileDetailCategories(mobileAmountMode);
   }
   updateOverlayScrollLock();
+}
+
+function setMovementDetailValue(element, value) {
+  if (!(element instanceof HTMLElement)) {
+    return;
+  }
+
+  const nextValue = String(value || "").trim() || "-";
+  element.textContent = nextValue;
+  element.setAttribute("title", nextValue);
+}
+
+function setMovementDetailRowVisibility(row, shouldShow) {
+  if (!(row instanceof HTMLElement)) {
+    return;
+  }
+  row.classList.toggle("is-hidden", !shouldShow);
+}
+
+function formatRecurringDurationLabel(item, monthKey = getMonthKeyFromItem(item)) {
+  const selection = getRecurringDurationSelectionForItem(item, monthKey);
+  if (selection === "always") {
+    return "Hasta cancelarlo";
+  }
+
+  const totalMonths = Math.max(1, Number(selection || 0));
+  return totalMonths === 1 ? "1 mes" : `${totalMonths} meses`;
+}
+
+function formatRecurringProgressLabel(item, monthKey = getMonthKeyFromItem(item)) {
+  const selection = getRecurringDurationSelectionForItem(item, monthKey);
+  if (selection === "always") {
+    return "Mensual";
+  }
+
+  const sourceMonth = getRecurringSeriesSourceMonth(item);
+  const selectedMonth = normalizeMonthKey(monthKey);
+  const totalMonths = Math.max(1, Number(selection || 0));
+  const currentOccurrence = Math.max(1, Math.min(totalMonths, getMonthOffsetBetween(sourceMonth, selectedMonth) + 1));
+  return `${currentOccurrence} de ${totalMonths} meses`;
+}
+
+function isPuntualExpenseItem(item) {
+  return Boolean(item)
+    && normalizeMovementType(item.type) === "expense"
+    && !Boolean(item.isRecurring)
+    && !Boolean(item.isProjectedRecurring);
+}
+
+function isRecurringExpenseItem(item) {
+  return Boolean(item)
+    && normalizeMovementType(item.type) === "expense"
+    && Boolean(item.isRecurring || item.isProjectedRecurring);
+}
+
+function isMobileExpenseEditSupportedItem(item) {
+  return isPuntualExpenseItem(item) || isRecurringExpenseItem(item);
+}
+
+function formatPuntualExpenseEditAmount(value) {
+  return `-${money(Math.max(0, Number(value || 0))).replace("$ ", "$")}`;
+}
+
+function populateMobileExpenseEditCategories(selectedCategory = "") {
+  if (!(mobileExpenseEditCategory instanceof HTMLSelectElement)) {
+    return;
+  }
+
+  const selectedValue = normalizeCategoryKeyForType(selectedCategory || getDefaultCategoryKeyForType("expense"), "expense");
+  mobileExpenseEditCategory.replaceChildren();
+
+  getCategoryKeysForType("expense").forEach((key) => {
+    const option = document.createElement("option");
+    option.value = key;
+    option.textContent = getCategoryConfig(key).label;
+    mobileExpenseEditCategory.appendChild(option);
+  });
+
+  mobileExpenseEditCategory.value = selectedValue;
+}
+
+function setMobileExpenseEditDateFieldVisibility(shouldShow = true) {
+  if (!(mobileExpenseEditDateField instanceof HTMLElement)) {
+    return;
+  }
+
+  mobileExpenseEditDateField.classList.toggle("is-hidden", !shouldShow);
+}
+
+function resetMobileExpenseEditState() {
+  mobileExpenseEditItem = null;
+  editingItemId = null;
+  editingProjectedItem = null;
+  pendingMovementType = "expense";
+
+  if (mobileExpenseEditAmountInput instanceof HTMLInputElement) {
+    mobileExpenseEditAmountInput.value = "";
+  }
+  if (mobileExpenseEditNameInput instanceof HTMLInputElement) {
+    mobileExpenseEditNameInput.value = "";
+  }
+  if (mobileExpenseEditDateInput instanceof HTMLInputElement) {
+    mobileExpenseEditDateInput.value = "";
+  }
+  populateMobileExpenseEditCategories(getDefaultCategoryKeyForType("expense"));
+  setMobileExpenseEditDateFieldVisibility(true);
+}
+
+function openMobileExpenseEditScreen(item) {
+  if (!mobileExpenseEditScreen || !isMobileExpenseEditSupportedItem(item)) {
+    openMobileQuickEntrySheet(item?.type || "expense", item?.amount || 0, item || null);
+    return;
+  }
+
+  closeMobileMovementDetailScreen({ restoreFocus: false, preserveItem: true });
+  closeProfileDropdown();
+  closeMobileQuickAddSheet();
+  closeMobileAmountScreen({ immediate: true, preserveState: true });
+  closeMobileDetailScreen({ immediate: true });
+  closeMobileExpenseEditScreen({ reopenDetail: false });
+  closeMobileQuickEntrySheet();
+  closeMobileFilterSheet();
+
+  const editableItem = item;
+  const projectionSeriesId = item?.isProjectedRecurring ? getRecurringSeriesId(item) : "";
+  const projectionMonthKey = item?.isProjectedRecurring ? getMonthKeyFromItem(item) : "";
+  const projectionSourceItem = item?.isProjectedRecurring
+    ? findLatestRecurringSourceItem(projectionSeriesId, projectionMonthKey)
+    : null;
+  const isRecurringEdit = isRecurringEditContext(editableItem, { isProjected: Boolean(item?.isProjectedRecurring) });
+
+  mobileExpenseEditItem = item;
+  editingProjectedItem = item?.isProjectedRecurring
+    ? {
+      seriesId: projectionSeriesId,
+      monthKey: projectionMonthKey,
+      sourceItemId: projectionSourceItem?.id || "",
+      sourceMonthKey: projectionSourceItem ? getRecurringSeriesSourceMonth(projectionSourceItem) : "",
+      endMonth: projectionSourceItem ? getRecurringSeriesTerminalMonth(projectionSourceItem) : "",
+      type: normalizeMovementType(editableItem.type),
+      date: normalizeItemDate(editableItem.date),
+      category: normalizeCategoryKeyForType(editableItem.category, editableItem.type),
+      name: String(editableItem.name || "").trim(),
+      amount: Math.max(0, Number(editableItem.amount || 0))
+    }
+    : null;
+  editingItemId = item?.isProjectedRecurring ? null : item.id;
+  pendingMovementType = "expense";
+
+  if (mobileExpenseEditAmountInput instanceof HTMLInputElement) {
+    mobileExpenseEditAmountInput.value = formatPuntualExpenseEditAmount(editableItem.amount);
+  }
+  if (mobileExpenseEditNameInput instanceof HTMLInputElement) {
+    mobileExpenseEditNameInput.value = editableItem.name || "";
+  }
+  if (mobileExpenseEditDateInput instanceof HTMLInputElement) {
+    mobileExpenseEditDateInput.value = normalizeItemDate(editableItem.date);
+  }
+  populateMobileExpenseEditCategories(editableItem.category);
+  setMobileExpenseEditDateFieldVisibility(!isRecurringEdit);
+
+  mobileExpenseEditOpen = true;
+  mobileExpenseEditScreen.classList.remove("is-hidden");
+  mobileExpenseEditScreen.setAttribute("aria-hidden", "false");
+  updateOverlayScrollLock();
+  ensureCurrentOverlayHistoryEntry();
+}
+
+function closeMobileExpenseEditScreen({ reopenDetail = true } = {}) {
+  if (!mobileExpenseEditScreen) {
+    return;
+  }
+
+  const item = mobileExpenseEditItem;
+  mobileExpenseEditOpen = false;
+  mobileExpenseEditScreen.classList.add("is-hidden");
+  mobileExpenseEditScreen.setAttribute("aria-hidden", "true");
+  resetMobileExpenseEditState();
+  updateOverlayScrollLock();
+
+  if (reopenDetail && normalizeMovementType(item?.type) === "expense") {
+    openMobileMovementDetailScreen(item, mobileMovementDetailTrigger);
+  }
+}
+
+function saveMobileExpenseEditScreen() {
+  if (
+    !(mobileExpenseEditAmountInput instanceof HTMLInputElement)
+    || !(mobileExpenseEditNameInput instanceof HTMLInputElement)
+    || !(mobileExpenseEditCategory instanceof HTMLSelectElement)
+    || !(mobileExpenseEditDateInput instanceof HTMLInputElement)
+    || !mobileExpenseEditItem
+  ) {
+    return;
+  }
+
+  const editedItemId = editingItemId;
+  const recurringEditContext = isRecurringEditContext(
+    mobileExpenseEditItem,
+    { isProjected: Boolean(editingProjectedItem) }
+  );
+  const editDate = recurringEditContext
+    ? normalizeItemDate(mobileExpenseEditItem.date)
+    : mobileExpenseEditDateInput.value;
+  const recurringDuration = recurringEditContext
+    ? getRecurringDurationSelectionForItem(
+      editingProjectedItem?.sourceItemId
+        ? findLatestRecurringSourceItem(editingProjectedItem.seriesId, editingProjectedItem.monthKey) || mobileExpenseEditItem
+        : mobileExpenseEditItem,
+      getMonthKeyFromItem(mobileExpenseEditItem)
+    )
+    : null;
+  const didSave = saveMovementRecord({
+    movementType: "expense",
+    rawMovementDate: editDate,
+    category: mobileExpenseEditCategory.value,
+    name: mobileExpenseEditNameInput.value,
+    amount: parseCurrencyInput(mobileExpenseEditAmountInput.value || ""),
+    isRecurring: recurringEditContext,
+    recurringMonths: recurringDuration,
+    editScope: recurringEditContext ? "allMonths" : "thisMonth",
+    successToastMessage: "Cambios guardados"
+  });
+
+  if (!didSave) {
+    return;
+  }
+
+  const updatedItem = recurringEditContext
+    ? getVisibleMonthExpenseItems(state.activeMonth).find((entry) => {
+      if (!entry) {
+        return false;
+      }
+      if (editingProjectedItem?.seriesId) {
+        return getRecurringSeriesId(entry) === editingProjectedItem.seriesId
+          && getMonthKeyFromItem(entry) === normalizeMonthKey(editingProjectedItem.monthKey);
+      }
+      return entry.id === editedItemId;
+    }) || state.items.find((entry) => entry.id === editedItemId) || mobileExpenseEditItem
+    : state.items.find((entry) => entry.id === editedItemId) || null;
+  mobileExpenseEditOpen = false;
+  mobileExpenseEditScreen.classList.add("is-hidden");
+  mobileExpenseEditScreen.setAttribute("aria-hidden", "true");
+  resetMobileExpenseEditState();
+  updateOverlayScrollLock();
+
+  if (normalizeMovementType(updatedItem?.type) === "expense") {
+    pendingMobileMovementDetailToast = "Cambios guardados";
+    openMobileMovementDetailScreen(updatedItem, mobileMovementDetailTrigger);
+  }
+}
+
+function renderMobileMovementDetailScreen(item = mobileMovementDetailItem) {
+  if (!item) {
+    return;
+  }
+
+  const movementType = normalizeMovementType(item.type);
+  const categoryKey = normalizeCategoryKeyForType(item.category, movementType);
+  const categoryConfig = getCategoryConfig(categoryKey);
+  const detailMonthKey = normalizeMonthKey(state.activeMonth || getMonthKeyFromItem(item));
+  const timeLabel = formatItemCreatedTime(item.createdAt, item.date) || "--:--";
+  const dateLabel = formatItemLongDate(item.date);
+  const amountValue = Math.max(0, Number(item.amount || 0));
+  const isRecurringExpense = movementType === "expense" && Boolean(item.isRecurring || item.isProjectedRecurring);
+  const signedAmountLabel = movementType === "income"
+    ? `+$${new Intl.NumberFormat("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amountValue)}`
+    : `-$${new Intl.NumberFormat("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amountValue)}`;
+
+  if (mobileMovementDetailTitle) {
+    mobileMovementDetailTitle.textContent = "Detalle de Gasto";
+  }
+
+  if (mobileMovementDetailIcon) {
+    mobileMovementDetailIcon.textContent = getCategorySymbol(categoryKey, movementType);
+  }
+
+  if (mobileMovementDetailHeroIcon instanceof HTMLElement) {
+    mobileMovementDetailHeroIcon.style.setProperty("color", categoryConfig.color, "important");
+    mobileMovementDetailHeroIcon.style.setProperty("background", `${categoryConfig.color}1A`, "important");
+  }
+
+  if (mobileMovementDetailAmount) {
+    mobileMovementDetailAmount.textContent = signedAmountLabel;
+    mobileMovementDetailAmount.setAttribute("title", signedAmountLabel);
+  }
+
+  if (mobileMovementDetailRecurringIcon instanceof HTMLElement) {
+    mobileMovementDetailRecurringIcon.classList.toggle("is-hidden", !isRecurringExpense);
+  }
+
+  if (mobileMovementDetailTimestamp) {
+    const timestampLabel = `${timeLabel} - ${dateLabel}`;
+    mobileMovementDetailTimestamp.textContent = timestampLabel;
+    mobileMovementDetailTimestamp.setAttribute("title", timestampLabel);
+  }
+
+  setMovementDetailValue(mobileMovementDetailDescriptionValue, item.name);
+  setMovementDetailValue(mobileMovementDetailCategoryValue, categoryConfig.label);
+  setMovementDetailRowVisibility(mobileMovementDetailRepetitionRow, isRecurringExpense);
+  setMovementDetailRowVisibility(mobileMovementDetailDurationRow, isRecurringExpense);
+
+  if (isRecurringExpense) {
+    setMovementDetailValue(mobileMovementDetailRepetitionValue, formatRecurringProgressLabel(item, detailMonthKey));
+    setMovementDetailValue(mobileMovementDetailDurationValue, formatRecurringDurationLabel(item, detailMonthKey));
+  } else {
+    setMovementDetailValue(mobileMovementDetailRepetitionValue, "");
+    setMovementDetailValue(mobileMovementDetailDurationValue, "");
+  }
+
+  if (mobileMovementDetailEditBtn) {
+    const label = mobileMovementDetailEditBtn.querySelector("span:last-child");
+    if (label instanceof HTMLElement) {
+      label.textContent = "Editar";
+    }
+  }
+
+  if (mobileMovementDetailDeleteBtn) {
+    const label = mobileMovementDetailDeleteBtn.querySelector("span:last-child");
+    if (label instanceof HTMLElement) {
+      label.textContent = "Eliminar";
+    }
+  }
+}
+
+function showMobileMovementDetailAlert(message) {
+  if (!(mobileMovementDetailAlert instanceof HTMLElement)) {
+    return;
+  }
+
+  const nextMessage = String(message || "").trim() || "Cambios guardados";
+  if (mobileMovementDetailAlertMessage instanceof HTMLElement) {
+    mobileMovementDetailAlertMessage.textContent = nextMessage;
+  } else {
+    mobileMovementDetailAlert.textContent = nextMessage;
+  }
+  mobileMovementDetailAlert.classList.remove("is-hidden");
+  mobileMovementDetailAlert.classList.add("show");
+
+  if (mobileMovementDetailAlertTimer) {
+    clearTimeout(mobileMovementDetailAlertTimer);
+  }
+
+  mobileMovementDetailAlertTimer = window.setTimeout(() => {
+    mobileMovementDetailAlert.classList.remove("show");
+    mobileMovementDetailAlert.classList.add("is-hidden");
+  }, 2600);
+}
+
+function openMobileMovementDetailScreen(item, trigger = null) {
+  if (!mobileMovementDetailScreen || !item) {
+    return;
+  }
+
+  if (normalizeMovementType(item.type) !== "expense") {
+    openMobileQuickEntrySheet(item.type, item.amount, item);
+    return;
+  }
+
+  mobileMovementDetailItem = item;
+  mobileMovementDetailTrigger = trigger instanceof HTMLElement
+    ? trigger
+    : document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+
+  closeProfileDropdown();
+  closeMobileQuickAddSheet();
+  closeMobileAmountScreen({ immediate: true, preserveState: true });
+  closeMobileDetailScreen({ immediate: true });
+  closeMobileQuickEntrySheet();
+  closeMobileFilterSheet();
+
+  renderMobileMovementDetailScreen(item);
+  mobileMovementDetailOpen = true;
+  mobileMovementDetailScreen.classList.remove("is-hidden");
+  mobileMovementDetailScreen.setAttribute("aria-hidden", "false");
+  if (mobileMovementDetailBody) {
+    mobileMovementDetailBody.scrollTop = 0;
+  }
+  updateOverlayScrollLock();
+  ensureCurrentOverlayHistoryEntry();
+
+  if (pendingMobileMovementDetailToast) {
+    const successMessage = pendingMobileMovementDetailToast;
+    pendingMobileMovementDetailToast = "";
+    requestAnimationFrame(() => {
+      showMobileMovementDetailAlert(successMessage);
+    });
+  }
+}
+
+function closeMobileMovementDetailScreen({ restoreFocus = true, preserveItem = false } = {}) {
+  if (!mobileMovementDetailScreen) {
+    return;
+  }
+
+  mobileMovementDetailOpen = false;
+  mobileMovementDetailScreen.classList.add("is-hidden");
+  mobileMovementDetailScreen.setAttribute("aria-hidden", "true");
+  updateOverlayScrollLock();
+
+  if (mobileMovementDetailAlert instanceof HTMLElement) {
+    mobileMovementDetailAlert.classList.remove("show");
+    mobileMovementDetailAlert.classList.add("is-hidden");
+  }
+  if (mobileMovementDetailAlertTimer) {
+    clearTimeout(mobileMovementDetailAlertTimer);
+    mobileMovementDetailAlertTimer = null;
+  }
+
+  const focusTarget = restoreFocus && mobileMovementDetailTrigger instanceof HTMLElement
+    ? mobileMovementDetailTrigger
+    : null;
+
+  if (!preserveItem) {
+    mobileMovementDetailItem = null;
+    mobileMovementDetailTrigger = null;
+  }
+
+  if (focusTarget) {
+    requestAnimationFrame(() => {
+      focusTarget.focus();
+    });
+  }
+}
+
+function openEditFlowFromMobileMovementDetail() {
+  if (!mobileMovementDetailItem) {
+    return;
+  }
+
+  openMobileExpenseEditScreen(mobileMovementDetailItem);
+}
+
+function openDeleteFlowFromMobileMovementDetail() {
+  if (!mobileMovementDetailItem) {
+    return;
+  }
+
+  const item = mobileMovementDetailItem;
+  const deleteTrigger = mobileMovementDetailDeleteBtn instanceof HTMLElement
+    ? mobileMovementDetailDeleteBtn
+    : mobileMovementDetailTrigger;
+  openDeleteConfirmModal(item, deleteTrigger, { mobilePresentation: "dialog" });
 }
 
 function getDefaultItemDateForMonth(monthKey = state.activeMonth) {
@@ -4436,6 +5162,8 @@ function openMobileQuickEntrySheet(movementType = "expense", amount = 0, item = 
     backMobileQuickEntryBtn.classList.add("is-hidden");
   }
 
+  closeMobileExpenseEditScreen({ reopenDetail: false });
+  closeMobileMovementDetailScreen({ restoreFocus: false });
   closeMobileDetailScreen({ immediate: true });
   closeMobileAmountScreen({ immediate: true });
   closeMobileQuickAddSheet();
@@ -4504,7 +5232,9 @@ function saveMovementRecord({
   amount = 0,
   isRecurring = false,
   recurringMonths = null,
-  editScope = "thisMonth"
+  editScope = "thisMonth",
+  successToastMessage = "",
+  showSuccessFeedback = true
 }) {
   const normalizedType = normalizeMovementType(movementType);
   const movementDate = normalizeItemDate(rawMovementDate);
@@ -4514,6 +5244,15 @@ function saveMovementRecord({
   const recurring = Boolean(isRecurring);
   const requestedRecurringMonths = recurringMonths == null ? null : parseRecurringDurationSelection(recurringMonths);
   const normalizedEditScope = normalizeEditScope(editScope);
+  const successMessage = String(successToastMessage || "").trim();
+  const shouldShowSuccessFeedback = showSuccessFeedback !== false;
+
+  const notifyMovementSaveSuccess = () => {
+    if (!shouldShowSuccessFeedback) {
+      return;
+    }
+    showToast(successMessage || (normalizedType === "income" ? "Ingreso actualizado correctamente." : "Gasto actualizado correctamente."));
+  };
 
   if (!trimmedName || numericAmount < 0 || !CATEGORY_CONFIG[normalizedCategory] || !hasValidItemDate(rawMovementDate)) {
     showToast("Revisa los campos: descripcion, fecha y monto validos.", true);
@@ -4523,6 +5262,7 @@ function saveMovementRecord({
   let didMutate = false;
   let nextActiveMonthAfterSave = "";
   const viewedMonthAtSave = normalizeMonthKey(state.activeMonth);
+  const mutationTimestamp = new Date().toISOString();
 
   if (editingItemId) {
     const item = state.items.find((entry) => entry.id === editingItemId);
@@ -4588,6 +5328,7 @@ function saveMovementRecord({
         item.isRecurring = false;
         item.recurringSeriesId = previousSeriesId;
         item.createdAt = normalizeItemCreatedAt(item.createdAt, item.date);
+        item.updatedAt = mutationTimestamp;
         clearRecurringWindow(item);
         removeRecurringSkip(previousSeriesId, previousMonthKey);
 
@@ -4598,7 +5339,7 @@ function saveMovementRecord({
         }
 
         didMutate = true;
-        showToast(normalizedType === "income" ? "Ingreso actualizado correctamente." : "Gasto actualizado correctamente.");
+        notifyMovementSaveSuccess();
       }
     } else {
       item.type = normalizedType;
@@ -4608,6 +5349,7 @@ function saveMovementRecord({
       item.amount = numericAmount;
       item.isRecurring = effectiveRecurring;
       item.createdAt = normalizeItemCreatedAt(item.createdAt, item.date);
+      item.updatedAt = mutationTimestamp;
 
       const nextMonthKey = getMonthKeyFromItem(item);
       if (previousSeriesId && previousMonthKey !== nextMonthKey) {
@@ -4639,7 +5381,7 @@ function saveMovementRecord({
       }
 
       didMutate = true;
-      showToast(normalizedType === "income" ? "Ingreso actualizado correctamente." : "Gasto actualizado correctamente.");
+      notifyMovementSaveSuccess();
     }
   } else if (editingProjectedItem?.seriesId && editingProjectedItem?.monthKey) {
     const projectionContext = editingProjectedItem;
@@ -4675,6 +5417,7 @@ function saveMovementRecord({
         recurringSourceMonth: projectionContext.sourceMonthKey || projectionContext.monthKey,
         sortAnchorId: String(projectionContext.sourceItemId || "").trim() || undefined,
         createdAt: new Date().toISOString(),
+        updatedAt: mutationTimestamp,
         recurringMonths: projectionContext.endMonth
           ? Math.max(1, getMonthOffsetBetween(projectionContext.monthKey, projectionContext.endMonth) + 1)
           : undefined,
@@ -4700,6 +5443,7 @@ function saveMovementRecord({
           amount: numericAmount,
           isRecurring: false,
           createdAt: new Date().toISOString(),
+          updatedAt: mutationTimestamp,
           recurringSeriesId: projectionContext.seriesId,
           sortAnchorId: String(projectionContext.sourceItemId || "").trim() || undefined
         });
@@ -4717,7 +5461,7 @@ function saveMovementRecord({
       didMutate = true;
     }
 
-    showToast(normalizedType === "income" ? "Ingreso actualizado correctamente." : "Gasto actualizado correctamente.");
+    notifyMovementSaveSuccess();
   } else {
     const newItemId = createItemId();
     const newRecurringDuration = requestedRecurringMonths == null ? 12 : requestedRecurringMonths;
@@ -4729,7 +5473,8 @@ function saveMovementRecord({
         name: trimmedName,
         amount: numericAmount,
         isRecurring: recurring,
-        createdAt: new Date().toISOString(),
+        createdAt: mutationTimestamp,
+        updatedAt: mutationTimestamp,
         recurringSeriesId: recurring ? newItemId : undefined,
         recurringMonths: recurring && newRecurringDuration !== "always" ? newRecurringDuration : undefined,
         recurringEndMonth: recurring && newRecurringDuration !== "always"
@@ -4785,7 +5530,7 @@ function saveMobileDetailScreen() {
   closeMobileDetailScreen();
   mobileAmountValue = "";
   mobileAmountRecurringEnabled = false;
-  mobileAmountRecurringDuration = "12";
+  mobileAmountRecurringDuration = "always";
   renderMobileAmountDisplay();
 }
 
@@ -4889,6 +5634,8 @@ function openMobileFilterSheet() {
   if (!mobileFilterSheet) {
     return;
   }
+  closeMobileExpenseEditScreen({ reopenDetail: false });
+  closeMobileMovementDetailScreen({ restoreFocus: false });
   closeProfileDropdown();
   closeMobileQuickEntrySheet();
   hideCategoryFilterMenu();
@@ -5921,7 +6668,7 @@ function applyTheme() {
   const resolvedTheme = getResolvedTheme();
   const isDark = resolvedTheme === "dark";
   document.body.classList.toggle("theme-dark", isDark);
-  document.body.dataset.themePreference = state.theme;
+  document.body.dataset.themePreference = resolvedTheme;
 
   const themeMeta = document.querySelector('meta[name="theme-color"]');
   if (themeMeta) {
@@ -5933,7 +6680,7 @@ function applyTheme() {
     themeToggleBtn.setAttribute("aria-label", isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro");
     themeToggleBtn.setAttribute(
       "title",
-      state.theme === "system" ? `Tema del sistema (${isDark ? "oscuro" : "claro"})` : isDark ? "Modo claro" : "Modo oscuro"
+      isDark ? "Modo claro" : "Modo oscuro"
     );
     themeToggleBtn.innerHTML = isDark
       ? '<i class="bi bi-sun"></i>'
@@ -5949,13 +6696,7 @@ function applyTheme() {
 }
 
 function getResolvedTheme() {
-  if (state.theme === "dark") {
-    return "dark";
-  }
-  if (state.theme === "light") {
-    return "light";
-  }
-  return systemThemeMedia?.matches ? "dark" : "light";
+  return state.theme === "dark" ? "dark" : "light";
 }
 
 function toggleThemePreference() {
@@ -6468,6 +7209,7 @@ function closeDeleteConfirmModal() {
     confirmDeleteSeriesBtn.textContent = "Eliminar en todos";
     confirmDeleteSeriesBtn.classList.add("is-hidden");
   }
+  deleteConfirmModal.dataset.mobilePresentation = "";
   updateOverlayScrollLock();
 
   if (wasOpen && modalTrigger) {
@@ -6475,12 +7217,13 @@ function closeDeleteConfirmModal() {
   }
 }
 
-function openDeleteConfirmModal(item, trigger = null) {
+function openDeleteConfirmModal(item, trigger = null, { mobilePresentation = "sheet" } = {}) {
   if (!deleteConfirmModal || !confirmDeleteBtn || !deleteConfirmText) {
     return;
   }
 
   modalTrigger = trigger instanceof HTMLElement ? trigger : null;
+  deleteConfirmModal.dataset.mobilePresentation = mobilePresentation;
   pendingDeleteKind = "item";
   pendingDeleteRecurringContext = getRecurringDeleteContext(item);
   pendingDeleteProjection = item?.isProjectedRecurring
@@ -6581,20 +7324,38 @@ function hasOpenOverlayState() {
     || mobileAddMovementIsOpen
     || mobileQuickAddOpen
     || mobileAmountScreenOpen
+    || mobileAmountRecurrenceSheetOpen
     || mobileDetailScreenOpen
+    || mobileExpenseEditOpen
     || mobileQuickEntryOpen
+    || mobileMovementDetailOpen
     || mobileFilterSheetOpen
   );
 }
 
 function closeActiveOverlayState() {
+  if (mobileAmountRecurrenceSheetOpen) {
+    closeMobileAmountRecurrenceSheet();
+    return true;
+  }
+
   if (mobileDetailScreenOpen) {
     closeMobileDetailScreen();
     return true;
   }
 
+  if (mobileExpenseEditOpen) {
+    closeMobileExpenseEditScreen({ reopenDetail: true });
+    return true;
+  }
+
   if (mobileQuickEntryOpen) {
     closeMobileQuickEntrySheet();
+    return true;
+  }
+
+  if (mobileMovementDetailOpen) {
+    closeMobileMovementDetailScreen();
     return true;
   }
 
@@ -6691,6 +7452,21 @@ function closeActiveOverlayState() {
   return false;
 }
 
+function ensureCurrentOverlayHistoryEntry() {
+  if (!hasOpenOverlayState()) {
+    return;
+  }
+
+  const currentState = history.state && typeof history.state === "object" ? history.state : {};
+  if (currentState.dinariaOverlay) {
+    overlayBackStateActive = true;
+    return;
+  }
+
+  history.pushState({ ...currentState, dinariaOverlay: true }, "", location.href);
+  overlayBackStateActive = true;
+}
+
 function syncOverlayBackState(hasOpenOverlay = hasOpenOverlayState()) {
   if (hasOpenOverlay && !overlayBackStateActive) {
     const currentState = history.state && typeof history.state === "object" ? history.state : {};
@@ -6777,6 +7553,7 @@ function sanitizeItem(item) {
   const amount = Number.isFinite(Number(item?.amount)) ? Math.max(0, Number(item.amount)) : 0;
   const isRecurring = Boolean(item?.isRecurring || item?.isRecurringMonthly || false);
   const createdAt = normalizeItemCreatedAt(item?.createdAt, date);
+  const updatedAt = normalizeItemUpdatedAt(item?.updatedAt, createdAt, date);
   const recurringMonths = Number.isFinite(Number(item?.recurringMonths))
     ? clampRecurringMonths(item.recurringMonths, { min: 1, fallback: 1 })
     : undefined;
@@ -6792,6 +7569,7 @@ function sanitizeItem(item) {
     amount,
     isRecurring,
     createdAt: createdAt || undefined,
+    updatedAt: updatedAt || createdAt || undefined,
     recurringSeriesId: item?.recurringSeriesId ? String(item.recurringSeriesId) : undefined,
     sortAnchorId: item?.sortAnchorId ? String(item.sortAnchorId) : undefined,
     recurringSourceMonth: isRecurring && recurringSourceMonth ? recurringSourceMonth : undefined,
@@ -6869,7 +7647,7 @@ function loadState() {
       recurringSkips: [],
       items: [],
       hideSalary: false,
-      theme: "system",
+      theme: "light",
       themeUserSet: false,
       budgetPeriod: "monthly",
       chartMode: "expense",
@@ -6890,7 +7668,7 @@ function loadState() {
       recurringSkips: [],
       items: [],
       hideSalary: false,
-      theme: "system",
+      theme: "light",
       themeUserSet: false,
       budgetPeriod: "monthly",
       chartMode: "expense",
@@ -6928,10 +7706,10 @@ function normalizeStateSnapshot(candidate, fallbackTimestamp = new Date().toISOS
   const themeUserSet = typeof candidate?.themeUserSet === "boolean"
     ? candidate.themeUserSet
     : rawTheme === "dark";
-  const normalizedTheme = rawTheme === "dark" || rawTheme === "light" || rawTheme === "system"
+  const normalizedTheme = rawTheme === "dark" || rawTheme === "light"
     ? rawTheme
-    : "system";
-  const theme = normalizedTheme === "light" && !themeUserSet ? "system" : normalizedTheme;
+    : "light";
+  const theme = normalizedTheme;
 
   return {
     salary: Object.prototype.hasOwnProperty.call(monthlySalaries, currentMonthKey)
@@ -6962,8 +7740,7 @@ function applySnapshotToState(snapshot) {
   state.recurringSkips = normalized.recurringSkips;
   state.items = normalized.items;
   state.hideSalary = normalized.hideSalary;
-  state.theme = normalized.theme;
-  state.themeUserSet = normalized.themeUserSet;
+  // Theme is intentionally NOT synced from cloud.
   state.budgetPeriod = normalized.budgetPeriod;
   state.chartMode = normalized.chartMode;
   state.sidebarCollapsed = normalized.sidebarCollapsed;
@@ -7709,7 +8486,7 @@ function populateItemNode(node, item) {
   if (isMobileRow) {
     node.addEventListener("click", () => {
       if (isMobileViewport()) {
-        openMobileQuickEntrySheet(item.type, item.amount, item);
+        openMobileMovementDetailScreen(item, node);
         return;
       }
       openExpenseModalForEdit(item, node);
@@ -7718,7 +8495,7 @@ function populateItemNode(node, item) {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
         if (isMobileViewport()) {
-          openMobileQuickEntrySheet(item.type, item.amount, item);
+          openMobileMovementDetailScreen(item, node);
           return;
         }
         openExpenseModalForEdit(item, node);
@@ -8413,6 +9190,8 @@ function hasMeaningfulFinanceData(snapshot) {
 function snapshotForCloud(snapshot = snapshotFromState()) {
   const normalized = normalizeStateSnapshot(snapshot);
   delete normalized.onboardingSeen;
+  delete normalized.theme;
+  delete normalized.themeUserSet;
   return normalized;
 }
 
@@ -9340,8 +10119,44 @@ if (previewMode === "month-model") {
       mobileAmountValue = "66000";
       mobileAmountMode = "expense";
       mobileAmountRecurringEnabled = false;
-      mobileAmountRecurringDuration = "12";
+      mobileAmountRecurringDuration = "always";
       openMobileDetailScreen({ reset: true });
+    });
+  }
+  if (previewMode === "mobile-movement-detail") {
+    requestAnimationFrame(() => {
+      const previewItem = getVisibleMonthExpenseItems(state.activeMonth).find((item) => !item?.isRecurring) || sanitizeItem({
+        id: "preview-detail-item",
+        type: "expense",
+        date: getDefaultItemDateForMonth(state.activeMonth),
+        category: "compras",
+        name: "Campera",
+        amount: 155000,
+        isRecurring: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+      if (previewItem) {
+        openMobileMovementDetailScreen(previewItem);
+      }
+    });
+  }
+  if (previewMode === "mobile-expense-edit") {
+    requestAnimationFrame(() => {
+      const previewItem = getVisibleMonthExpenseItems(state.activeMonth).find((item) => !item?.isRecurring) || sanitizeItem({
+        id: "preview-edit-item",
+        type: "expense",
+        date: getDefaultItemDateForMonth(state.activeMonth),
+        category: "compras",
+        name: "Campera",
+        amount: 155000,
+        isRecurring: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+      if (previewItem) {
+        openMobileExpenseEditScreen(previewItem);
+      }
     });
   }
 if (previewMode === "mobile-filter") {

@@ -1401,13 +1401,9 @@
               </label>
 
               <div id="mobileAmountRecurringMonthsField" class="mobile-amount-frame-card mobile-amount-frame-card--duration is-disabled">
-                <span>Cuantos meses</span>
+                <span>Duración</span>
                 <span class="mobile-amount-frame-select-wrap">
-                  <select
-                    id="mobileAmountRecurringMonths"
-                    class="mobile-amount-frame-select"
-                    disabled
-                  ></select>
+                  <span id="mobileAmountRecurringSummary" class="mobile-amount-frame-select">Elegir duración</span>
                   <span class="mobile-amount-frame-select-icon" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">expand_more</span></span>
                 </span>
               </div>
@@ -1448,6 +1444,67 @@
           </button>
         </div>
       </section>
+
+      <div id="mobileAmountRecurrenceSheet" class="mobile-amount-recurrence-sheet is-hidden" aria-hidden="true">
+        <button id="mobileAmountRecurrenceBackdrop" class="mobile-amount-recurrence-sheet-backdrop" type="button" aria-label="Cerrar selector de recurrencia"></button>
+        <section class="mobile-amount-recurrence-sheet-card" role="dialog" aria-modal="true" aria-labelledby="mobileAmountRecurrenceTitle">
+          <div class="mobile-amount-recurrence-sheet-handle" aria-hidden="true"></div>
+
+          <div class="mobile-amount-recurrence-sheet-copy">
+            <h3 id="mobileAmountRecurrenceTitle" class="mobile-amount-recurrence-sheet-title">Duración de la recurrencia</h3>
+            <p id="mobileAmountRecurrenceSubtitle" class="mobile-amount-recurrence-sheet-subtitle">Elegí por cuánto tiempo se repetirá este gasto.</p>
+          </div>
+
+          <div class="mobile-amount-recurrence-sheet-options">
+            <button id="mobileAmountRecurrenceAlwaysOption" class="mobile-amount-recurrence-option is-selected" type="button">
+              <span class="mobile-amount-recurrence-option-radio" aria-hidden="true"></span>
+              <span class="mobile-amount-recurrence-option-copy">
+                <strong>Hasta cancelar</strong>
+                <small>Se repetirá hasta que lo canceles.</small>
+              </span>
+              <span class="mobile-amount-recurrence-option-icon" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">all_inclusive</span></span>
+            </button>
+
+            <button id="mobileAmountRecurrenceMonthsOption" class="mobile-amount-recurrence-option" type="button">
+              <span class="mobile-amount-recurrence-option-radio" aria-hidden="true"></span>
+              <span class="mobile-amount-recurrence-option-copy">
+                <strong>Cantidad de meses</strong>
+                <small>Define por cuántos meses se repetirá.</small>
+              </span>
+              <span class="mobile-amount-recurrence-option-icon" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">calendar_month</span></span>
+            </button>
+          </div>
+
+          <div id="mobileAmountRecurrenceMonthsPanel" class="mobile-amount-recurrence-months-panel is-hidden">
+            <p class="mobile-amount-recurrence-months-title">Cantidad de meses</p>
+
+            <div class="mobile-amount-recurrence-stepper">
+              <button id="mobileAmountRecurrenceMinusBtn" class="mobile-amount-recurrence-stepper-btn" type="button" aria-label="Restar meses">
+                <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">remove</span>
+              </button>
+              <strong id="mobileAmountRecurrenceMonthsValue" class="mobile-amount-recurrence-stepper-value font-space">2</strong>
+              <button id="mobileAmountRecurrencePlusBtn" class="mobile-amount-recurrence-stepper-btn" type="button" aria-label="Sumar meses">
+                <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">add</span>
+              </button>
+            </div>
+
+            <p class="mobile-amount-recurrence-helper">Mínimo 2 meses. Máximo 24 meses.</p>
+
+            <div class="mobile-amount-recurrence-chips" role="list" aria-label="Atajos de cantidad de meses">
+              <button class="mobile-amount-recurrence-chip" type="button" data-mobile-recurrence-chip="6">6</button>
+              <button class="mobile-amount-recurrence-chip" type="button" data-mobile-recurrence-chip="9">9</button>
+              <button class="mobile-amount-recurrence-chip" type="button" data-mobile-recurrence-chip="12">12</button>
+              <button class="mobile-amount-recurrence-chip" type="button" data-mobile-recurrence-chip="18">18</button>
+              <button class="mobile-amount-recurrence-chip" type="button" data-mobile-recurrence-chip="24">24</button>
+            </div>
+          </div>
+
+          <footer class="mobile-amount-recurrence-sheet-footer">
+            <button id="mobileAmountRecurrenceCancelBtn" class="mobile-movement-detail-secondary-btn mobile-amount-recurrence-secondary-btn" type="button">Cancelar</button>
+            <button id="mobileAmountRecurrenceConfirmBtn" class="mobile-amount-frame-next-btn" type="button">Confirmar</button>
+          </footer>
+        </section>
+      </div>
     </div>
 
     <div id="mobileQuickEntrySheet" class="mobile-quick-entry-sheet is-hidden md:hidden" aria-hidden="true">
@@ -1569,6 +1626,86 @@
       </section>
     </div>
 
+    <div id="mobileMovementDetailScreen" class="mobile-movement-detail-screen is-hidden md:hidden" aria-hidden="true">
+      <section class="mobile-movement-detail-card" role="dialog" aria-modal="true" aria-labelledby="mobileMovementDetailTitle">
+        <header class="mobile-movement-detail-head">
+          <div class="mobile-movement-detail-toolbar">
+            <button
+              id="backMobileMovementDetailBtn"
+              class="mobile-amount-frame-close-btn mobile-movement-detail-icon-btn"
+              type="button"
+              aria-label="Volver"
+            >
+              <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">arrow_back</span>
+            </button>
+            <button
+              id="closeMobileMovementDetailBtn"
+              class="mobile-amount-frame-close-btn mobile-movement-detail-icon-btn"
+              type="button"
+              aria-label="Cerrar detalle"
+            >
+              <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">close</span>
+            </button>
+          </div>
+          <h2 id="mobileMovementDetailTitle" class="mobile-amount-frame-title mobile-movement-detail-title font-space">Detalle de Gasto</h2>
+        </header>
+
+        <div class="mobile-movement-detail-body">
+          <div id="mobileMovementDetailAlert" class="mobile-movement-detail-alert is-hidden" role="status" aria-live="polite">
+            <span class="mobile-movement-detail-alert-icon" aria-hidden="true">
+              <span class="material-symbols-rounded mobile-symbol">check_circle</span>
+            </span>
+            <span id="mobileMovementDetailAlertMessage" class="mobile-movement-detail-alert-message">Cambios guardados</span>
+          </div>
+
+          <section class="mobile-movement-detail-hero" aria-labelledby="mobileMovementDetailAmount">
+            <div class="mobile-movement-detail-hero-content">
+              <span class="mobile-movement-detail-hero-icon" aria-hidden="true">
+                <span id="mobileMovementDetailIcon" class="material-symbols-rounded mobile-symbol">shopping_cart</span>
+              </span>
+              <div class="mobile-movement-detail-hero-copy">
+                <div class="mobile-movement-detail-amount-row">
+                  <strong id="mobileMovementDetailAmount" class="mobile-movement-detail-amount font-space">-0</strong>
+                  <span id="mobileMovementDetailRecurringIcon" class="material-symbols-rounded mobile-movement-detail-recurring-icon is-hidden" aria-hidden="true">sync</span>
+                </div>
+                <span id="mobileMovementDetailTimestamp" class="mobile-movement-detail-timestamp">00:00 - 1 Enero 2026</span>
+              </div>
+            </div>
+          </section>
+
+          <dl class="mobile-movement-detail-info-list">
+            <div class="mobile-movement-detail-info-row">
+              <dt>Detalle</dt>
+              <dd id="mobileMovementDetailDescriptionValue">-</dd>
+            </div>
+            <div class="mobile-movement-detail-info-row">
+              <dt>Categoría</dt>
+              <dd id="mobileMovementDetailCategoryValue">Otros</dd>
+            </div>
+            <div id="mobileMovementDetailRepetitionRow" class="mobile-movement-detail-info-row is-hidden">
+              <dt>Repetición</dt>
+              <dd id="mobileMovementDetailRepetitionValue">-</dd>
+            </div>
+            <div id="mobileMovementDetailDurationRow" class="mobile-movement-detail-info-row is-hidden">
+              <dt>Duración</dt>
+              <dd id="mobileMovementDetailDurationValue">-</dd>
+            </div>
+          </dl>
+        </div>
+
+        <footer class="mobile-movement-detail-footer">
+          <button id="mobileMovementDetailEditBtn" class="ghost-btn mobile-movement-detail-secondary-btn inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-base font-semibold" type="button">
+            <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">edit</span>
+            <span>Editar</span>
+          </button>
+          <button id="mobileMovementDetailDeleteBtn" class="primary-btn inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-base font-semibold" type="button">
+            <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">delete</span>
+            <span>Eliminar</span>
+          </button>
+        </footer>
+      </section>
+    </div>
+
     <div id="mobileDetailScreen" class="mobile-detail-screen is-hidden md:hidden" aria-hidden="true">
       <section class="mobile-detail-screen-card" role="dialog" aria-modal="true" aria-labelledby="mobileDetailScreenTitle">
         <header class="mobile-detail-screen-head">
@@ -1625,6 +1762,89 @@
         <footer class="mobile-detail-screen-footer">
           <button id="mobileDetailSaveBtn" class="mobile-amount-frame-next-btn" type="button">
             <span>Cargar gasto</span>
+          </button>
+        </footer>
+      </section>
+    </div>
+
+    <div id="mobileExpenseEditScreen" class="mobile-expense-edit-screen is-hidden md:hidden" aria-hidden="true">
+      <section class="mobile-expense-edit-card" role="dialog" aria-modal="true" aria-labelledby="mobileExpenseEditTitle">
+        <header class="mobile-movement-detail-head mobile-expense-edit-head">
+          <div class="mobile-movement-detail-toolbar mobile-expense-edit-toolbar">
+            <button
+              id="backMobileExpenseEditBtn"
+              class="mobile-amount-frame-close-btn mobile-movement-detail-icon-btn mobile-expense-edit-icon-btn"
+              type="button"
+              aria-label="Volver al detalle"
+            >
+              <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">arrow_back</span>
+            </button>
+            <button
+              id="closeMobileExpenseEditBtn"
+              class="mobile-amount-frame-close-btn mobile-movement-detail-icon-btn mobile-expense-edit-icon-btn"
+              type="button"
+              aria-label="Cerrar edición"
+            >
+              <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">close</span>
+            </button>
+          </div>
+          <h2 id="mobileExpenseEditTitle" class="mobile-amount-frame-title mobile-movement-detail-title mobile-expense-edit-title font-space">Editar Gasto</h2>
+        </header>
+
+        <div class="mobile-expense-edit-body">
+          <label class="mobile-quick-entry-field mobile-expense-edit-field">
+            <span>Monto</span>
+            <span class="field-control">
+              <input
+                id="mobileExpenseEditAmountInput"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                placeholder="-$0"
+              />
+            </span>
+          </label>
+
+          <label class="mobile-quick-entry-field mobile-expense-edit-field">
+            <span>Detalle</span>
+            <span class="field-control">
+              <input
+                id="mobileExpenseEditNameInput"
+                type="text"
+                autocomplete="off"
+                maxlength="60"
+                placeholder="Detalle"
+              />
+            </span>
+          </label>
+
+          <label class="mobile-quick-entry-field mobile-expense-edit-field">
+            <span>Categoría</span>
+            <span class="field-control field-control--select">
+              <select id="mobileExpenseEditCategory" class="form-select"></select>
+              <span class="field-control-icon" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">expand_more</span></span>
+            </span>
+          </label>
+
+          <label id="mobileExpenseEditDateField" class="mobile-quick-entry-field mobile-expense-edit-field">
+            <span>Fecha</span>
+            <span class="field-control field-control--text-icon">
+              <input
+                id="mobileExpenseEditDateInput"
+                type="date"
+                autocomplete="off"
+              />
+              <span class="field-control-icon" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">calendar_month</span></span>
+            </span>
+          </label>
+        </div>
+
+        <footer class="mobile-expense-edit-footer">
+          <button id="mobileExpenseEditCancelBtn" class="ghost-btn mobile-movement-detail-secondary-btn inline-flex w-full items-center justify-center rounded-xl px-4 py-3 text-base font-semibold" type="button">
+            Cancelar
+          </button>
+          <button id="mobileExpenseEditSaveBtn" class="primary-btn inline-flex w-full items-center justify-center rounded-xl px-4 py-3 text-base font-semibold" type="button">
+            Guardar
           </button>
         </footer>
       </section>

@@ -1,11 +1,9 @@
-const CACHE_NAME = "expense-webapp-v104";
-const IS_QA_ORIGIN = /(^|[-.])qa([-.]|$)/i.test(self.location.hostname);
-const APP_SHELL = IS_QA_ORIGIN ? "./qa.html" : "./index.html";
+const CACHE_NAME = "expense-webapp-v105";
+const APP_SHELL = "./index.html";
 const ASSETS = [
   "./",
   APP_SHELL,
   "./index.html",
-  "./qa.html",
   "./tailwind.generated.css",
   "./assets/fonts/fonts.css",
   "./assets/fonts/Nunito-VariableFont_wght.ttf",
@@ -30,8 +28,6 @@ const ASSETS = [
   "./app.js?v=20260403-03",
   "./manifest.webmanifest",
   "./manifest.webmanifest?v=20260403-03",
-  "./qa-manifest.webmanifest",
-  "./qa-manifest.webmanifest?v=20260403-03",
   "./assets/brand/dinaria-favicon-primary.svg?v=20260403-03",
   "./assets/brand/dinaria-isologotipo.svg?v=20260313-02",
   "./assets/brand/dinaria-isologotipo-white.svg?v=20260313-02",
@@ -39,11 +35,7 @@ const ASSETS = [
   "./icon-192.svg",
   "./icon-192.svg?v=20260403-03",
   "./icon-512.svg",
-  "./icon-512.svg?v=20260403-03",
-  "./icon-192-qa.svg",
-  "./icon-192-qa.svg?v=20260328-10",
-  "./icon-512-qa.svg",
-  "./icon-512-qa.svg?v=20260328-10"
+  "./icon-512.svg?v=20260403-03"
 ];
 
 self.addEventListener("install", (event) => {
