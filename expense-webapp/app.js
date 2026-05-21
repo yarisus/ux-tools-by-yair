@@ -2992,6 +2992,30 @@ function formatItemDate(rawDate) {
   return parsed.toLocaleDateString("es-AR");
 }
 
+function formatItemHomeDateLabel(rawDate) {
+  const normalized = normalizeItemDate(rawDate);
+  const parsed = new Date(`${normalized}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) {
+    return normalized;
+  }
+
+  const parts = new Intl.DateTimeFormat("es-AR", {
+    weekday: "short",
+    day: "numeric",
+    month: "long"
+  }).formatToParts(parsed);
+
+  const weekdayRaw = (parts.find((part) => part.type === "weekday")?.value || "")
+    .replace(".", "")
+    .replace(",", "")
+    .trim()
+    .toLowerCase();
+  const day = parts.find((part) => part.type === "day")?.value || "";
+  const month = (parts.find((part) => part.type === "month")?.value || "").trim().toLowerCase();
+
+  return [weekdayRaw, day ? `${day} de ${month}` : month].filter(Boolean).join(" ");
+}
+
 function normalizeItemCreatedAt(rawValue, fallbackDate = "") {
   const value = String(rawValue || "").trim();
   if (value) {
@@ -8466,7 +8490,7 @@ function populateItemNode(node, item) {
   const dateNode = node.querySelector(".date-text");
   if (dateNode) {
     const dateLabel = isMobileRow
-      ? formatItemCreatedTime(item.createdAt, item.date)
+      ? formatItemHomeDateLabel(item.date)
       : formatItemDate(item.date);
     dateNode.textContent = dateLabel;
     dateNode.setAttribute("title", dateLabel);

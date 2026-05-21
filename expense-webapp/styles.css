@@ -24038,7 +24038,8 @@ body.overflow-hidden .mobile-add-fab-wrap,
     grid-template-columns: minmax(0, 1fr) auto !important;
     grid-template-areas:
       "chip amount"
-      "name amount" !important;
+      "name amount"
+      "meta amount" !important;
     gap: 6px 12px !important;
     align-items: center !important;
     width: 100% !important;
@@ -24121,7 +24122,30 @@ body.overflow-hidden .mobile-add-fab-wrap,
   }
 
   body .mobile-item-submeta {
-    display: none !important;
+    grid-area: meta !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+    color: #6b7280 !important;
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    font-weight: 500 !important;
+  }
+
+  body .mobile-item-date-wrap {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+  }
+
+  body .mobile-date-text {
+    color: #6b7280 !important;
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    font-weight: 500 !important;
+    white-space: nowrap !important;
   }
 
   body .mobile-sticky-summary,
