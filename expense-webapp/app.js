@@ -8483,8 +8483,10 @@ function populateItemNode(node, item) {
 
   const secondaryNode = node.querySelector(".mobile-item-secondary");
   if (secondaryNode) {
-    secondaryNode.textContent = config.label;
-    secondaryNode.setAttribute("title", config.label);
+    const secondaryLabel = isMobileRow ? formatItemHomeDateLabel(item.date) : config.label;
+    secondaryNode.textContent = secondaryLabel;
+    secondaryNode.setAttribute("title", secondaryLabel);
+    secondaryNode.classList.toggle("is-hidden", !secondaryLabel);
   }
 
   const dateNode = node.querySelector(".date-text");

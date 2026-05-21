@@ -22806,7 +22806,8 @@ body.overflow-hidden .mobile-add-fab-wrap,
 
   body .mobile-item-main {
     grid-area: name !important;
-    display: block !important;
+    display: grid !important;
+    gap: 4px !important;
     min-width: 0 !important;
     overflow: hidden !important;
   }
@@ -22817,6 +22818,17 @@ body.overflow-hidden .mobile-add-fab-wrap,
     font-size: 14px !important;
     line-height: 1.2 !important;
     font-weight: 400 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  body .mobile-expense-row .mobile-item-secondary {
+    margin: 0 !important;
+    color: #6b7280 !important;
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    font-weight: 500 !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
@@ -24122,30 +24134,7 @@ body.overflow-hidden .mobile-add-fab-wrap,
   }
 
   body .mobile-item-submeta {
-    grid-area: meta !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-    min-width: 0 !important;
-    color: #6b7280 !important;
-    font-size: 12px !important;
-    line-height: 1.2 !important;
-    font-weight: 500 !important;
-  }
-
-  body .mobile-item-date-wrap {
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-    min-width: 0 !important;
-  }
-
-  body .mobile-date-text {
-    color: #6b7280 !important;
-    font-size: 12px !important;
-    line-height: 1.2 !important;
-    font-weight: 500 !important;
-    white-space: nowrap !important;
+    display: none !important;
   }
 
   body .mobile-sticky-summary,
