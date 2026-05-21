@@ -2068,7 +2068,7 @@ if (confirmDeleteBtn) {
       }
       saveState();
       render();
-      closeDeleteConfirmModal();
+      returnToHomeAfterDelete("Movimiento eliminado.");
       return;
     }
 
@@ -2087,8 +2087,7 @@ if (confirmDeleteBtn) {
       pendingDeleteProjection = null;
       saveState();
       render();
-      closeDeleteConfirmModal();
-      showToast(`Movimiento omitido en ${deletedMonthLabel}.`);
+      returnToHomeAfterDelete(`Movimiento omitido en ${deletedMonthLabel}.`);
       return;
     }
 
@@ -2101,8 +2100,7 @@ if (confirmDeleteBtn) {
     pendingDeleteItemId = null;
     saveState();
     render();
-    closeDeleteConfirmModal();
-    showToast("Movimiento eliminado.");
+    returnToHomeAfterDelete("Movimiento eliminado.");
   });
 }
 
@@ -3964,8 +3962,7 @@ if (confirmDeleteSeriesBtn) {
     pendingDeleteProjection = null;
     saveState();
     render();
-    closeDeleteConfirmModal();
-    showToast("Serie recurrente eliminada.");
+    returnToHomeAfterDelete("Serie recurrente eliminada.");
   });
 }
 
@@ -7258,6 +7255,27 @@ function closeDeleteConfirmModal() {
   if (wasOpen && modalTrigger) {
     modalTrigger.focus();
   }
+}
+
+function returnToHomeAfterDelete(successMessage) {
+  modalTrigger = null;
+  suspendOverlayBackStateSync = true;
+  try {
+    closeDeleteConfirmModal();
+    closeMobileExpenseEditScreen({ reopenDetail: false });
+    closeMobileMovementDetailScreen({ restoreFocus: false });
+    closeMobileQuickEntrySheet();
+    closeMobileDetailScreen({ immediate: true });
+    closeMobileAmountScreen({ immediate: true, preserveState: true });
+    closeMobileQuickAddSheet();
+    closeMobileFilterSheet();
+  } finally {
+    suspendOverlayBackStateSync = false;
+  }
+  updateOverlayScrollLock();
+  requestAnimationFrame(() => {
+    showToast(successMessage);
+  });
 }
 
 function openDeleteConfirmModal(item, trigger = null, { mobilePresentation = "sheet" } = {}) {
