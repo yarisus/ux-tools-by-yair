@@ -4565,6 +4565,11 @@ function setMobileExpenseEditDateFieldVisibility(shouldShow = true) {
   }
 
   mobileExpenseEditDateField.classList.toggle("is-hidden", !shouldShow);
+  mobileExpenseEditDateField.toggleAttribute("hidden", !shouldShow);
+  mobileExpenseEditDateField.setAttribute("aria-hidden", String(!shouldShow));
+  if (mobileExpenseEditDateInput instanceof HTMLInputElement) {
+    mobileExpenseEditDateInput.disabled = !shouldShow;
+  }
 }
 
 function resetMobileExpenseEditState() {
@@ -4593,15 +4598,30 @@ function openMobileExpenseEditScreen(item) {
   }
 
   const editableItem = item;
-  const projectionSeriesId = item?.isProjectedRecurring ? getRecurringSeriesId(item) : "";
-  const projectionMonthKey = item?.isProjectedRecurring ? getMonthKeyFromItem(item) : "";
-  const projectionSourceItem = item?.isProjectedRecurring
+
+  suspendOverlayBackStateSync = true;
+  try {
+    closeMobileMovementDetailScreen({ restoreFocus: false, preserveItem: true });
+    closeProfileDropdown();
+    closeMobileQuickAddSheet();
+    closeMobileAmountScreen({ immediate: true, preserveState: true });
+    closeMobileDetailScreen({ immediate: true });
+    closeMobileExpenseEditScreen({ reopenDetail: false });
+    closeMobileQuickEntrySheet();
+    closeMobileFilterSheet();
+  } finally {
+    suspendOverlayBackStateSync = false;
+  }
+
+  const projectionSeriesId = editableItem?.isProjectedRecurring ? getRecurringSeriesId(editableItem) : "";
+  const projectionMonthKey = editableItem?.isProjectedRecurring ? getMonthKeyFromItem(editableItem) : "";
+  const projectionSourceItem = editableItem?.isProjectedRecurring
     ? findLatestRecurringSourceItem(projectionSeriesId, projectionMonthKey)
     : null;
-  const isRecurringEdit = isRecurringEditContext(editableItem, { isProjected: Boolean(item?.isProjectedRecurring) });
+  const isRecurringEdit = isRecurringEditContext(editableItem, { isProjected: Boolean(editableItem?.isProjectedRecurring) });
 
-  mobileExpenseEditItem = item;
-  editingProjectedItem = item?.isProjectedRecurring
+  mobileExpenseEditItem = editableItem;
+  editingProjectedItem = editableItem?.isProjectedRecurring
     ? {
       seriesId: projectionSeriesId,
       monthKey: projectionMonthKey,
@@ -4615,7 +4635,7 @@ function openMobileExpenseEditScreen(item) {
       amount: Math.max(0, Number(editableItem.amount || 0))
     }
     : null;
-  editingItemId = item?.isProjectedRecurring ? null : item.id;
+  editingItemId = editableItem?.isProjectedRecurring ? null : editableItem.id;
   pendingMovementType = "expense";
 
   if (mobileExpenseEditAmountInput instanceof HTMLInputElement) {
@@ -4630,24 +4650,11 @@ function openMobileExpenseEditScreen(item) {
   populateMobileExpenseEditCategories(editableItem.category);
   setMobileExpenseEditDateFieldVisibility(!isRecurringEdit);
 
-  suspendOverlayBackStateSync = true;
-  try {
-    closeMobileMovementDetailScreen({ restoreFocus: false, preserveItem: true });
-    closeProfileDropdown();
-    closeMobileQuickAddSheet();
-    closeMobileAmountScreen({ immediate: true, preserveState: true });
-    closeMobileDetailScreen({ immediate: true });
-    closeMobileExpenseEditScreen({ reopenDetail: false });
-    closeMobileQuickEntrySheet();
-    closeMobileFilterSheet();
-
-    mobileExpenseEditOpen = true;
-    mobileExpenseEditScreen.classList.remove("is-hidden");
-    mobileExpenseEditScreen.setAttribute("aria-hidden", "false");
-    updateOverlayScrollLock();
-  } finally {
-    suspendOverlayBackStateSync = false;
-  }
+  mobileExpenseEditOpen = true;
+  mobileExpenseEditScreen.classList.remove("is-hidden");
+  mobileExpenseEditScreen.removeAttribute("hidden");
+  mobileExpenseEditScreen.setAttribute("aria-hidden", "false");
+  updateOverlayScrollLock();
   pushOverlayHistoryEntry();
 }
 
@@ -4661,6 +4668,7 @@ function closeMobileExpenseEditScreen({ reopenDetail = true } = {}) {
   try {
     mobileExpenseEditOpen = false;
     mobileExpenseEditScreen.classList.add("is-hidden");
+    mobileExpenseEditScreen.setAttribute("hidden", "");
     mobileExpenseEditScreen.setAttribute("aria-hidden", "true");
     resetMobileExpenseEditState();
     updateOverlayScrollLock();
@@ -4732,6 +4740,7 @@ function saveMobileExpenseEditScreen() {
   try {
     mobileExpenseEditOpen = false;
     mobileExpenseEditScreen.classList.add("is-hidden");
+    mobileExpenseEditScreen.setAttribute("hidden", "");
     mobileExpenseEditScreen.setAttribute("aria-hidden", "true");
     resetMobileExpenseEditState();
     updateOverlayScrollLock();
