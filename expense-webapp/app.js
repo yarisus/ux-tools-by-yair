@@ -397,6 +397,7 @@ const mobileExpenseEditNameInput = document.getElementById("mobileExpenseEditNam
 const mobileExpenseEditCategory = document.getElementById("mobileExpenseEditCategory");
 const mobileExpenseEditDateInput = document.getElementById("mobileExpenseEditDateInput");
 const mobileExpenseEditDateField = document.getElementById("mobileExpenseEditDateField");
+const mobileExpenseEditTitle = document.getElementById("mobileExpenseEditTitle");
 const mobileExpenseEditCancelBtn = document.getElementById("mobileExpenseEditCancelBtn");
 const mobileExpenseEditSaveBtn = document.getElementById("mobileExpenseEditSaveBtn");
 const mobileQuickEntrySheet = document.getElementById("mobileQuickEntrySheet");
@@ -1151,7 +1152,9 @@ if (mobileExpenseEditSaveBtn) {
 if (mobileExpenseEditAmountInput) {
   mobileExpenseEditAmountInput.addEventListener("input", () => {
     const parsed = parseCurrencyInput(mobileExpenseEditAmountInput.value || "");
-    mobileExpenseEditAmountInput.value = parsed > 0 ? formatPuntualExpenseEditAmount(parsed) : "";
+    mobileExpenseEditAmountInput.value = parsed > 0
+      ? formatMobileMovementEditAmount(parsed, pendingMovementType)
+      : "";
   });
 }
 
@@ -3634,6 +3637,12 @@ function getVisibleMonthIncomeItems(monthKey = state.activeMonth) {
   return visibleItems.sort((a, b) => compareItemsByNewestFirst(a, b, itemOrder));
 }
 
+function getVisibleMonthMovementItems(movementType, monthKey = state.activeMonth) {
+  return normalizeMovementType(movementType) === "income"
+    ? getVisibleMonthIncomeItems(monthKey)
+    : getVisibleMonthExpenseItems(monthKey);
+}
+
 function getMonthExpenseSummary(monthKey = state.activeMonth) {
   const monthItems = getVisibleMonthExpenseItems(monthKey);
   const recurringCount = monthItems.filter((item) => item.isRecurring).length;
@@ -4520,36 +4529,44 @@ function formatRecurringProgressLabel(item, monthKey = getMonthKeyFromItem(item)
   return `${currentOccurrence} de ${totalMonths} meses`;
 }
 
-function isPuntualExpenseItem(item) {
+function isPuntualMovementItem(item) {
+  const movementType = normalizeMovementType(item?.type);
   return Boolean(item)
-    && normalizeMovementType(item.type) === "expense"
+    && (movementType === "expense" || movementType === "income")
     && !Boolean(item.isRecurring)
     && !Boolean(item.isProjectedRecurring);
 }
 
-function isRecurringExpenseItem(item) {
+function isRecurringMovementItem(item) {
+  const movementType = normalizeMovementType(item?.type);
   return Boolean(item)
-    && normalizeMovementType(item.type) === "expense"
+    && (movementType === "expense" || movementType === "income")
     && Boolean(item.isRecurring || item.isProjectedRecurring);
 }
 
 function isMobileExpenseEditSupportedItem(item) {
-  return isPuntualExpenseItem(item) || isRecurringExpenseItem(item);
+  return isPuntualMovementItem(item) || isRecurringMovementItem(item);
 }
 
-function formatPuntualExpenseEditAmount(value) {
-  return `-${money(Math.max(0, Number(value || 0))).replace("$ ", "$")}`;
+function formatMobileMovementEditAmount(value, movementType = pendingMovementType) {
+  const normalizedType = normalizeMovementType(movementType);
+  const amountLabel = money(Math.max(0, Number(value || 0))).replace("$ ", "$");
+  return normalizedType === "expense" ? `-${amountLabel}` : `+${amountLabel}`;
 }
 
-function populateMobileExpenseEditCategories(selectedCategory = "") {
+function populateMobileExpenseEditCategories(selectedCategory = "", movementType = pendingMovementType) {
   if (!(mobileExpenseEditCategory instanceof HTMLSelectElement)) {
     return;
   }
 
-  const selectedValue = normalizeCategoryKeyForType(selectedCategory || getDefaultCategoryKeyForType("expense"), "expense");
+  const normalizedType = normalizeMovementType(movementType);
+  const selectedValue = normalizeCategoryKeyForType(
+    selectedCategory || getDefaultCategoryKeyForType(normalizedType),
+    normalizedType
+  );
   mobileExpenseEditCategory.replaceChildren();
 
-  getCategoryKeysForType("expense").forEach((key) => {
+  getCategoryKeysForType(normalizedType).forEach((key) => {
     const option = document.createElement("option");
     option.value = key;
     option.textContent = getCategoryConfig(key).label;
@@ -4587,7 +4604,7 @@ function resetMobileExpenseEditState() {
   if (mobileExpenseEditDateInput instanceof HTMLInputElement) {
     mobileExpenseEditDateInput.value = "";
   }
-  populateMobileExpenseEditCategories(getDefaultCategoryKeyForType("expense"));
+  populateMobileExpenseEditCategories(getDefaultCategoryKeyForType("expense"), "expense");
   setMobileExpenseEditDateFieldVisibility(true);
 }
 
@@ -4598,6 +4615,7 @@ function openMobileExpenseEditScreen(item) {
   }
 
   const editableItem = item;
+  const movementType = normalizeMovementType(editableItem.type);
 
   suspendOverlayBackStateSync = true;
   try {
@@ -4636,10 +4654,14 @@ function openMobileExpenseEditScreen(item) {
     }
     : null;
   editingItemId = editableItem?.isProjectedRecurring ? null : editableItem.id;
-  pendingMovementType = "expense";
+  pendingMovementType = movementType;
+
+  if (mobileExpenseEditTitle) {
+    mobileExpenseEditTitle.textContent = movementType === "income" ? "Editar Ingreso" : "Editar Gasto";
+  }
 
   if (mobileExpenseEditAmountInput instanceof HTMLInputElement) {
-    mobileExpenseEditAmountInput.value = formatPuntualExpenseEditAmount(editableItem.amount);
+    mobileExpenseEditAmountInput.value = formatMobileMovementEditAmount(editableItem.amount, movementType);
   }
   if (mobileExpenseEditNameInput instanceof HTMLInputElement) {
     mobileExpenseEditNameInput.value = editableItem.name || "";
@@ -4647,7 +4669,7 @@ function openMobileExpenseEditScreen(item) {
   if (mobileExpenseEditDateInput instanceof HTMLInputElement) {
     mobileExpenseEditDateInput.value = normalizeItemDate(editableItem.date);
   }
-  populateMobileExpenseEditCategories(editableItem.category);
+  populateMobileExpenseEditCategories(editableItem.category, movementType);
   setMobileExpenseEditDateFieldVisibility(!isRecurringEdit);
 
   mobileExpenseEditOpen = true;
@@ -4664,7 +4686,7 @@ function closeMobileExpenseEditScreen({ reopenDetail = true } = {}) {
   }
 
   const item = mobileExpenseEditItem;
-  suspendOverlayBackStateSync = reopenDetail && normalizeMovementType(item?.type) === "expense";
+  suspendOverlayBackStateSync = reopenDetail && isMobileExpenseEditSupportedItem(item);
   try {
     mobileExpenseEditOpen = false;
     mobileExpenseEditScreen.classList.add("is-hidden");
@@ -4673,7 +4695,7 @@ function closeMobileExpenseEditScreen({ reopenDetail = true } = {}) {
     resetMobileExpenseEditState();
     updateOverlayScrollLock();
 
-    if (reopenDetail && normalizeMovementType(item?.type) === "expense") {
+    if (reopenDetail && isMobileExpenseEditSupportedItem(item)) {
       openMobileMovementDetailScreen(item, mobileMovementDetailTrigger);
     }
   } finally {
@@ -4697,6 +4719,7 @@ function saveMobileExpenseEditScreen() {
     mobileExpenseEditItem,
     { isProjected: Boolean(editingProjectedItem) }
   );
+  const movementType = normalizeMovementType(mobileExpenseEditItem.type);
   const editDate = recurringEditContext
     ? normalizeItemDate(mobileExpenseEditItem.date)
     : mobileExpenseEditDateInput.value;
@@ -4709,7 +4732,7 @@ function saveMobileExpenseEditScreen() {
     )
     : null;
   const didSave = saveMovementRecord({
-    movementType: "expense",
+    movementType,
     rawMovementDate: editDate,
     category: mobileExpenseEditCategory.value,
     name: mobileExpenseEditNameInput.value,
@@ -4725,7 +4748,7 @@ function saveMobileExpenseEditScreen() {
   }
 
   const updatedItem = recurringEditContext
-    ? getVisibleMonthExpenseItems(state.activeMonth).find((entry) => {
+    ? getVisibleMonthMovementItems(movementType, state.activeMonth).find((entry) => {
       if (!entry) {
         return false;
       }
@@ -4736,7 +4759,7 @@ function saveMobileExpenseEditScreen() {
       return entry.id === editedItemId;
     }) || state.items.find((entry) => entry.id === editedItemId) || mobileExpenseEditItem
     : state.items.find((entry) => entry.id === editedItemId) || null;
-  suspendOverlayBackStateSync = normalizeMovementType(updatedItem?.type) === "expense";
+  suspendOverlayBackStateSync = isMobileExpenseEditSupportedItem(updatedItem);
   try {
     mobileExpenseEditOpen = false;
     mobileExpenseEditScreen.classList.add("is-hidden");
@@ -4745,7 +4768,7 @@ function saveMobileExpenseEditScreen() {
     resetMobileExpenseEditState();
     updateOverlayScrollLock();
 
-    if (normalizeMovementType(updatedItem?.type) === "expense") {
+    if (isMobileExpenseEditSupportedItem(updatedItem)) {
       pendingMobileMovementDetailToast = "Cambios guardados";
       openMobileMovementDetailScreen(updatedItem, mobileMovementDetailTrigger);
     }
@@ -4766,13 +4789,13 @@ function renderMobileMovementDetailScreen(item = mobileMovementDetailItem) {
   const timeLabel = formatItemCreatedTime(item.createdAt, item.date) || "--:--";
   const dateLabel = formatItemLongDate(item.date);
   const amountValue = Math.max(0, Number(item.amount || 0));
-  const isRecurringExpense = movementType === "expense" && Boolean(item.isRecurring || item.isProjectedRecurring);
+  const isRecurringMovement = Boolean(item.isRecurring || item.isProjectedRecurring);
   const signedAmountLabel = movementType === "income"
     ? `+$${new Intl.NumberFormat("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amountValue)}`
     : `-$${new Intl.NumberFormat("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amountValue)}`;
 
   if (mobileMovementDetailTitle) {
-    mobileMovementDetailTitle.textContent = "Detalle de Gasto";
+    mobileMovementDetailTitle.textContent = movementType === "income" ? "Detalle de Ingreso" : "Detalle de Gasto";
   }
 
   if (mobileMovementDetailIcon) {
@@ -4790,7 +4813,7 @@ function renderMobileMovementDetailScreen(item = mobileMovementDetailItem) {
   }
 
   if (mobileMovementDetailRecurringIcon instanceof HTMLElement) {
-    mobileMovementDetailRecurringIcon.classList.toggle("is-hidden", !isRecurringExpense);
+    mobileMovementDetailRecurringIcon.classList.toggle("is-hidden", !isRecurringMovement);
   }
 
   if (mobileMovementDetailTimestamp) {
@@ -4801,10 +4824,10 @@ function renderMobileMovementDetailScreen(item = mobileMovementDetailItem) {
 
   setMovementDetailValue(mobileMovementDetailDescriptionValue, item.name);
   setMovementDetailValue(mobileMovementDetailCategoryValue, categoryConfig.label);
-  setMovementDetailRowVisibility(mobileMovementDetailRepetitionRow, isRecurringExpense);
-  setMovementDetailRowVisibility(mobileMovementDetailDurationRow, isRecurringExpense);
+  setMovementDetailRowVisibility(mobileMovementDetailRepetitionRow, isRecurringMovement);
+  setMovementDetailRowVisibility(mobileMovementDetailDurationRow, isRecurringMovement);
 
-  if (isRecurringExpense) {
+  if (isRecurringMovement) {
     setMovementDetailValue(mobileMovementDetailRepetitionValue, formatRecurringProgressLabel(item, detailMonthKey));
     setMovementDetailValue(mobileMovementDetailDurationValue, formatRecurringDurationLabel(item, detailMonthKey));
   } else {
@@ -4853,11 +4876,6 @@ function showMobileMovementDetailAlert(message) {
 
 function openMobileMovementDetailScreen(item, trigger = null) {
   if (!mobileMovementDetailScreen || !item) {
-    return;
-  }
-
-  if (normalizeMovementType(item.type) !== "expense") {
-    openMobileQuickEntrySheet(item.type, item.amount, item);
     return;
   }
 
