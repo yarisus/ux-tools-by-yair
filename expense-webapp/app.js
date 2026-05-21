@@ -3945,7 +3945,7 @@ if (confirmDeleteSeriesBtn) {
       }
       saveState();
       render();
-      closeDeleteConfirmModal();
+      returnToHomeAfterDelete("Serie recurrente eliminada.");
       return;
     }
 
