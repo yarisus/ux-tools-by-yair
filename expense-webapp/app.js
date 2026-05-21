@@ -505,6 +505,7 @@ let mobileFilterSheetOpen = false;
 let overlayBackStateActive = false;
 let overlayBackStateSyncScheduled = false;
 let ignoreOverlayBackPopstate = false;
+let suspendOverlayBackStateSync = false;
 let mobileQuickEntryAmount = 0;
 let mobileMovementDetailItem = null;
 let mobileMovementDetailTrigger = null;
@@ -4591,15 +4592,6 @@ function openMobileExpenseEditScreen(item) {
     return;
   }
 
-  closeMobileMovementDetailScreen({ restoreFocus: false, preserveItem: true });
-  closeProfileDropdown();
-  closeMobileQuickAddSheet();
-  closeMobileAmountScreen({ immediate: true, preserveState: true });
-  closeMobileDetailScreen({ immediate: true });
-  closeMobileExpenseEditScreen({ reopenDetail: false });
-  closeMobileQuickEntrySheet();
-  closeMobileFilterSheet();
-
   const editableItem = item;
   const projectionSeriesId = item?.isProjectedRecurring ? getRecurringSeriesId(item) : "";
   const projectionMonthKey = item?.isProjectedRecurring ? getMonthKeyFromItem(item) : "";
@@ -4638,10 +4630,24 @@ function openMobileExpenseEditScreen(item) {
   populateMobileExpenseEditCategories(editableItem.category);
   setMobileExpenseEditDateFieldVisibility(!isRecurringEdit);
 
-  mobileExpenseEditOpen = true;
-  mobileExpenseEditScreen.classList.remove("is-hidden");
-  mobileExpenseEditScreen.setAttribute("aria-hidden", "false");
-  updateOverlayScrollLock();
+  suspendOverlayBackStateSync = true;
+  try {
+    closeMobileMovementDetailScreen({ restoreFocus: false, preserveItem: true });
+    closeProfileDropdown();
+    closeMobileQuickAddSheet();
+    closeMobileAmountScreen({ immediate: true, preserveState: true });
+    closeMobileDetailScreen({ immediate: true });
+    closeMobileExpenseEditScreen({ reopenDetail: false });
+    closeMobileQuickEntrySheet();
+    closeMobileFilterSheet();
+
+    mobileExpenseEditOpen = true;
+    mobileExpenseEditScreen.classList.remove("is-hidden");
+    mobileExpenseEditScreen.setAttribute("aria-hidden", "false");
+    updateOverlayScrollLock();
+  } finally {
+    suspendOverlayBackStateSync = false;
+  }
   ensureCurrentOverlayHistoryEntry();
 }
 
@@ -4651,14 +4657,19 @@ function closeMobileExpenseEditScreen({ reopenDetail = true } = {}) {
   }
 
   const item = mobileExpenseEditItem;
-  mobileExpenseEditOpen = false;
-  mobileExpenseEditScreen.classList.add("is-hidden");
-  mobileExpenseEditScreen.setAttribute("aria-hidden", "true");
-  resetMobileExpenseEditState();
-  updateOverlayScrollLock();
+  suspendOverlayBackStateSync = reopenDetail && normalizeMovementType(item?.type) === "expense";
+  try {
+    mobileExpenseEditOpen = false;
+    mobileExpenseEditScreen.classList.add("is-hidden");
+    mobileExpenseEditScreen.setAttribute("aria-hidden", "true");
+    resetMobileExpenseEditState();
+    updateOverlayScrollLock();
 
-  if (reopenDetail && normalizeMovementType(item?.type) === "expense") {
-    openMobileMovementDetailScreen(item, mobileMovementDetailTrigger, { forceOverlayHistoryEntry: true });
+    if (reopenDetail && normalizeMovementType(item?.type) === "expense") {
+      openMobileMovementDetailScreen(item, mobileMovementDetailTrigger);
+    }
+  } finally {
+    suspendOverlayBackStateSync = false;
   }
 }
 
@@ -4717,15 +4728,20 @@ function saveMobileExpenseEditScreen() {
       return entry.id === editedItemId;
     }) || state.items.find((entry) => entry.id === editedItemId) || mobileExpenseEditItem
     : state.items.find((entry) => entry.id === editedItemId) || null;
-  mobileExpenseEditOpen = false;
-  mobileExpenseEditScreen.classList.add("is-hidden");
-  mobileExpenseEditScreen.setAttribute("aria-hidden", "true");
-  resetMobileExpenseEditState();
-  updateOverlayScrollLock();
+  suspendOverlayBackStateSync = normalizeMovementType(updatedItem?.type) === "expense";
+  try {
+    mobileExpenseEditOpen = false;
+    mobileExpenseEditScreen.classList.add("is-hidden");
+    mobileExpenseEditScreen.setAttribute("aria-hidden", "true");
+    resetMobileExpenseEditState();
+    updateOverlayScrollLock();
 
-  if (normalizeMovementType(updatedItem?.type) === "expense") {
-    pendingMobileMovementDetailToast = "Cambios guardados";
-    openMobileMovementDetailScreen(updatedItem, mobileMovementDetailTrigger, { forceOverlayHistoryEntry: true });
+    if (normalizeMovementType(updatedItem?.type) === "expense") {
+      pendingMobileMovementDetailToast = "Cambios guardados";
+      openMobileMovementDetailScreen(updatedItem, mobileMovementDetailTrigger);
+    }
+  } finally {
+    suspendOverlayBackStateSync = false;
   }
 }
 
@@ -4826,7 +4842,7 @@ function showMobileMovementDetailAlert(message) {
   }, 2600);
 }
 
-function openMobileMovementDetailScreen(item, trigger = null, { forceOverlayHistoryEntry = false } = {}) {
+function openMobileMovementDetailScreen(item, trigger = null) {
   if (!mobileMovementDetailScreen || !item) {
     return;
   }
@@ -4858,13 +4874,7 @@ function openMobileMovementDetailScreen(item, trigger = null, { forceOverlayHist
     mobileMovementDetailBody.scrollTop = 0;
   }
   updateOverlayScrollLock();
-  if (forceOverlayHistoryEntry) {
-    const currentState = history.state && typeof history.state === "object" ? history.state : {};
-    history.pushState({ ...currentState, dinariaOverlay: true }, "", location.href);
-    overlayBackStateActive = true;
-  } else {
-    ensureCurrentOverlayHistoryEntry();
-  }
+  ensureCurrentOverlayHistoryEntry();
 
   if (pendingMobileMovementDetailToast) {
     const successMessage = pendingMobileMovementDetailToast;
@@ -7509,6 +7519,9 @@ function updateOverlayScrollLock() {
   if (overlayInteractionBlocker) {
     overlayInteractionBlocker.classList.toggle("is-hidden", !hasOpenMenuOverlay);
     overlayInteractionBlocker.setAttribute("aria-hidden", String(!hasOpenMenuOverlay));
+  }
+  if (suspendOverlayBackStateSync) {
+    return;
   }
   scheduleOverlayBackStateSync();
 }
