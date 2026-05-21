@@ -14450,6 +14450,10 @@ body.overflow-hidden .mobile-add-fab-wrap,
     justify-content: stretch !important;
   }
 
+  body .mobile-amount-recurrence-sheet.is-hidden {
+    display: none !important;
+  }
+
   body .mobile-amount-recurrence-sheet-backdrop {
     position: absolute !important;
     inset: 0 !important;
