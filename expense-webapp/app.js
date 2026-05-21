@@ -3016,6 +3016,32 @@ function formatItemHomeDateLabel(rawDate) {
   return [weekdayRaw, day ? `${day} de ${month}` : month].filter(Boolean).join(" ");
 }
 
+function formatItemHomeDateGroupLabel(rawDate) {
+  const normalized = normalizeItemDate(rawDate);
+  const parsed = new Date(`${normalized}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) {
+    return normalized;
+  }
+
+  const today = new Date();
+  const sameDay = parsed.getFullYear() === today.getFullYear()
+    && parsed.getMonth() === today.getMonth()
+    && parsed.getDate() === today.getDate();
+
+  if (sameDay) {
+    return "Hoy";
+  }
+
+  const parts = new Intl.DateTimeFormat("es-AR", {
+    day: "numeric",
+    month: "long"
+  }).formatToParts(parsed);
+
+  const day = parts.find((part) => part.type === "day")?.value || "";
+  const month = (parts.find((part) => part.type === "month")?.value || "").trim().toLowerCase();
+  return [day ? `${day} de ${month}` : month].filter(Boolean).join(" ");
+}
+
 function normalizeItemCreatedAt(rawValue, fallbackDate = "") {
   const value = String(rawValue || "").trim();
   if (value) {
@@ -8458,7 +8484,16 @@ function renderExpenseMobileList() {
     return;
   }
 
+  let previousGroupDate = "";
   for (const item of filteredItems) {
+    const itemGroupDate = normalizeItemDate(item.date);
+    if (itemGroupDate !== previousGroupDate) {
+      const groupLabel = document.createElement("p");
+      groupLabel.className = "mobile-item-group-label";
+      groupLabel.textContent = formatItemHomeDateGroupLabel(item.date);
+      expenseMobileList.appendChild(groupLabel);
+      previousGroupDate = itemGroupDate;
+    }
     const card = mobileItemTemplate.content.firstElementChild.cloneNode(true);
     populateItemNode(card, item);
     expenseMobileList.appendChild(card);
@@ -8483,7 +8518,7 @@ function populateItemNode(node, item) {
 
   const secondaryNode = node.querySelector(".mobile-item-secondary");
   if (secondaryNode) {
-    const secondaryLabel = isMobileRow ? formatItemHomeDateLabel(item.date) : config.label;
+    const secondaryLabel = config.label;
     secondaryNode.textContent = secondaryLabel;
     secondaryNode.setAttribute("title", secondaryLabel);
     secondaryNode.classList.toggle("is-hidden", !secondaryLabel);

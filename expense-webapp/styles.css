@@ -21910,6 +21910,18 @@ body.overflow-hidden .mobile-add-fab-wrap,
     width: 100% !important;
   }
 
+  body .mobile-item-group-label {
+    margin: 16px 0 8px !important;
+    color: #374151 !important;
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    font-weight: 600 !important;
+  }
+
+  body #expenseMobileList > .mobile-item-group-label:first-child {
+    margin-top: 0 !important;
+  }
+
   body .mobile-expense-card {
     padding: 14px 0 !important;
   }
