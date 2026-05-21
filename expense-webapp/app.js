@@ -4648,7 +4648,7 @@ function openMobileExpenseEditScreen(item) {
   } finally {
     suspendOverlayBackStateSync = false;
   }
-  ensureCurrentOverlayHistoryEntry();
+  pushOverlayHistoryEntry();
 }
 
 function closeMobileExpenseEditScreen({ reopenDetail = true } = {}) {
@@ -7479,6 +7479,16 @@ function ensureCurrentOverlayHistoryEntry() {
     return;
   }
 
+  history.pushState({ ...currentState, dinariaOverlay: true }, "", location.href);
+  overlayBackStateActive = true;
+}
+
+function pushOverlayHistoryEntry() {
+  if (!hasOpenOverlayState()) {
+    return;
+  }
+
+  const currentState = history.state && typeof history.state === "object" ? history.state : {};
   history.pushState({ ...currentState, dinariaOverlay: true }, "", location.href);
   overlayBackStateActive = true;
 }
