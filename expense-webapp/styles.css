@@ -14441,6 +14441,244 @@ body.overflow-hidden .mobile-add-fab-wrap,
     color: #47444c !important;
   }
 
+  body .mobile-amount-recurrence-sheet {
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 6 !important;
+    display: flex !important;
+    align-items: flex-end !important;
+    justify-content: stretch !important;
+  }
+
+  body .mobile-amount-recurrence-sheet-backdrop {
+    position: absolute !important;
+    inset: 0 !important;
+    border: none !important;
+    background: rgba(15, 23, 42, 0.48) !important;
+  }
+
+  body .mobile-amount-recurrence-sheet-card {
+    position: relative !important;
+    z-index: 1 !important;
+    width: 100% !important;
+    display: grid !important;
+    gap: 16px !important;
+    padding: 12px 16px calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+    border-radius: 24px 24px 0 0 !important;
+    background: #ffffff !important;
+    box-shadow: 0 -12px 32px rgba(27, 27, 33, 0.12) !important;
+  }
+
+  body .mobile-amount-recurrence-sheet-handle {
+    width: 56px !important;
+    height: 4px !important;
+    margin: 0 auto !important;
+    border-radius: 999px !important;
+    background: #e5e7eb !important;
+  }
+
+  body .mobile-amount-recurrence-sheet-copy {
+    display: grid !important;
+    gap: 8px !important;
+    text-align: center !important;
+  }
+
+  body .mobile-amount-recurrence-sheet-title {
+    margin: 0 !important;
+    color: #252732 !important;
+    font-family: "Nunito", "Segoe UI", sans-serif !important;
+    font-size: 24px !important;
+    line-height: 32px !important;
+    font-weight: 700 !important;
+  }
+
+  body .mobile-amount-recurrence-sheet-subtitle {
+    margin: 0 !important;
+    color: #6b7280 !important;
+    font-family: "Nunito", "Segoe UI", sans-serif !important;
+    font-size: 16px !important;
+    line-height: 24px !important;
+    font-weight: 500 !important;
+  }
+
+  body .mobile-amount-recurrence-sheet-options {
+    display: grid !important;
+    gap: 12px !important;
+  }
+
+  body .mobile-amount-recurrence-option {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: auto 1fr auto !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 16px !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    background: #ffffff !important;
+    text-align: left !important;
+    color: inherit !important;
+  }
+
+  body .mobile-amount-recurrence-option.is-selected {
+    border-color: #dbe4ff !important;
+    background: #edf1fe !important;
+  }
+
+  body .mobile-amount-recurrence-option-radio {
+    width: 16px !important;
+    height: 16px !important;
+    border: 2px solid #213196 !important;
+    border-radius: 999px !important;
+    box-sizing: border-box !important;
+    background: #ffffff !important;
+  }
+
+  body .mobile-amount-recurrence-option.is-selected .mobile-amount-recurrence-option-radio {
+    border-width: 5px !important;
+  }
+
+  body .mobile-amount-recurrence-option-copy {
+    display: grid !important;
+    gap: 4px !important;
+    min-width: 0 !important;
+  }
+
+  body .mobile-amount-recurrence-option-copy strong {
+    color: #252732 !important;
+    font-family: "Nunito", "Segoe UI", sans-serif !important;
+    font-size: 16px !important;
+    line-height: 24px !important;
+    font-weight: 700 !important;
+  }
+
+  body .mobile-amount-recurrence-option-copy small {
+    color: #4b5563 !important;
+    font-family: "Nunito", "Segoe UI", sans-serif !important;
+    font-size: 14px !important;
+    line-height: 20px !important;
+    font-weight: 500 !important;
+  }
+
+  body .mobile-amount-recurrence-option-icon {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #213196 !important;
+  }
+
+  body .mobile-amount-recurrence-option-icon .mobile-symbol {
+    font-size: 28px !important;
+    line-height: 1 !important;
+  }
+
+  body .mobile-amount-recurrence-months-panel {
+    display: grid !important;
+    gap: 12px !important;
+  }
+
+  body .mobile-amount-recurrence-months-title {
+    margin: 0 !important;
+    color: #252732 !important;
+    font-family: "Nunito", "Segoe UI", sans-serif !important;
+    font-size: 16px !important;
+    line-height: 24px !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+  }
+
+  body .mobile-amount-recurrence-months-panel.is-hidden {
+    display: none !important;
+  }
+
+  body .mobile-amount-recurrence-stepper {
+    display: grid !important;
+    grid-template-columns: 48px 1fr 48px !important;
+    align-items: center !important;
+    gap: 24px !important;
+    justify-items: center !important;
+    max-width: 240px !important;
+    margin: 0 auto !important;
+  }
+
+  body .mobile-amount-recurrence-stepper-btn {
+    width: 48px !important;
+    min-width: 48px !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: none !important;
+    border-radius: 12px !important;
+    background: #edf1fe !important;
+    color: #213196 !important;
+  }
+
+  body .mobile-amount-recurrence-stepper-btn:disabled {
+    opacity: 0.5 !important;
+  }
+
+  body .mobile-amount-recurrence-stepper-value {
+    color: #111827 !important;
+    font-size: 40px !important;
+    line-height: 1 !important;
+    font-weight: 600 !important;
+  }
+
+  body .mobile-amount-recurrence-helper {
+    margin: 0 !important;
+    color: #6b7280 !important;
+    font-family: "Nunito", "Segoe UI", sans-serif !important;
+    font-size: 14px !important;
+    line-height: 20px !important;
+    font-weight: 500 !important;
+    text-align: center !important;
+  }
+
+  body .mobile-amount-recurrence-chips {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  body .mobile-amount-recurrence-chip {
+    min-height: 40px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 8px 12px !important;
+    border: none !important;
+    border-radius: 999px !important;
+    background: #edf1fe !important;
+    color: #252732 !important;
+    font-family: "Nunito", "Segoe UI", sans-serif !important;
+    font-size: 16px !important;
+    line-height: 24px !important;
+    font-weight: 600 !important;
+  }
+
+  body .mobile-amount-recurrence-chip.is-selected {
+    background: #213196 !important;
+    color: #ffffff !important;
+  }
+
+  body .mobile-amount-recurrence-sheet-footer {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+  }
+
+  body .mobile-amount-recurrence-secondary-btn {
+    width: 100% !important;
+    min-height: 48px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 12px !important;
+    border-radius: 12px !important;
+  }
+
   body .mobile-amount-screen-footer {
     order: 2 !important;
     position: fixed !important;

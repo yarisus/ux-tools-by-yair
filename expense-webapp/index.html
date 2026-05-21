@@ -1401,13 +1401,9 @@
               </label>
 
               <div id="mobileAmountRecurringMonthsField" class="mobile-amount-frame-card mobile-amount-frame-card--duration is-disabled">
-                <span>Cuantos meses</span>
+                <span>Duración</span>
                 <span class="mobile-amount-frame-select-wrap">
-                  <select
-                    id="mobileAmountRecurringMonths"
-                    class="mobile-amount-frame-select"
-                    disabled
-                  ></select>
+                  <span id="mobileAmountRecurringSummary" class="mobile-amount-frame-select">Elegir duración</span>
                   <span class="mobile-amount-frame-select-icon" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">expand_more</span></span>
                 </span>
               </div>
@@ -1448,6 +1444,67 @@
           </button>
         </div>
       </section>
+
+      <div id="mobileAmountRecurrenceSheet" class="mobile-amount-recurrence-sheet is-hidden" aria-hidden="true">
+        <button id="mobileAmountRecurrenceBackdrop" class="mobile-amount-recurrence-sheet-backdrop" type="button" aria-label="Cerrar selector de recurrencia"></button>
+        <section class="mobile-amount-recurrence-sheet-card" role="dialog" aria-modal="true" aria-labelledby="mobileAmountRecurrenceTitle">
+          <div class="mobile-amount-recurrence-sheet-handle" aria-hidden="true"></div>
+
+          <div class="mobile-amount-recurrence-sheet-copy">
+            <h3 id="mobileAmountRecurrenceTitle" class="mobile-amount-recurrence-sheet-title">Duración de la recurrencia</h3>
+            <p id="mobileAmountRecurrenceSubtitle" class="mobile-amount-recurrence-sheet-subtitle">Elegí por cuánto tiempo se repetirá este gasto.</p>
+          </div>
+
+          <div class="mobile-amount-recurrence-sheet-options">
+            <button id="mobileAmountRecurrenceAlwaysOption" class="mobile-amount-recurrence-option is-selected" type="button">
+              <span class="mobile-amount-recurrence-option-radio" aria-hidden="true"></span>
+              <span class="mobile-amount-recurrence-option-copy">
+                <strong>Hasta cancelar</strong>
+                <small>Se repetirá hasta que lo canceles.</small>
+              </span>
+              <span class="mobile-amount-recurrence-option-icon" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">all_inclusive</span></span>
+            </button>
+
+            <button id="mobileAmountRecurrenceMonthsOption" class="mobile-amount-recurrence-option" type="button">
+              <span class="mobile-amount-recurrence-option-radio" aria-hidden="true"></span>
+              <span class="mobile-amount-recurrence-option-copy">
+                <strong>Cantidad de meses</strong>
+                <small>Define por cuántos meses se repetirá.</small>
+              </span>
+              <span class="mobile-amount-recurrence-option-icon" aria-hidden="true"><span class="material-symbols-rounded mobile-symbol">calendar_month</span></span>
+            </button>
+          </div>
+
+          <div id="mobileAmountRecurrenceMonthsPanel" class="mobile-amount-recurrence-months-panel is-hidden">
+            <p class="mobile-amount-recurrence-months-title">Cantidad de meses</p>
+
+            <div class="mobile-amount-recurrence-stepper">
+              <button id="mobileAmountRecurrenceMinusBtn" class="mobile-amount-recurrence-stepper-btn" type="button" aria-label="Restar meses">
+                <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">remove</span>
+              </button>
+              <strong id="mobileAmountRecurrenceMonthsValue" class="mobile-amount-recurrence-stepper-value font-space">2</strong>
+              <button id="mobileAmountRecurrencePlusBtn" class="mobile-amount-recurrence-stepper-btn" type="button" aria-label="Sumar meses">
+                <span class="material-symbols-rounded mobile-symbol" aria-hidden="true">add</span>
+              </button>
+            </div>
+
+            <p class="mobile-amount-recurrence-helper">Mínimo 2 meses. Máximo 24 meses.</p>
+
+            <div class="mobile-amount-recurrence-chips" role="list" aria-label="Atajos de cantidad de meses">
+              <button class="mobile-amount-recurrence-chip" type="button" data-mobile-recurrence-chip="6">6</button>
+              <button class="mobile-amount-recurrence-chip" type="button" data-mobile-recurrence-chip="9">9</button>
+              <button class="mobile-amount-recurrence-chip" type="button" data-mobile-recurrence-chip="12">12</button>
+              <button class="mobile-amount-recurrence-chip" type="button" data-mobile-recurrence-chip="18">18</button>
+              <button class="mobile-amount-recurrence-chip" type="button" data-mobile-recurrence-chip="24">24</button>
+            </div>
+          </div>
+
+          <footer class="mobile-amount-recurrence-sheet-footer">
+            <button id="mobileAmountRecurrenceCancelBtn" class="mobile-movement-detail-secondary-btn mobile-amount-recurrence-secondary-btn" type="button">Cancelar</button>
+            <button id="mobileAmountRecurrenceConfirmBtn" class="mobile-amount-frame-next-btn" type="button">Confirmar</button>
+          </footer>
+        </section>
+      </div>
     </div>
 
     <div id="mobileQuickEntrySheet" class="mobile-quick-entry-sheet is-hidden md:hidden" aria-hidden="true">
