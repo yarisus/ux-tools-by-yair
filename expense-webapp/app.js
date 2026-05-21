@@ -4016,7 +4016,8 @@ function syncMobileAmountRecurrenceSheetState() {
   }
 
   if (mobileAmountRecurrenceMonthsPanel) {
-    mobileAmountRecurrenceMonthsPanel.classList.toggle("is-hidden", !isMonthsMode);
+    mobileAmountRecurrenceMonthsPanel.classList.remove("is-hidden");
+    mobileAmountRecurrenceMonthsPanel.classList.toggle("is-active", isMonthsMode);
   }
 
   if (mobileAmountRecurrenceMonthsValue) {

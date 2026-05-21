@@ -14579,6 +14579,8 @@ body.overflow-hidden .mobile-add-fab-wrap,
   body .mobile-amount-recurrence-months-panel {
     display: grid !important;
     gap: 12px !important;
+    opacity: 0.72 !important;
+    transition: opacity 140ms ease !important;
   }
 
   body .mobile-amount-recurrence-months-title {
@@ -14593,6 +14595,10 @@ body.overflow-hidden .mobile-add-fab-wrap,
 
   body .mobile-amount-recurrence-months-panel.is-hidden {
     display: none !important;
+  }
+
+  body .mobile-amount-recurrence-months-panel.is-active {
+    opacity: 1 !important;
   }
 
   body .mobile-amount-recurrence-stepper {
