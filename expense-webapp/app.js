@@ -944,7 +944,11 @@ if (mobileAmountRecurringCard) {
       mobileAmountRecurringEnabled = false;
       syncMobileAmountRecurringDurationState();
     } else {
-      openMobileAmountRecurrenceSheet();
+      mobileAmountRecurringEnabled = true;
+      if (!mobileAmountRecurringDuration) {
+        mobileAmountRecurringDuration = "always";
+      }
+      syncMobileAmountRecurringDurationState();
     }
     syncMobileAmountEditingState();
     syncMobileAmountKeyboardLift();
