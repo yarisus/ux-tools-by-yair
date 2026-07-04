@@ -23601,16 +23601,12 @@ body.overflow-hidden .mobile-add-fab-wrap,
     text-transform: none !important;
   }
 
-  body #mobileExpenseEditScopeWrap {
-    margin-top: 12px !important;
-  }
-
-  body .mobile-expense-edit-scope-label {
-    text-transform: none !important;
-    letter-spacing: normal !important;
-  }
-
   body #mobileExpenseEditDateField.is-hidden {
+    display: none !important;
+  }
+
+  body #expenseEditScopeWrap,
+  body #mobileQuickEntryScopeWrap {
     display: none !important;
   }
 
@@ -24802,6 +24798,39 @@ body.overflow-hidden .mobile-add-fab-wrap,
     justify-content: center !important;
     padding: 16px !important;
     box-sizing: border-box !important;
+  }
+
+  body #mobileExpenseEditScopeModal {
+    z-index: 125 !important;
+  }
+
+  body #mobileExpenseEditScopeModal.show {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  body #mobileExpenseEditScopeModal .modal-card {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    width: min(100% - 32px, 420px) !important;
+    max-width: min(100% - 32px, 420px) !important;
+    margin: auto !important;
+    border-radius: 24px !important;
+  }
+
+  body .mobile-expense-edit-scope-modal-actions {
+    display: grid !important;
+    gap: 12px !important;
+  }
+
+  body .mobile-expense-edit-scope-modal-actions > button {
+    width: 100% !important;
   }
 }
 

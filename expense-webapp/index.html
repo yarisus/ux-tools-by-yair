@@ -793,18 +793,6 @@
             </span>
           </label>
 
-          <div id="expenseEditScopeWrap" class="mobile-edit-scope is-hidden" role="group" aria-label="Alcance de la edicion recurrente">
-            <p class="mobile-edit-scope-label">Aplicar cambios</p>
-            <div class="mobile-edit-scope-options">
-              <button id="expenseEditScopeThisMonthBtn" class="mobile-edit-scope-btn is-active" type="button" aria-pressed="true">
-                Solo este mes
-              </button>
-              <button id="expenseEditScopeAllMonthsBtn" class="mobile-edit-scope-btn" type="button" aria-pressed="false">
-                Desde este mes en adelante
-              </button>
-            </div>
-          </div>
-
           <button
             id="expenseSubmitBtn"
             type="submit"
@@ -1032,6 +1020,40 @@
           </button>
           <button id="confirmDeleteBtn" class="danger-confirm-btn inline-flex min-h-11 items-center rounded-xl border border-rose-600 bg-rose-600 px-4 py-2.5 font-semibold text-white" type="button">
             Eliminar
+          </button>
+        </footer>
+      </section>
+    </div>
+
+    <div id="mobileExpenseEditScopeModal" class="modal" aria-hidden="true">
+      <div class="modal-backdrop" data-close-mobile-expense-edit-scope-modal="true"></div>
+      <section
+        class="modal-card relative mx-auto mt-[18vh] w-[min(480px,calc(100%-20px))] rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="mobileExpenseEditScopeModalTitle"
+      >
+        <header class="modal-head mb-2 flex items-center justify-between gap-2">
+          <h3 id="mobileExpenseEditScopeModalTitle" class="font-space text-2xl font-bold text-slate-900">Aplicar cambios</h3>
+          <button
+            id="closeMobileExpenseEditScopeModalBtn"
+            class="icon-btn inline-grid h-11 w-11 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+            type="button"
+            aria-label="Cerrar selector de alcance"
+          >
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </header>
+        <p id="mobileExpenseEditScopeModalText" class="text-sm text-slate-700">Elegí si querés aplicar el cambio solo en este mes o desde este mes en adelante.</p>
+        <footer class="mobile-expense-edit-scope-modal-actions mt-4">
+          <button id="cancelMobileExpenseEditScopeModalBtn" class="ghost-btn inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-700" type="button">
+            Cancelar
+          </button>
+          <button id="confirmMobileExpenseEditScopeThisMonthBtn" class="ghost-btn inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-700" type="button">
+            Solo este mes
+          </button>
+          <button id="confirmMobileExpenseEditScopeAllMonthsBtn" class="primary-btn inline-flex min-h-11 items-center justify-center rounded-xl px-4 py-2.5 font-semibold text-white" type="button">
+            De acá en adelante
           </button>
         </footer>
       </section>
@@ -1602,17 +1624,6 @@
             </span>
           </label>
 
-          <div id="mobileQuickEntryScopeWrap" class="mobile-edit-scope is-hidden" role="group" aria-label="Alcance de la edicion recurrente">
-            <p class="mobile-edit-scope-label">Aplicar cambios</p>
-            <div class="mobile-edit-scope-options">
-              <button id="mobileQuickEntryScopeThisMonthBtn" class="mobile-edit-scope-btn is-active" type="button" aria-pressed="true">
-                Solo este mes
-              </button>
-              <button id="mobileQuickEntryScopeAllMonthsBtn" class="mobile-edit-scope-btn" type="button" aria-pressed="false">
-                Desde este mes en adelante
-              </button>
-            </div>
-          </div>
         </div>
 
         <footer class="mobile-quick-entry-footer">
@@ -1838,17 +1849,6 @@
             </span>
           </label>
 
-          <div id="mobileExpenseEditScopeWrap" class="mobile-edit-scope is-hidden" role="group" aria-label="Alcance del cambio recurrente">
-            <p class="mobile-edit-scope-label mobile-expense-edit-scope-label">Aplicar cambio</p>
-            <div class="mobile-edit-scope-options">
-              <button id="mobileExpenseEditScopeThisMonthBtn" class="mobile-edit-scope-btn is-active" type="button" aria-pressed="true">
-                Solo este mes
-              </button>
-              <button id="mobileExpenseEditScopeAllMonthsBtn" class="mobile-edit-scope-btn" type="button" aria-pressed="false">
-                De acá en adelante
-              </button>
-            </div>
-          </div>
         </div>
 
         <footer class="mobile-expense-edit-footer">

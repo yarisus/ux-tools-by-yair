@@ -296,6 +296,12 @@ const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
 const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
 const confirmDeleteSeriesBtn = document.getElementById("confirmDeleteSeriesBtn");
 const deleteConfirmTitle = document.getElementById("deleteConfirmTitle");
+const mobileExpenseEditScopeModal = document.getElementById("mobileExpenseEditScopeModal");
+const mobileExpenseEditScopeModalText = document.getElementById("mobileExpenseEditScopeModalText");
+const closeMobileExpenseEditScopeModalBtn = document.getElementById("closeMobileExpenseEditScopeModalBtn");
+const cancelMobileExpenseEditScopeModalBtn = document.getElementById("cancelMobileExpenseEditScopeModalBtn");
+const confirmMobileExpenseEditScopeThisMonthBtn = document.getElementById("confirmMobileExpenseEditScopeThisMonthBtn");
+const confirmMobileExpenseEditScopeAllMonthsBtn = document.getElementById("confirmMobileExpenseEditScopeAllMonthsBtn");
 const feedbackModal = document.getElementById("feedbackModal");
 const closeFeedbackModalBtn = document.getElementById("closeFeedbackModalBtn");
 const feedbackForm = document.getElementById("feedbackForm");
@@ -398,9 +404,6 @@ const mobileExpenseEditCategory = document.getElementById("mobileExpenseEditCate
 const mobileExpenseEditDateInput = document.getElementById("mobileExpenseEditDateInput");
 const mobileExpenseEditDateField = document.getElementById("mobileExpenseEditDateField");
 const mobileExpenseEditTitle = document.getElementById("mobileExpenseEditTitle");
-const mobileExpenseEditScopeWrap = document.getElementById("mobileExpenseEditScopeWrap");
-const mobileExpenseEditScopeThisMonthBtn = document.getElementById("mobileExpenseEditScopeThisMonthBtn");
-const mobileExpenseEditScopeAllMonthsBtn = document.getElementById("mobileExpenseEditScopeAllMonthsBtn");
 const mobileExpenseEditCancelBtn = document.getElementById("mobileExpenseEditCancelBtn");
 const mobileExpenseEditSaveBtn = document.getElementById("mobileExpenseEditSaveBtn");
 const mobileQuickEntrySheet = document.getElementById("mobileQuickEntrySheet");
@@ -516,9 +519,9 @@ let mobileMovementDetailTrigger = null;
 let mobileExpenseEditItem = null;
 let pendingMobileMovementDetailToast = "";
 let mobileMovementDetailAlertTimer = null;
-let mobileExpenseEditScope = "thisMonth";
 let expenseEditScope = "thisMonth";
 let mobileQuickEntryScope = "thisMonth";
+let pendingRecurringEditScopeAction = null;
 let mobileAmountMode = "expense";
 let mobileAmountValue = "";
 let mobileAmountRecurringEnabled = false;
@@ -1093,29 +1096,6 @@ if (mobileDetailNameInput) {
 }
 
 if (mobileDetailCategory) {
-  mobileDetailCategory.addEventListener("pointerdown", (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-  });
-
-  mobileDetailCategory.addEventListener("click", (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    if (!(mobileDetailCategory instanceof HTMLSelectElement)) {
-      return;
-    }
-    if (typeof mobileDetailCategory.showPicker === "function") {
-      try {
-        mobileDetailCategory.showPicker();
-        return;
-      } catch (_error) {
-        // Fall through to focus/click fallback.
-      }
-    }
-    mobileDetailCategory.focus({ preventScroll: true });
-    mobileDetailCategory.click();
-  });
-
   mobileDetailCategory.addEventListener("change", () => {
     window.setTimeout(() => {
       focusMobileDetailNameInput();
@@ -1153,17 +1133,17 @@ if (mobileExpenseEditSaveBtn) {
   });
 }
 
-if (mobileExpenseEditScopeThisMonthBtn) {
-  mobileExpenseEditScopeThisMonthBtn.addEventListener("click", () => {
-    mobileExpenseEditScope = "thisMonth";
-    updateMobileExpenseEditScopeSelection();
+if (confirmMobileExpenseEditScopeThisMonthBtn) {
+  confirmMobileExpenseEditScopeThisMonthBtn.addEventListener("click", () => {
+    closeMobileExpenseEditScopeModal();
+    runPendingRecurringEditScopeAction("thisMonth");
   });
 }
 
-if (mobileExpenseEditScopeAllMonthsBtn) {
-  mobileExpenseEditScopeAllMonthsBtn.addEventListener("click", () => {
-    mobileExpenseEditScope = "allMonths";
-    updateMobileExpenseEditScopeSelection();
+if (confirmMobileExpenseEditScopeAllMonthsBtn) {
+  confirmMobileExpenseEditScopeAllMonthsBtn.addEventListener("click", () => {
+    closeMobileExpenseEditScopeModal();
+    runPendingRecurringEditScopeAction("allMonths");
   });
 }
 
@@ -1413,16 +1393,33 @@ if (salaryModalInput) {
 
 expenseForm.addEventListener("submit", (event) => {
   event.preventDefault();
-  const didSave = saveMovementRecord({
-    movementType: normalizeMovementType(typeInput?.value || pendingMovementType || "expense"),
+  const movementType = normalizeMovementType(typeInput?.value || pendingMovementType || "expense");
+  const saveWithScope = (scope) => saveMovementRecord({
+    movementType,
     rawMovementDate: dateInput?.value || "",
     category: categoryInput?.value || getDefaultCategoryKeyForType("expense"),
     name: nameInput?.value || "",
     amount: parseCurrencyInput(amountInput?.value || ""),
     isRecurring: Boolean(recurringInput?.checked),
     recurringMonths: parseRecurringDurationSelection(recurringMonthsInput?.value || "12"),
-    editScope: expenseEditScope
+    editScope: scope
   });
+
+  const needsScopeModal = Boolean(editingItemId || editingProjectedItem) && Boolean(recurringInput?.checked);
+  if (needsScopeModal) {
+    openMobileExpenseEditScopeModal({
+      movementType,
+      onConfirm: (selectedScope) => {
+        const didScopedSave = saveWithScope(selectedScope);
+        if (didScopedSave) {
+          closeModal();
+        }
+      }
+    });
+    return;
+  }
+
+  const didSave = saveWithScope(expenseEditScope);
 
   if (!didSave) {
     return;
@@ -2049,6 +2046,32 @@ if (closeDeleteConfirmBtn) {
 
 if (cancelDeleteBtn) {
   cancelDeleteBtn.addEventListener("click", closeDeleteConfirmModal);
+}
+
+if (mobileExpenseEditScopeModal) {
+  mobileExpenseEditScopeModal.addEventListener("click", (event) => {
+    const target = event.target;
+    if (target instanceof HTMLElement && target.dataset.closeMobileExpenseEditScopeModal === "true") {
+      closeMobileExpenseEditScopeModal();
+    }
+  });
+}
+
+if (closeMobileExpenseEditScopeModalBtn) {
+  closeMobileExpenseEditScopeModalBtn.addEventListener("click", closeMobileExpenseEditScopeModal);
+}
+
+if (cancelMobileExpenseEditScopeModalBtn) {
+  cancelMobileExpenseEditScopeModalBtn.addEventListener("click", closeMobileExpenseEditScopeModal);
+}
+
+function runPendingRecurringEditScopeAction(scope) {
+  if (typeof pendingRecurringEditScopeAction !== "function") {
+    return;
+  }
+  const action = pendingRecurringEditScopeAction;
+  pendingRecurringEditScopeAction = null;
+  action(scope);
 }
 
 if (confirmDeleteBtn) {
@@ -4659,7 +4682,6 @@ function resetMobileExpenseEditState() {
   editingItemId = null;
   editingProjectedItem = null;
   pendingMovementType = "expense";
-  mobileExpenseEditScope = "thisMonth";
 
   if (mobileExpenseEditAmountInput instanceof HTMLInputElement) {
     mobileExpenseEditAmountInput.value = "";
@@ -4672,10 +4694,7 @@ function resetMobileExpenseEditState() {
   }
   populateMobileExpenseEditCategories(getDefaultCategoryKeyForType("expense"), "expense");
   setMobileExpenseEditDateFieldVisibility(true);
-  if (mobileExpenseEditScopeWrap) {
-    mobileExpenseEditScopeWrap.classList.add("is-hidden");
-  }
-  updateMobileExpenseEditScopeSelection();
+  closeMobileExpenseEditScopeModal();
 }
 
 function openMobileExpenseEditScreen(item) {
@@ -4741,11 +4760,7 @@ function openMobileExpenseEditScreen(item) {
   }
   populateMobileExpenseEditCategories(editableItem.category, movementType);
   setMobileExpenseEditDateFieldVisibility(!isRecurringEdit);
-  mobileExpenseEditScope = isRecurringEdit ? "thisMonth" : "thisMonth";
-  if (mobileExpenseEditScopeWrap) {
-    mobileExpenseEditScopeWrap.classList.toggle("is-hidden", !isRecurringEdit);
-  }
-  updateMobileExpenseEditScopeSelection();
+  closeMobileExpenseEditScopeModal();
 
   mobileExpenseEditOpen = true;
   mobileExpenseEditScreen.classList.remove("is-hidden");
@@ -4778,7 +4793,7 @@ function closeMobileExpenseEditScreen({ reopenDetail = true } = {}) {
   }
 }
 
-function saveMobileExpenseEditScreen() {
+function saveMobileExpenseEditScreen(editScopeOverride = null) {
   if (
     !(mobileExpenseEditAmountInput instanceof HTMLInputElement)
     || !(mobileExpenseEditNameInput instanceof HTMLInputElement)
@@ -4806,6 +4821,17 @@ function saveMobileExpenseEditScreen() {
       getMonthKeyFromItem(mobileExpenseEditItem)
     )
     : null;
+
+  if (recurringEditContext && !editScopeOverride) {
+    openMobileExpenseEditScopeModal({
+      movementType,
+      onConfirm: (selectedScope) => {
+        saveMobileExpenseEditScreen(selectedScope);
+      }
+    });
+    return;
+  }
+
   const didSave = saveMovementRecord({
     movementType,
     rawMovementDate: editDate,
@@ -4814,7 +4840,7 @@ function saveMobileExpenseEditScreen() {
     amount: parseCurrencyInput(mobileExpenseEditAmountInput.value || ""),
     isRecurring: recurringEditContext,
     recurringMonths: recurringDuration,
-    editScope: recurringEditContext ? mobileExpenseEditScope : "thisMonth",
+    editScope: recurringEditContext ? normalizeEditScope(editScopeOverride) : "thisMonth",
     successToastMessage: "Cambios guardados"
   });
 
@@ -5658,8 +5684,9 @@ function saveMobileQuickEntry() {
     return;
   }
 
-  const didSave = saveMovementRecord({
-    movementType: pendingMovementType,
+  const movementType = pendingMovementType;
+  const saveWithScope = (scope) => saveMovementRecord({
+    movementType,
     rawMovementDate: mobileQuickEntryDate.value,
     category: mobileQuickEntryCategory.value,
     name: mobileQuickEntryName.value,
@@ -5668,8 +5695,24 @@ function saveMobileQuickEntry() {
       : parseCurrencyInput(mobileQuickEntryAmountInput?.value || ""),
     isRecurring: mobileQuickEntryRecurring.checked,
     recurringMonths: parseRecurringDurationSelection(mobileQuickEntryRecurringMonths?.value || "12"),
-    editScope: mobileQuickEntryScope
+    editScope: scope
   });
+
+  const needsScopeModal = Boolean(editingItemId || editingProjectedItem) && mobileQuickEntryRecurring.checked;
+  if (needsScopeModal) {
+    openMobileExpenseEditScopeModal({
+      movementType,
+      onConfirm: (selectedScope) => {
+        const didScopedSave = saveWithScope(selectedScope);
+        if (didScopedSave) {
+          closeMobileQuickEntrySheet();
+        }
+      }
+    });
+    return;
+  }
+
+  const didSave = saveWithScope(mobileQuickEntryScope);
 
   if (!didSave) {
     return;
@@ -7333,6 +7376,33 @@ function closeDeleteConfirmModal() {
   }
 }
 
+function openMobileExpenseEditScopeModal({ movementType = null, onConfirm = null } = {}) {
+  if (!mobileExpenseEditScopeModal) {
+    return;
+  }
+
+  pendingRecurringEditScopeAction = typeof onConfirm === "function" ? onConfirm : null;
+  const resolvedType = normalizeMovementType(movementType || mobileExpenseEditItem?.type || pendingMovementType || "expense");
+  const movementLabel = resolvedType === "income" ? "ingreso" : "gasto";
+  if (mobileExpenseEditScopeModalText) {
+    mobileExpenseEditScopeModalText.textContent = `Elegí si querés aplicar el cambio solo en este mes o desde este mes en adelante para este ${movementLabel}.`;
+  }
+  mobileExpenseEditScopeModal.classList.add("show");
+  mobileExpenseEditScopeModal.setAttribute("aria-hidden", "false");
+  updateOverlayScrollLock();
+}
+
+function closeMobileExpenseEditScopeModal() {
+  if (!mobileExpenseEditScopeModal) {
+    return;
+  }
+
+  pendingRecurringEditScopeAction = null;
+  mobileExpenseEditScopeModal.classList.remove("show");
+  mobileExpenseEditScopeModal.setAttribute("aria-hidden", "true");
+  updateOverlayScrollLock();
+}
+
 function returnToHomeAfterDelete(successMessage) {
   modalTrigger = null;
   suspendOverlayBackStateSync = true;
@@ -7432,6 +7502,7 @@ function hasOpenOverlayState() {
   const onboardingIsOpen = onboardingModal ? onboardingModal.classList.contains("show") : false;
   const authIsOpen = authModal ? authModal.classList.contains("show") : false;
   const deleteIsOpen = deleteConfirmModal ? deleteConfirmModal.classList.contains("show") : false;
+  const mobileExpenseEditScopeIsOpen = mobileExpenseEditScopeModal ? mobileExpenseEditScopeModal.classList.contains("show") : false;
   const feedbackIsOpen = feedbackModal ? feedbackModal.classList.contains("show") : false;
   const salaryIsOpen = salaryModal ? salaryModal.classList.contains("show") : false;
   const walkthroughIsOpen = walkthroughOverlay ? !walkthroughOverlay.classList.contains("is-hidden") : false;
@@ -7449,6 +7520,7 @@ function hasOpenOverlayState() {
     || onboardingIsOpen
     || authIsOpen
     || deleteIsOpen
+    || mobileExpenseEditScopeIsOpen
     || feedbackIsOpen
     || walkthroughIsOpen
     || profileIsOpen
@@ -7471,6 +7543,11 @@ function hasOpenOverlayState() {
 }
 
 function closeActiveOverlayState() {
+  if (mobileExpenseEditScopeModal ? mobileExpenseEditScopeModal.classList.contains("show") : false) {
+    closeMobileExpenseEditScopeModal();
+    return true;
+  }
+
   if (mobileAmountRecurrenceSheetOpen) {
     closeMobileAmountRecurrenceSheet();
     return true;
@@ -8510,10 +8587,11 @@ function renderExpenseMobileList() {
     return;
   }
 
+  const shouldShowDateGroups = normalizeMonthKey(state.activeMonth) === getCurrentMonthKey();
   let previousGroupDate = "";
   for (const item of filteredItems) {
     const itemGroupDate = normalizeItemDate(item.date);
-    if (itemGroupDate !== previousGroupDate) {
+    if (shouldShowDateGroups && itemGroupDate !== previousGroupDate) {
       const groupLabel = document.createElement("p");
       groupLabel.className = "mobile-item-group-label";
       groupLabel.textContent = formatItemHomeDateGroupLabel(item.date);
@@ -8524,21 +8602,6 @@ function renderExpenseMobileList() {
     populateItemNode(card, item);
     expenseMobileList.appendChild(card);
   }
-}
-
-function updateMobileExpenseEditScopeSelection() {
-  const selectedScope = normalizeEditScope(mobileExpenseEditScope);
-  [
-    [mobileExpenseEditScopeThisMonthBtn, "thisMonth"],
-    [mobileExpenseEditScopeAllMonthsBtn, "allMonths"]
-  ].forEach(([button, scopeValue]) => {
-    if (!(button instanceof HTMLButtonElement)) {
-      return;
-    }
-    const isSelected = scopeValue === selectedScope;
-    button.classList.toggle("is-active", isSelected);
-    button.setAttribute("aria-pressed", String(isSelected));
-  });
 }
 
 function populateItemNode(node, item) {
