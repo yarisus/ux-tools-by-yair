@@ -398,6 +398,9 @@ const mobileExpenseEditCategory = document.getElementById("mobileExpenseEditCate
 const mobileExpenseEditDateInput = document.getElementById("mobileExpenseEditDateInput");
 const mobileExpenseEditDateField = document.getElementById("mobileExpenseEditDateField");
 const mobileExpenseEditTitle = document.getElementById("mobileExpenseEditTitle");
+const mobileExpenseEditScopeWrap = document.getElementById("mobileExpenseEditScopeWrap");
+const mobileExpenseEditScopeThisMonthBtn = document.getElementById("mobileExpenseEditScopeThisMonthBtn");
+const mobileExpenseEditScopeAllMonthsBtn = document.getElementById("mobileExpenseEditScopeAllMonthsBtn");
 const mobileExpenseEditCancelBtn = document.getElementById("mobileExpenseEditCancelBtn");
 const mobileExpenseEditSaveBtn = document.getElementById("mobileExpenseEditSaveBtn");
 const mobileQuickEntrySheet = document.getElementById("mobileQuickEntrySheet");
@@ -513,6 +516,7 @@ let mobileMovementDetailTrigger = null;
 let mobileExpenseEditItem = null;
 let pendingMobileMovementDetailToast = "";
 let mobileMovementDetailAlertTimer = null;
+let mobileExpenseEditScope = "thisMonth";
 let expenseEditScope = "thisMonth";
 let mobileQuickEntryScope = "thisMonth";
 let mobileAmountMode = "expense";
@@ -1146,6 +1150,20 @@ if (mobileExpenseEditCancelBtn) {
 if (mobileExpenseEditSaveBtn) {
   mobileExpenseEditSaveBtn.addEventListener("click", () => {
     saveMobileExpenseEditScreen();
+  });
+}
+
+if (mobileExpenseEditScopeThisMonthBtn) {
+  mobileExpenseEditScopeThisMonthBtn.addEventListener("click", () => {
+    mobileExpenseEditScope = "thisMonth";
+    updateMobileExpenseEditScopeSelection();
+  });
+}
+
+if (mobileExpenseEditScopeAllMonthsBtn) {
+  mobileExpenseEditScopeAllMonthsBtn.addEventListener("click", () => {
+    mobileExpenseEditScope = "allMonths";
+    updateMobileExpenseEditScopeSelection();
   });
 }
 
@@ -4641,6 +4659,7 @@ function resetMobileExpenseEditState() {
   editingItemId = null;
   editingProjectedItem = null;
   pendingMovementType = "expense";
+  mobileExpenseEditScope = "thisMonth";
 
   if (mobileExpenseEditAmountInput instanceof HTMLInputElement) {
     mobileExpenseEditAmountInput.value = "";
@@ -4653,6 +4672,10 @@ function resetMobileExpenseEditState() {
   }
   populateMobileExpenseEditCategories(getDefaultCategoryKeyForType("expense"), "expense");
   setMobileExpenseEditDateFieldVisibility(true);
+  if (mobileExpenseEditScopeWrap) {
+    mobileExpenseEditScopeWrap.classList.add("is-hidden");
+  }
+  updateMobileExpenseEditScopeSelection();
 }
 
 function openMobileExpenseEditScreen(item) {
@@ -4718,6 +4741,11 @@ function openMobileExpenseEditScreen(item) {
   }
   populateMobileExpenseEditCategories(editableItem.category, movementType);
   setMobileExpenseEditDateFieldVisibility(!isRecurringEdit);
+  mobileExpenseEditScope = isRecurringEdit ? "thisMonth" : "thisMonth";
+  if (mobileExpenseEditScopeWrap) {
+    mobileExpenseEditScopeWrap.classList.toggle("is-hidden", !isRecurringEdit);
+  }
+  updateMobileExpenseEditScopeSelection();
 
   mobileExpenseEditOpen = true;
   mobileExpenseEditScreen.classList.remove("is-hidden");
@@ -4786,7 +4814,7 @@ function saveMobileExpenseEditScreen() {
     amount: parseCurrencyInput(mobileExpenseEditAmountInput.value || ""),
     isRecurring: recurringEditContext,
     recurringMonths: recurringDuration,
-    editScope: recurringEditContext ? "allMonths" : "thisMonth",
+    editScope: recurringEditContext ? mobileExpenseEditScope : "thisMonth",
     successToastMessage: "Cambios guardados"
   });
 
@@ -8496,6 +8524,21 @@ function renderExpenseMobileList() {
     populateItemNode(card, item);
     expenseMobileList.appendChild(card);
   }
+}
+
+function updateMobileExpenseEditScopeSelection() {
+  const selectedScope = normalizeEditScope(mobileExpenseEditScope);
+  [
+    [mobileExpenseEditScopeThisMonthBtn, "thisMonth"],
+    [mobileExpenseEditScopeAllMonthsBtn, "allMonths"]
+  ].forEach(([button, scopeValue]) => {
+    if (!(button instanceof HTMLButtonElement)) {
+      return;
+    }
+    const isSelected = scopeValue === selectedScope;
+    button.classList.toggle("is-active", isSelected);
+    button.setAttribute("aria-pressed", String(isSelected));
+  });
 }
 
 function populateItemNode(node, item) {

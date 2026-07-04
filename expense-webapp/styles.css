@@ -23601,6 +23601,15 @@ body.overflow-hidden .mobile-add-fab-wrap,
     text-transform: none !important;
   }
 
+  body #mobileExpenseEditScopeWrap {
+    margin-top: 12px !important;
+  }
+
+  body .mobile-expense-edit-scope-label {
+    text-transform: none !important;
+    letter-spacing: normal !important;
+  }
+
   body #mobileExpenseEditDateField.is-hidden {
     display: none !important;
   }
