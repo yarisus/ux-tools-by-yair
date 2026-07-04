@@ -1135,15 +1135,15 @@ if (mobileExpenseEditSaveBtn) {
 
 if (confirmMobileExpenseEditScopeThisMonthBtn) {
   confirmMobileExpenseEditScopeThisMonthBtn.addEventListener("click", () => {
-    closeMobileExpenseEditScopeModal();
     runPendingRecurringEditScopeAction("thisMonth");
+    closeMobileExpenseEditScopeModal();
   });
 }
 
 if (confirmMobileExpenseEditScopeAllMonthsBtn) {
   confirmMobileExpenseEditScopeAllMonthsBtn.addEventListener("click", () => {
-    closeMobileExpenseEditScopeModal();
     runPendingRecurringEditScopeAction("allMonths");
+    closeMobileExpenseEditScopeModal();
   });
 }
 
