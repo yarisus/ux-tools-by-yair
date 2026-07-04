@@ -8525,13 +8525,17 @@ function populateItemNode(node, item) {
   }
 
   const dateNode = node.querySelector(".date-text");
+  const dateWrapNode = node.querySelector(".mobile-item-date-wrap");
   if (dateNode) {
     const dateLabel = isMobileRow
-      ? formatItemHomeDateLabel(item.date)
+      ? formatItemCreatedTime(item.createdAt, item.date)
       : formatItemDate(item.date);
     dateNode.textContent = dateLabel;
     dateNode.setAttribute("title", dateLabel);
     dateNode.classList.toggle("is-hidden", !dateLabel);
+  }
+  if (dateWrapNode instanceof HTMLElement) {
+    dateWrapNode.classList.toggle("has-frequency", isMobileRow && isRecurring);
   }
 
   const chip = node.querySelector(".category-chip");
