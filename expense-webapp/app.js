@@ -2478,11 +2478,11 @@ function normalizeEditScope(rawScope) {
 }
 
 function shouldShowRecurringEditScope(item = null, { isProjected = Boolean(editingProjectedItem) } = {}) {
-  return Boolean(isProjected || item?.isRecurring);
+  return Boolean(isProjected || item?.isRecurring || getRecurringSeriesId(item));
 }
 
 function isRecurringEditContext(item = null, { isProjected = Boolean(editingProjectedItem) } = {}) {
-  return Boolean(isProjected || item?.isRecurring);
+  return Boolean(isProjected || item?.isRecurring || getRecurringSeriesId(item));
 }
 
 function applyExpenseRecurringEditRestrictions({ isRecurringEdit = false } = {}) {
