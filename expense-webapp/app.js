@@ -5015,9 +5015,7 @@ function openDeleteFlowFromMobileMovementDetail() {
 }
 
 function getDefaultItemDateForMonth(monthKey = state.activeMonth) {
-  const today = new Date();
-  const targetMonth = normalizeMonthKey(monthKey);
-  return normalizeItemDate(buildDateForMonth(today, targetMonth));
+  return toDateInputValue(getMonthReferenceDate(monthKey));
 }
 
 function populateMobileQuickEntryCategories(movementType = "expense") {
