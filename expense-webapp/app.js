@@ -2460,7 +2460,7 @@ function openMovementCreateFlow(trigger = null, movementType = "expense") {
 
 function normalizeBudgetPeriod(rawPeriod) {
   const value = String(rawPeriod || "").trim().toLowerCase();
-  if (value === "daily" || value === "monthly") {
+  if (value === "daily" || value === "weekly" || value === "monthly") {
     return value;
   }
   return "monthly";
@@ -2975,6 +2975,83 @@ function getStartOfDay(dateLike) {
   }
   date.setHours(0, 0, 0, 0);
   return date;
+}
+
+function getEndOfDay(dateLike) {
+  const date = getStartOfDay(dateLike);
+  if (!date) {
+    return null;
+  }
+  date.setHours(23, 59, 59, 999);
+  return date;
+}
+
+function getStartOfWeek(dateLike) {
+  const date = getStartOfDay(dateLike);
+  if (!date) {
+    return null;
+  }
+  const weekday = date.getDay();
+  const offset = weekday === 0 ? -6 : 1 - weekday;
+  date.setDate(date.getDate() + offset);
+  return date;
+}
+
+function getEndOfWeek(dateLike) {
+  const date = getStartOfWeek(dateLike);
+  if (!date) {
+    return null;
+  }
+  date.setDate(date.getDate() + 6);
+  date.setHours(23, 59, 59, 999);
+  return date;
+}
+
+function getMonthWindow(monthKey = state.activeMonth) {
+  const normalizedMonth = normalizeMonthKey(monthKey);
+  const [year, month] = normalizedMonth.split("-").map(Number);
+  const monthStart = new Date(year, month - 1, 1);
+  const monthEnd = new Date(year, month, 0, 23, 59, 59, 999);
+  return { monthStart, monthEnd };
+}
+
+function getLaterDate(a, b) {
+  return a.getTime() >= b.getTime() ? a : b;
+}
+
+function getEarlierDate(a, b) {
+  return a.getTime() <= b.getTime() ? a : b;
+}
+
+function getDaySpanInclusive(startDate, endDate) {
+  const start = getStartOfDay(startDate);
+  const end = getStartOfDay(endDate);
+  if (!start || !end) {
+    return 0;
+  }
+  return Math.max(0, Math.round((end.getTime() - start.getTime()) / 86400000) + 1);
+}
+
+function sumVisibleMonthExpensesInRange(startDate, endDate, monthKey = state.activeMonth) {
+  const rangeStart = getStartOfDay(startDate);
+  const rangeEnd = getEndOfDay(endDate);
+  if (!rangeStart || !rangeEnd) {
+    return 0;
+  }
+
+  return getVisibleMonthExpenseItems(monthKey).reduce((total, item) => {
+    const amount = Number(item?.amount || 0);
+    if (!Number.isFinite(amount) || amount <= 0 || normalizeMovementType(item?.type) !== "expense") {
+      return total;
+    }
+
+    const itemDate = getStartOfDay(`${normalizeItemDate(item.date)}T00:00:00`);
+    if (!itemDate) {
+      return total;
+    }
+
+    return itemDate >= rangeStart && itemDate <= rangeEnd ? total + amount : total;
+  }, 0);
 }
 
 function passesDateFilter(itemDateRaw, filterRaw) {
@@ -7062,6 +7139,7 @@ function updateMobileBudgetPeriodSelection() {
 
   if (mobileBudgetPeriodLabel) {
     const labels = {
+      weekly: "Disponible semanal",
       daily: "Disponible diario",
       monthly: "Disponible mensual"
     };
@@ -8153,6 +8231,57 @@ function getBudgetSuggestions(available, remainingDays) {
   };
 }
 
+function getBudgetPeriodMetrics(monthKey = state.activeMonth, monthlyAvailable = 0) {
+  const normalizedMonth = normalizeMonthKey(monthKey);
+  const referenceDate = getMonthReferenceDate(normalizedMonth);
+  const remainingDays = getBudgetDaySpanForMonth(normalizedMonth);
+  const { daily: suggestedDaily, weekly: suggestedWeekly, monthly } = getBudgetSuggestions(monthlyAvailable, remainingDays);
+  const isCurrentMonth = normalizedMonth === getCurrentMonthKey();
+
+  if (!isCurrentMonth) {
+    return {
+      monthly,
+      weekly: suggestedWeekly,
+      daily: suggestedDaily,
+      labels: {
+        monthly: "Disponible mensual",
+        weekly: "Disponible semanal",
+        daily: "Disponible diario"
+      },
+      mode: "estimated"
+    };
+  }
+
+  const { monthStart, monthEnd } = getMonthWindow(normalizedMonth);
+  const todayStart = getStartOfDay(referenceDate);
+  const todaySpend = sumVisibleMonthExpensesInRange(todayStart, todayStart, normalizedMonth);
+  const dayStartAvailable = monthlyAvailable + todaySpend;
+  const dayOpeningBudget = dayStartAvailable / remainingDays;
+  const realDaily = dayOpeningBudget - todaySpend;
+
+  const weekStart = getLaterDate(getStartOfWeek(referenceDate), monthStart);
+  const weekEnd = getEarlierDate(getEndOfWeek(referenceDate), monthEnd);
+  const weekSpend = sumVisibleMonthExpensesInRange(weekStart, weekEnd, normalizedMonth);
+  const daysInCurrentWeekWindow = Math.max(1, getDaySpanInclusive(weekStart, weekEnd));
+  const daysFromWeekStartToMonthEnd = Math.max(1, getDaySpanInclusive(weekStart, monthEnd));
+  const weekStartAvailable = monthlyAvailable + weekSpend;
+  const weekOpeningDailyBudget = weekStartAvailable / daysFromWeekStartToMonthEnd;
+  const weeklyTarget = weekOpeningDailyBudget * daysInCurrentWeekWindow;
+  const realWeekly = weeklyTarget - weekSpend;
+
+  return {
+    monthly,
+    weekly: realWeekly,
+    daily: realDaily,
+    labels: {
+      monthly: "Disponible mensual",
+      weekly: "Disponible semanal",
+      daily: "Disponible diario"
+    },
+    mode: "live"
+  };
+}
+
 function renderSummary() {
   const { monthlyIncome, monthlySpend } = getTotals();
   const { monthItems } = getMonthExpenseSummary(state.activeMonth);
@@ -8160,11 +8289,10 @@ function renderSummary() {
   const monthLabel = formatMonthLabel(state.activeMonth);
   const hasAnyData = monthItems.length > 0 || monthIncomeItems.length > 0;
   const available = monthlyIncome - monthlySpend;
-  const budgetDaySpan = getBudgetDaySpanForMonth(state.activeMonth);
-  const { daily, weekly, biweekly, monthly } = getBudgetSuggestions(available, budgetDaySpan);
+  const periodMetrics = getBudgetPeriodMetrics(state.activeMonth, available);
   const selectedPeriod = normalizeBudgetPeriod(state.budgetPeriod);
-  const periodLabel = selectedPeriod === "monthly" ? "Disponible mensual" : "Disponible diario";
-  const periodValue = selectedPeriod === "monthly" ? monthly : daily;
+  const periodLabel = periodMetrics.labels[selectedPeriod] || periodMetrics.labels.monthly;
+  const periodValue = Number.isFinite(periodMetrics[selectedPeriod]) ? periodMetrics[selectedPeriod] : periodMetrics.monthly;
 
   if (monthlyIncomeEl) {
     const incomeLabel = money(monthlyIncome);
@@ -8191,10 +8319,10 @@ function renderSummary() {
   availableBalanceEl.style.color = available >= 0 ? "var(--ok)" : "var(--bad)";
 
   if (weeklyBudgetEl) {
-    const weeklyLabel = money(weekly);
+    const weeklyLabel = money(periodMetrics.weekly);
     weeklyBudgetEl.textContent = weeklyLabel;
     weeklyBudgetEl.setAttribute("title", weeklyLabel);
-    weeklyBudgetEl.style.color = weekly >= 0 ? "var(--ok)" : "var(--bad)";
+    weeklyBudgetEl.style.color = periodMetrics.weekly >= 0 ? "var(--ok)" : "var(--bad)";
   }
 
   if (budgetPeriodLabel) {
@@ -8246,11 +8374,17 @@ function renderSummary() {
 
   if (mobileBudgetHintEl) {
     if (!hasAnyData) {
-      mobileBudgetHintEl.textContent = `Carga tu primer ingreso y tu primer gasto de ${monthLabel} para ver una sugerencia diaria o mensual.`;
+      mobileBudgetHintEl.textContent = `Carga tu primer ingreso y tu primer gasto de ${monthLabel} para ver tu disponible diario, semanal o mensual.`;
     } else if (selectedPeriod === "monthly") {
       mobileBudgetHintEl.textContent = `Balance disponible estimado para ${monthLabel}: ${money(periodValue)}.`;
+    } else if (selectedPeriod === "weekly") {
+      mobileBudgetHintEl.textContent = periodMetrics.mode === "live"
+        ? `Disponible real para esta semana: ${money(periodValue)}.`
+        : `Disponible semanal estimado para ${monthLabel}: ${money(periodValue)}.`;
     } else {
-      mobileBudgetHintEl.textContent = `Sugerencia diaria para ${monthLabel}: ${money(periodValue)} para cuidar tu balance.`;
+      mobileBudgetHintEl.textContent = periodMetrics.mode === "live"
+        ? `Disponible real para hoy: ${money(periodValue)}.`
+        : `Disponible diario estimado para ${monthLabel}: ${money(periodValue)}.`;
     }
   }
 
