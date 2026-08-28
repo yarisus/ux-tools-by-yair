@@ -7887,9 +7887,20 @@ function normalizeLocalUiState(candidate) {
   const dismissedMonths = Array.isArray(candidate?.incomeMissingAlertDismissedMonths)
     ? [...new Set(candidate.incomeMissingAlertDismissedMonths.map((month) => normalizeMonthKey(month)).filter(Boolean))]
     : [];
+  const budgetAlertMemory = {
+    dailyKey: String(candidate?.budgetAlertMemory?.dailyKey || "").trim(),
+    dailyRemaining: Number.isFinite(Number(candidate?.budgetAlertMemory?.dailyRemaining))
+      ? Number(candidate.budgetAlertMemory.dailyRemaining)
+      : null,
+    weeklyKey: String(candidate?.budgetAlertMemory?.weeklyKey || "").trim(),
+    weeklyRemaining: Number.isFinite(Number(candidate?.budgetAlertMemory?.weeklyRemaining))
+      ? Number(candidate.budgetAlertMemory.weeklyRemaining)
+      : null
+  };
 
   return {
-    incomeMissingAlertDismissedMonths: dismissedMonths
+    incomeMissingAlertDismissedMonths: dismissedMonths,
+    budgetAlertMemory
   };
 }
 
@@ -7939,6 +7950,18 @@ function clearIncomeMissingAlertDismissal(monthKey = state.activeMonth) {
   if (isIncomeMissingAlertDismissed(monthKey)) {
     setIncomeMissingAlertDismissed(monthKey, false);
   }
+}
+
+function updateBudgetAlertMemory(patch = {}) {
+  const currentUiState = normalizeLocalUiState(localUiState);
+  localUiState = {
+    ...currentUiState,
+    budgetAlertMemory: {
+      ...currentUiState.budgetAlertMemory,
+      ...patch
+    }
+  };
+  saveLocalUiState();
 }
 
 function loadState() {
@@ -8248,7 +8271,11 @@ function getBudgetPeriodMetrics(monthKey = state.activeMonth, monthlyAvailable =
         weekly: "Disponible semanal",
         daily: "Disponible diario"
       },
-      mode: "estimated"
+      mode: "estimated",
+      dailyOpening: suggestedDaily,
+      weeklyOpening: suggestedWeekly,
+      dailyAlertKey: `${normalizedMonth}:estimated`,
+      weeklyAlertKey: `${normalizedMonth}:estimated`
     };
   }
 
@@ -8268,6 +8295,8 @@ function getBudgetPeriodMetrics(monthKey = state.activeMonth, monthlyAvailable =
   const weekOpeningDailyBudget = weekStartAvailable / daysFromWeekStartToMonthEnd;
   const weeklyTarget = weekOpeningDailyBudget * daysInCurrentWeekWindow;
   const realWeekly = weeklyTarget - weekSpend;
+  const dailyAlertKey = `${normalizedMonth}:${toDateInputValue(todayStart)}`;
+  const weeklyAlertKey = `${normalizedMonth}:${toDateInputValue(weekStart)}`;
 
   return {
     monthly,
@@ -8278,8 +8307,50 @@ function getBudgetPeriodMetrics(monthKey = state.activeMonth, monthlyAvailable =
       weekly: "Disponible semanal",
       daily: "Disponible diario"
     },
-    mode: "live"
+    mode: "live",
+    dailyOpening: dayOpeningBudget,
+    weeklyOpening: weeklyTarget,
+    dailyAlertKey,
+    weeklyAlertKey
   };
+}
+
+function maybeNotifyBudgetAlerts(periodMetrics, selectedPeriod, monthKey = state.activeMonth) {
+  if (periodMetrics?.mode !== "live" || normalizeMonthKey(monthKey) !== getCurrentMonthKey()) {
+    return;
+  }
+
+  const alertMemory = normalizeLocalUiState(localUiState).budgetAlertMemory;
+  const weeklyHalfThreshold = Number(periodMetrics.weeklyOpening || 0) * 0.5;
+  const dailyThresholdCrossed = selectedPeriod === "daily"
+    && Number.isFinite(periodMetrics.dailyOpening)
+    && periodMetrics.dailyOpening > 0
+    && alertMemory.dailyKey === periodMetrics.dailyAlertKey
+    && Number.isFinite(alertMemory.dailyRemaining)
+    && alertMemory.dailyRemaining > 0
+    && periodMetrics.daily <= 0;
+  const weeklyThresholdCrossed = selectedPeriod === "weekly"
+    && Number.isFinite(periodMetrics.weeklyOpening)
+    && periodMetrics.weeklyOpening > 0
+    && alertMemory.weeklyKey === periodMetrics.weeklyAlertKey
+    && Number.isFinite(alertMemory.weeklyRemaining)
+    && alertMemory.weeklyRemaining > weeklyHalfThreshold
+    && periodMetrics.weekly <= weeklyHalfThreshold;
+
+  updateBudgetAlertMemory({
+    dailyKey: periodMetrics.dailyAlertKey,
+    dailyRemaining: Number.isFinite(periodMetrics.daily) ? periodMetrics.daily : null,
+    weeklyKey: periodMetrics.weeklyAlertKey,
+    weeklyRemaining: Number.isFinite(periodMetrics.weekly) ? periodMetrics.weekly : null
+  });
+
+  if (dailyThresholdCrossed) {
+    showToast("Ya consumiste tu disponible diario.");
+  }
+
+  if (weeklyThresholdCrossed) {
+    showToast("Cuidado: ya usaste mas de la mitad de tu disponible semanal.");
+  }
 }
 
 function renderSummary() {
@@ -8403,6 +8474,7 @@ function renderSummary() {
   ].forEach(applyMetricValueDensity);
 
   scheduleMetricValueFit();
+  maybeNotifyBudgetAlerts(periodMetrics, selectedPeriod, state.activeMonth);
   renderInitialUsageState({
     totalIncome: monthlyIncome,
     totalExpenses: monthlySpend,
