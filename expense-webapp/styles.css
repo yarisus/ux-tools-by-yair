@@ -21910,6 +21910,18 @@ body.overflow-hidden .mobile-add-fab-wrap,
     width: 100% !important;
   }
 
+  body .mobile-item-group-label {
+    margin: 16px 0 8px !important;
+    color: #374151 !important;
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    font-weight: 600 !important;
+  }
+
+  body #expenseMobileList > .mobile-item-group-label:first-child {
+    margin-top: 0 !important;
+  }
+
   body .mobile-expense-card {
     padding: 14px 0 !important;
   }
@@ -22806,7 +22818,8 @@ body.overflow-hidden .mobile-add-fab-wrap,
 
   body .mobile-item-main {
     grid-area: name !important;
-    display: block !important;
+    display: grid !important;
+    gap: 4px !important;
     min-width: 0 !important;
     overflow: hidden !important;
   }
@@ -22817,6 +22830,17 @@ body.overflow-hidden .mobile-add-fab-wrap,
     font-size: 14px !important;
     line-height: 1.2 !important;
     font-weight: 400 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  body .mobile-expense-row .mobile-item-secondary {
+    margin: 0 !important;
+    color: #6b7280 !important;
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    font-weight: 500 !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
@@ -23581,6 +23605,10 @@ body.overflow-hidden .mobile-add-fab-wrap,
     display: none !important;
   }
 
+  body #expenseEditScopeWrap,
+  body #mobileQuickEntryScopeWrap {
+    display: none !important;
+  }
   body .mobile-expense-edit-field label,
   body .mobile-expense-edit-field > span:first-child {
     color: #4b5563 !important;
@@ -24038,7 +24066,8 @@ body.overflow-hidden .mobile-add-fab-wrap,
     grid-template-columns: minmax(0, 1fr) auto !important;
     grid-template-areas:
       "chip amount"
-      "name amount" !important;
+      "name amount"
+      "meta amount" !important;
     gap: 6px 12px !important;
     align-items: center !important;
     width: 100% !important;
@@ -24768,6 +24797,38 @@ body.overflow-hidden .mobile-add-fab-wrap,
     justify-content: center !important;
     padding: 16px !important;
     box-sizing: border-box !important;
+  }
+  body #mobileExpenseEditScopeModal {
+    z-index: 125 !important;
+  }
+
+  body #mobileExpenseEditScopeModal.show {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  body #mobileExpenseEditScopeModal .modal-card {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    width: min(100% - 32px, 420px) !important;
+    max-width: min(100% - 32px, 420px) !important;
+    margin: auto !important;
+    border-radius: 24px !important;
+  }
+
+  body .mobile-expense-edit-scope-modal-actions {
+    display: grid !important;
+    gap: 12px !important;
+  }
+
+  body .mobile-expense-edit-scope-modal-actions > button {
+    width: 100% !important;
   }
 }
 
@@ -25551,6 +25612,16 @@ body.theme-dark .hero #activeMonthSection[data-month-state="projected"] .month-c
   body .mobile-frequency-text {
     display: inline !important;
     white-space: nowrap !important;
+  }
+
+  body .mobile-item-date-wrap:not(.has-frequency) .mobile-date-text::before {
+    content: none !important;
+    margin-right: 0 !important;
+  }
+
+  body .mobile-item-date-wrap.has-frequency .mobile-date-text::before {
+    content: "·" !important;
+    margin-right: 8px !important;
   }
 
   body .mobile-month-eyebrow {

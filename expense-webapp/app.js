@@ -296,6 +296,12 @@ const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
 const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
 const confirmDeleteSeriesBtn = document.getElementById("confirmDeleteSeriesBtn");
 const deleteConfirmTitle = document.getElementById("deleteConfirmTitle");
+const mobileExpenseEditScopeModal = document.getElementById("mobileExpenseEditScopeModal");
+const mobileExpenseEditScopeModalText = document.getElementById("mobileExpenseEditScopeModalText");
+const closeMobileExpenseEditScopeModalBtn = document.getElementById("closeMobileExpenseEditScopeModalBtn");
+const cancelMobileExpenseEditScopeModalBtn = document.getElementById("cancelMobileExpenseEditScopeModalBtn");
+const confirmMobileExpenseEditScopeThisMonthBtn = document.getElementById("confirmMobileExpenseEditScopeThisMonthBtn");
+const confirmMobileExpenseEditScopeAllMonthsBtn = document.getElementById("confirmMobileExpenseEditScopeAllMonthsBtn");
 const feedbackModal = document.getElementById("feedbackModal");
 const closeFeedbackModalBtn = document.getElementById("closeFeedbackModalBtn");
 const feedbackForm = document.getElementById("feedbackForm");
@@ -515,6 +521,7 @@ let pendingMobileMovementDetailToast = "";
 let mobileMovementDetailAlertTimer = null;
 let expenseEditScope = "thisMonth";
 let mobileQuickEntryScope = "thisMonth";
+let pendingRecurringEditScopeAction = null;
 let mobileAmountMode = "expense";
 let mobileAmountValue = "";
 let mobileAmountRecurringEnabled = false;
@@ -1089,29 +1096,6 @@ if (mobileDetailNameInput) {
 }
 
 if (mobileDetailCategory) {
-  mobileDetailCategory.addEventListener("pointerdown", (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-  });
-
-  mobileDetailCategory.addEventListener("click", (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    if (!(mobileDetailCategory instanceof HTMLSelectElement)) {
-      return;
-    }
-    if (typeof mobileDetailCategory.showPicker === "function") {
-      try {
-        mobileDetailCategory.showPicker();
-        return;
-      } catch (_error) {
-        // Fall through to focus/click fallback.
-      }
-    }
-    mobileDetailCategory.focus({ preventScroll: true });
-    mobileDetailCategory.click();
-  });
-
   mobileDetailCategory.addEventListener("change", () => {
     window.setTimeout(() => {
       focusMobileDetailNameInput();
@@ -1149,6 +1133,19 @@ if (mobileExpenseEditSaveBtn) {
   });
 }
 
+if (confirmMobileExpenseEditScopeThisMonthBtn) {
+  confirmMobileExpenseEditScopeThisMonthBtn.addEventListener("click", () => {
+    runPendingRecurringEditScopeAction("thisMonth");
+    closeMobileExpenseEditScopeModal();
+  });
+}
+
+if (confirmMobileExpenseEditScopeAllMonthsBtn) {
+  confirmMobileExpenseEditScopeAllMonthsBtn.addEventListener("click", () => {
+    runPendingRecurringEditScopeAction("allMonths");
+    closeMobileExpenseEditScopeModal();
+  });
+}
 if (mobileExpenseEditAmountInput) {
   mobileExpenseEditAmountInput.addEventListener("input", () => {
     const parsed = parseCurrencyInput(mobileExpenseEditAmountInput.value || "");
@@ -1395,16 +1392,33 @@ if (salaryModalInput) {
 
 expenseForm.addEventListener("submit", (event) => {
   event.preventDefault();
-  const didSave = saveMovementRecord({
-    movementType: normalizeMovementType(typeInput?.value || pendingMovementType || "expense"),
+  const movementType = normalizeMovementType(typeInput?.value || pendingMovementType || "expense");
+  const saveWithScope = (scope) => saveMovementRecord({
+    movementType,
     rawMovementDate: dateInput?.value || "",
     category: categoryInput?.value || getDefaultCategoryKeyForType("expense"),
     name: nameInput?.value || "",
     amount: parseCurrencyInput(amountInput?.value || ""),
     isRecurring: Boolean(recurringInput?.checked),
     recurringMonths: parseRecurringDurationSelection(recurringMonthsInput?.value || "12"),
-    editScope: expenseEditScope
+    editScope: scope
   });
+
+  const needsScopeModal = Boolean(editingItemId || editingProjectedItem) && Boolean(recurringInput?.checked);
+  if (needsScopeModal) {
+    openMobileExpenseEditScopeModal({
+      movementType,
+      onConfirm: (selectedScope) => {
+        const didScopedSave = saveWithScope(selectedScope);
+        if (didScopedSave) {
+          closeModal();
+        }
+      }
+    });
+    return;
+  }
+
+  const didSave = saveWithScope(expenseEditScope);
 
   if (!didSave) {
     return;
@@ -2033,6 +2047,32 @@ if (cancelDeleteBtn) {
   cancelDeleteBtn.addEventListener("click", closeDeleteConfirmModal);
 }
 
+if (mobileExpenseEditScopeModal) {
+  mobileExpenseEditScopeModal.addEventListener("click", (event) => {
+    const target = event.target;
+    if (target instanceof HTMLElement && target.dataset.closeMobileExpenseEditScopeModal === "true") {
+      closeMobileExpenseEditScopeModal();
+    }
+  });
+}
+
+if (closeMobileExpenseEditScopeModalBtn) {
+  closeMobileExpenseEditScopeModalBtn.addEventListener("click", closeMobileExpenseEditScopeModal);
+}
+
+if (cancelMobileExpenseEditScopeModalBtn) {
+  cancelMobileExpenseEditScopeModalBtn.addEventListener("click", closeMobileExpenseEditScopeModal);
+}
+
+function runPendingRecurringEditScopeAction(scope) {
+  if (typeof pendingRecurringEditScopeAction !== "function") {
+    return;
+  }
+  const action = pendingRecurringEditScopeAction;
+  pendingRecurringEditScopeAction = null;
+  action(scope);
+}
+
 if (confirmDeleteBtn) {
   confirmDeleteBtn.addEventListener("click", () => {
     if (pendingDeleteKind === "all") {
@@ -2437,11 +2477,11 @@ function normalizeEditScope(rawScope) {
 }
 
 function shouldShowRecurringEditScope(item = null, { isProjected = Boolean(editingProjectedItem) } = {}) {
-  return Boolean(isProjected || item?.isRecurring);
+  return Boolean(isProjected || item?.isRecurring || getRecurringSeriesId(item));
 }
 
 function isRecurringEditContext(item = null, { isProjected = Boolean(editingProjectedItem) } = {}) {
-  return Boolean(isProjected || item?.isRecurring);
+  return Boolean(isProjected || item?.isRecurring || getRecurringSeriesId(item));
 }
 
 function applyExpenseRecurringEditRestrictions({ isRecurringEdit = false } = {}) {
@@ -2990,6 +3030,56 @@ function formatItemDate(rawDate) {
     return normalized;
   }
   return parsed.toLocaleDateString("es-AR");
+}
+
+function formatItemHomeDateLabel(rawDate) {
+  const normalized = normalizeItemDate(rawDate);
+  const parsed = new Date(`${normalized}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) {
+    return normalized;
+  }
+
+  const parts = new Intl.DateTimeFormat("es-AR", {
+    weekday: "short",
+    day: "numeric",
+    month: "long"
+  }).formatToParts(parsed);
+
+  const weekdayRaw = (parts.find((part) => part.type === "weekday")?.value || "")
+    .replace(".", "")
+    .replace(",", "")
+    .trim()
+    .toLowerCase();
+  const day = parts.find((part) => part.type === "day")?.value || "";
+  const month = (parts.find((part) => part.type === "month")?.value || "").trim().toLowerCase();
+
+  return [weekdayRaw, day ? `${day} de ${month}` : month].filter(Boolean).join(" ");
+}
+
+function formatItemHomeDateGroupLabel(rawDate) {
+  const normalized = normalizeItemDate(rawDate);
+  const parsed = new Date(`${normalized}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) {
+    return normalized;
+  }
+
+  const today = new Date();
+  const sameDay = parsed.getFullYear() === today.getFullYear()
+    && parsed.getMonth() === today.getMonth()
+    && parsed.getDate() === today.getDate();
+
+  if (sameDay) {
+    return "Hoy";
+  }
+
+  const parts = new Intl.DateTimeFormat("es-AR", {
+    day: "numeric",
+    month: "long"
+  }).formatToParts(parsed);
+
+  const day = parts.find((part) => part.type === "day")?.value || "";
+  const month = (parts.find((part) => part.type === "month")?.value || "").trim().toLowerCase();
+  return [day ? `${day} de ${month}` : month].filter(Boolean).join(" ");
 }
 
 function normalizeItemCreatedAt(rawValue, fallbackDate = "") {
@@ -4964,10 +5054,499 @@ function openDeleteFlowFromMobileMovementDetail() {
   openDeleteConfirmModal(item, deleteTrigger, { mobilePresentation: "dialog" });
 }
 
+function setMovementDetailValue(element, value) {
+  if (!(element instanceof HTMLElement)) {
+    return;
+  }
+
+  const nextValue = String(value || "").trim() || "-";
+  element.textContent = nextValue;
+  element.setAttribute("title", nextValue);
+}
+
+function setMovementDetailRowVisibility(row, shouldShow) {
+  if (!(row instanceof HTMLElement)) {
+    return;
+  }
+  row.classList.toggle("is-hidden", !shouldShow);
+}
+
+function formatRecurringDurationLabel(item, monthKey = getMonthKeyFromItem(item)) {
+  const selection = getRecurringDurationSelectionForItem(item, monthKey);
+  if (selection === "always") {
+    return "Hasta cancelarlo";
+  }
+
+  const totalMonths = Math.max(1, Number(selection || 0));
+  return totalMonths === 1 ? "1 mes" : `${totalMonths} meses`;
+}
+
+function formatRecurringProgressLabel(item, monthKey = getMonthKeyFromItem(item)) {
+  const selection = getRecurringDurationSelectionForItem(item, monthKey);
+  if (selection === "always") {
+    return "Mensual";
+  }
+
+  const sourceMonth = getRecurringSeriesSourceMonth(item);
+  const selectedMonth = normalizeMonthKey(monthKey);
+  const totalMonths = Math.max(1, Number(selection || 0));
+  const currentOccurrence = Math.max(1, Math.min(totalMonths, getMonthOffsetBetween(sourceMonth, selectedMonth) + 1));
+  return `${currentOccurrence} de ${totalMonths} meses`;
+}
+
+function isPuntualMovementItem(item) {
+  const movementType = normalizeMovementType(item?.type);
+  return Boolean(item)
+    && (movementType === "expense" || movementType === "income")
+    && !Boolean(item.isRecurring)
+    && !Boolean(item.isProjectedRecurring);
+}
+
+function isRecurringMovementItem(item) {
+  const movementType = normalizeMovementType(item?.type);
+  return Boolean(item)
+    && (movementType === "expense" || movementType === "income")
+    && Boolean(item.isRecurring || item.isProjectedRecurring);
+}
+
+function isMobileExpenseEditSupportedItem(item) {
+  return isPuntualMovementItem(item) || isRecurringMovementItem(item);
+}
+
+function formatMobileMovementEditAmount(value, movementType = pendingMovementType) {
+  const normalizedType = normalizeMovementType(movementType);
+  const amountLabel = money(Math.max(0, Number(value || 0))).replace("$ ", "$");
+  return normalizedType === "expense" ? `-${amountLabel}` : `+${amountLabel}`;
+}
+
+function populateMobileExpenseEditCategories(selectedCategory = "", movementType = pendingMovementType) {
+  if (!(mobileExpenseEditCategory instanceof HTMLSelectElement)) {
+    return;
+  }
+
+  const normalizedType = normalizeMovementType(movementType);
+  const selectedValue = normalizeCategoryKeyForType(
+    selectedCategory || getDefaultCategoryKeyForType(normalizedType),
+    normalizedType
+  );
+  mobileExpenseEditCategory.replaceChildren();
+
+  getCategoryKeysForType(normalizedType).forEach((key) => {
+    const option = document.createElement("option");
+    option.value = key;
+    option.textContent = getCategoryConfig(key).label;
+    mobileExpenseEditCategory.appendChild(option);
+  });
+
+  mobileExpenseEditCategory.value = selectedValue;
+}
+
+function setMobileExpenseEditDateFieldVisibility(shouldShow = true) {
+  if (!(mobileExpenseEditDateField instanceof HTMLElement)) {
+    return;
+  }
+
+  mobileExpenseEditDateField.classList.toggle("is-hidden", !shouldShow);
+  mobileExpenseEditDateField.toggleAttribute("hidden", !shouldShow);
+  mobileExpenseEditDateField.setAttribute("aria-hidden", String(!shouldShow));
+  if (mobileExpenseEditDateInput instanceof HTMLInputElement) {
+    mobileExpenseEditDateInput.disabled = !shouldShow;
+  }
+}
+
+function resetMobileExpenseEditState() {
+  mobileExpenseEditItem = null;
+  editingItemId = null;
+  editingProjectedItem = null;
+  pendingMovementType = "expense";
+
+  if (mobileExpenseEditAmountInput instanceof HTMLInputElement) {
+    mobileExpenseEditAmountInput.value = "";
+  }
+  if (mobileExpenseEditNameInput instanceof HTMLInputElement) {
+    mobileExpenseEditNameInput.value = "";
+  }
+  if (mobileExpenseEditDateInput instanceof HTMLInputElement) {
+    mobileExpenseEditDateInput.value = "";
+  }
+  populateMobileExpenseEditCategories(getDefaultCategoryKeyForType("expense"), "expense");
+  setMobileExpenseEditDateFieldVisibility(true);
+  closeMobileExpenseEditScopeModal();
+}
+
+function openMobileExpenseEditScreen(item) {
+  if (!mobileExpenseEditScreen || !isMobileExpenseEditSupportedItem(item)) {
+    openMobileQuickEntrySheet(item?.type || "expense", item?.amount || 0, item || null);
+    return;
+  }
+
+  const editableItem = item;
+  const movementType = normalizeMovementType(editableItem.type);
+
+  suspendOverlayBackStateSync = true;
+  try {
+    closeMobileMovementDetailScreen({ restoreFocus: false, preserveItem: true });
+    closeProfileDropdown();
+    closeMobileQuickAddSheet();
+    closeMobileAmountScreen({ immediate: true, preserveState: true });
+    closeMobileDetailScreen({ immediate: true });
+    closeMobileExpenseEditScreen({ reopenDetail: false });
+    closeMobileQuickEntrySheet();
+    closeMobileFilterSheet();
+  } finally {
+    suspendOverlayBackStateSync = false;
+  }
+
+  const projectionSeriesId = editableItem?.isProjectedRecurring ? getRecurringSeriesId(editableItem) : "";
+  const projectionMonthKey = editableItem?.isProjectedRecurring ? getMonthKeyFromItem(editableItem) : "";
+  const projectionSourceItem = editableItem?.isProjectedRecurring
+    ? findLatestRecurringSourceItem(projectionSeriesId, projectionMonthKey)
+    : null;
+  const isRecurringEdit = isRecurringEditContext(editableItem, { isProjected: Boolean(editableItem?.isProjectedRecurring) });
+
+  mobileExpenseEditItem = editableItem;
+  editingProjectedItem = editableItem?.isProjectedRecurring
+    ? {
+      seriesId: projectionSeriesId,
+      monthKey: projectionMonthKey,
+      sourceItemId: projectionSourceItem?.id || "",
+      sourceMonthKey: projectionSourceItem ? getRecurringSeriesSourceMonth(projectionSourceItem) : "",
+      endMonth: projectionSourceItem ? getRecurringSeriesTerminalMonth(projectionSourceItem) : "",
+      type: normalizeMovementType(editableItem.type),
+      date: normalizeItemDate(editableItem.date),
+      category: normalizeCategoryKeyForType(editableItem.category, editableItem.type),
+      name: String(editableItem.name || "").trim(),
+      amount: Math.max(0, Number(editableItem.amount || 0))
+    }
+    : null;
+  editingItemId = editableItem?.isProjectedRecurring ? null : editableItem.id;
+  pendingMovementType = movementType;
+
+  if (mobileExpenseEditTitle) {
+    mobileExpenseEditTitle.textContent = movementType === "income" ? "Editar Ingreso" : "Editar Gasto";
+  }
+
+  if (mobileExpenseEditAmountInput instanceof HTMLInputElement) {
+    mobileExpenseEditAmountInput.value = formatMobileMovementEditAmount(editableItem.amount, movementType);
+  }
+  if (mobileExpenseEditNameInput instanceof HTMLInputElement) {
+    mobileExpenseEditNameInput.value = editableItem.name || "";
+  }
+  if (mobileExpenseEditDateInput instanceof HTMLInputElement) {
+    mobileExpenseEditDateInput.value = normalizeItemDate(editableItem.date);
+  }
+  populateMobileExpenseEditCategories(editableItem.category, movementType);
+  setMobileExpenseEditDateFieldVisibility(!isRecurringEdit);
+  closeMobileExpenseEditScopeModal();
+
+  mobileExpenseEditOpen = true;
+  mobileExpenseEditScreen.classList.remove("is-hidden");
+  mobileExpenseEditScreen.removeAttribute("hidden");
+  mobileExpenseEditScreen.setAttribute("aria-hidden", "false");
+  updateOverlayScrollLock();
+  pushOverlayHistoryEntry();
+}
+
+function closeMobileExpenseEditScreen({ reopenDetail = true } = {}) {
+  if (!mobileExpenseEditScreen) {
+    return;
+  }
+
+  const item = mobileExpenseEditItem;
+  suspendOverlayBackStateSync = reopenDetail && isMobileExpenseEditSupportedItem(item);
+  try {
+    mobileExpenseEditOpen = false;
+    mobileExpenseEditScreen.classList.add("is-hidden");
+    mobileExpenseEditScreen.setAttribute("hidden", "");
+    mobileExpenseEditScreen.setAttribute("aria-hidden", "true");
+    resetMobileExpenseEditState();
+    updateOverlayScrollLock();
+
+    if (reopenDetail && isMobileExpenseEditSupportedItem(item)) {
+      openMobileMovementDetailScreen(item, mobileMovementDetailTrigger);
+    }
+  } finally {
+    suspendOverlayBackStateSync = false;
+  }
+}
+
+function saveMobileExpenseEditScreen(editScopeOverride = null) {
+  if (
+    !(mobileExpenseEditAmountInput instanceof HTMLInputElement)
+    || !(mobileExpenseEditNameInput instanceof HTMLInputElement)
+    || !(mobileExpenseEditCategory instanceof HTMLSelectElement)
+    || !(mobileExpenseEditDateInput instanceof HTMLInputElement)
+    || !mobileExpenseEditItem
+  ) {
+    return;
+  }
+
+  const editedItemId = editingItemId;
+  const recurringEditContext = isRecurringEditContext(
+    mobileExpenseEditItem,
+    { isProjected: Boolean(editingProjectedItem) }
+  );
+  const movementType = normalizeMovementType(mobileExpenseEditItem.type);
+  const editDate = recurringEditContext
+    ? normalizeItemDate(mobileExpenseEditItem.date)
+    : mobileExpenseEditDateInput.value;
+  const recurringDuration = recurringEditContext
+    ? getRecurringDurationSelectionForItem(
+      editingProjectedItem?.sourceItemId
+        ? findLatestRecurringSourceItem(editingProjectedItem.seriesId, editingProjectedItem.monthKey) || mobileExpenseEditItem
+        : mobileExpenseEditItem,
+      getMonthKeyFromItem(mobileExpenseEditItem)
+    )
+    : null;
+
+  if (recurringEditContext && !editScopeOverride) {
+    openMobileExpenseEditScopeModal({
+      movementType,
+      onConfirm: (selectedScope) => {
+        saveMobileExpenseEditScreen(selectedScope);
+      }
+    });
+    return;
+  }
+
+  const didSave = saveMovementRecord({
+    movementType,
+    rawMovementDate: editDate,
+    category: mobileExpenseEditCategory.value,
+    name: mobileExpenseEditNameInput.value,
+    amount: parseCurrencyInput(mobileExpenseEditAmountInput.value || ""),
+    isRecurring: recurringEditContext,
+    recurringMonths: recurringDuration,
+    editScope: recurringEditContext ? normalizeEditScope(editScopeOverride) : "thisMonth",
+    successToastMessage: "Cambios guardados"
+  });
+
+  if (!didSave) {
+    return;
+  }
+
+  const updatedItem = recurringEditContext
+    ? getVisibleMonthMovementItems(movementType, state.activeMonth).find((entry) => {
+      if (!entry) {
+        return false;
+      }
+      if (editingProjectedItem?.seriesId) {
+        return getRecurringSeriesId(entry) === editingProjectedItem.seriesId
+          && getMonthKeyFromItem(entry) === normalizeMonthKey(editingProjectedItem.monthKey);
+      }
+      return entry.id === editedItemId;
+    }) || state.items.find((entry) => entry.id === editedItemId) || mobileExpenseEditItem
+    : state.items.find((entry) => entry.id === editedItemId) || null;
+  suspendOverlayBackStateSync = isMobileExpenseEditSupportedItem(updatedItem);
+  try {
+    mobileExpenseEditOpen = false;
+    mobileExpenseEditScreen.classList.add("is-hidden");
+    mobileExpenseEditScreen.setAttribute("hidden", "");
+    mobileExpenseEditScreen.setAttribute("aria-hidden", "true");
+    resetMobileExpenseEditState();
+    updateOverlayScrollLock();
+
+    if (isMobileExpenseEditSupportedItem(updatedItem)) {
+      pendingMobileMovementDetailToast = "Cambios guardados";
+      openMobileMovementDetailScreen(updatedItem, mobileMovementDetailTrigger);
+    }
+  } finally {
+    suspendOverlayBackStateSync = false;
+  }
+}
+
+function renderMobileMovementDetailScreen(item = mobileMovementDetailItem) {
+  if (!item) {
+    return;
+  }
+
+  const movementType = normalizeMovementType(item.type);
+  const categoryKey = normalizeCategoryKeyForType(item.category, movementType);
+  const categoryConfig = getCategoryConfig(categoryKey);
+  const detailMonthKey = normalizeMonthKey(state.activeMonth || getMonthKeyFromItem(item));
+  const timeLabel = formatItemCreatedTime(item.createdAt, item.date) || "--:--";
+  const dateLabel = formatItemLongDate(item.date);
+  const amountValue = Math.max(0, Number(item.amount || 0));
+  const isRecurringMovement = Boolean(item.isRecurring || item.isProjectedRecurring);
+  const signedAmountLabel = movementType === "income"
+    ? `+$${new Intl.NumberFormat("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amountValue)}`
+    : `-$${new Intl.NumberFormat("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amountValue)}`;
+
+  if (mobileMovementDetailTitle) {
+    mobileMovementDetailTitle.textContent = movementType === "income" ? "Detalle de Ingreso" : "Detalle de Gasto";
+  }
+
+  if (mobileMovementDetailIcon) {
+    mobileMovementDetailIcon.textContent = getCategorySymbol(categoryKey, movementType);
+  }
+
+  if (mobileMovementDetailHeroIcon instanceof HTMLElement) {
+    mobileMovementDetailHeroIcon.style.setProperty("color", categoryConfig.color, "important");
+    mobileMovementDetailHeroIcon.style.setProperty("background", `${categoryConfig.color}1A`, "important");
+  }
+
+  if (mobileMovementDetailAmount) {
+    mobileMovementDetailAmount.textContent = signedAmountLabel;
+    mobileMovementDetailAmount.setAttribute("title", signedAmountLabel);
+  }
+
+  if (mobileMovementDetailRecurringIcon instanceof HTMLElement) {
+    mobileMovementDetailRecurringIcon.classList.toggle("is-hidden", !isRecurringMovement);
+  }
+
+  if (mobileMovementDetailTimestamp) {
+    const timestampLabel = `${timeLabel} - ${dateLabel}`;
+    mobileMovementDetailTimestamp.textContent = timestampLabel;
+    mobileMovementDetailTimestamp.setAttribute("title", timestampLabel);
+  }
+
+  setMovementDetailValue(mobileMovementDetailDescriptionValue, item.name);
+  setMovementDetailValue(mobileMovementDetailCategoryValue, categoryConfig.label);
+  setMovementDetailRowVisibility(mobileMovementDetailRepetitionRow, isRecurringMovement);
+  setMovementDetailRowVisibility(mobileMovementDetailDurationRow, isRecurringMovement);
+
+  if (isRecurringMovement) {
+    setMovementDetailValue(mobileMovementDetailRepetitionValue, formatRecurringProgressLabel(item, detailMonthKey));
+    setMovementDetailValue(mobileMovementDetailDurationValue, formatRecurringDurationLabel(item, detailMonthKey));
+  } else {
+    setMovementDetailValue(mobileMovementDetailRepetitionValue, "");
+    setMovementDetailValue(mobileMovementDetailDurationValue, "");
+  }
+
+  if (mobileMovementDetailEditBtn) {
+    const label = mobileMovementDetailEditBtn.querySelector("span:last-child");
+    if (label instanceof HTMLElement) {
+      label.textContent = "Editar";
+    }
+  }
+
+  if (mobileMovementDetailDeleteBtn) {
+    const label = mobileMovementDetailDeleteBtn.querySelector("span:last-child");
+    if (label instanceof HTMLElement) {
+      label.textContent = "Eliminar";
+    }
+  }
+}
+
+function showMobileMovementDetailAlert(message) {
+  if (!(mobileMovementDetailAlert instanceof HTMLElement)) {
+    return;
+  }
+
+  const nextMessage = String(message || "").trim() || "Cambios guardados";
+  if (mobileMovementDetailAlertMessage instanceof HTMLElement) {
+    mobileMovementDetailAlertMessage.textContent = nextMessage;
+  } else {
+    mobileMovementDetailAlert.textContent = nextMessage;
+  }
+  mobileMovementDetailAlert.classList.remove("is-hidden");
+  mobileMovementDetailAlert.classList.add("show");
+
+  if (mobileMovementDetailAlertTimer) {
+    clearTimeout(mobileMovementDetailAlertTimer);
+  }
+
+  mobileMovementDetailAlertTimer = window.setTimeout(() => {
+    mobileMovementDetailAlert.classList.remove("show");
+    mobileMovementDetailAlert.classList.add("is-hidden");
+  }, 2600);
+}
+
+function openMobileMovementDetailScreen(item, trigger = null) {
+  if (!mobileMovementDetailScreen || !item) {
+    return;
+  }
+
+  mobileMovementDetailItem = item;
+  mobileMovementDetailTrigger = trigger instanceof HTMLElement
+    ? trigger
+    : document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+
+  closeProfileDropdown();
+  closeMobileQuickAddSheet();
+  closeMobileAmountScreen({ immediate: true, preserveState: true });
+  closeMobileDetailScreen({ immediate: true });
+  closeMobileQuickEntrySheet();
+  closeMobileFilterSheet();
+
+  renderMobileMovementDetailScreen(item);
+  mobileMovementDetailOpen = true;
+  mobileMovementDetailScreen.classList.remove("is-hidden");
+  mobileMovementDetailScreen.setAttribute("aria-hidden", "false");
+  if (mobileMovementDetailBody) {
+    mobileMovementDetailBody.scrollTop = 0;
+  }
+  updateOverlayScrollLock();
+  ensureCurrentOverlayHistoryEntry();
+
+  if (pendingMobileMovementDetailToast) {
+    const successMessage = pendingMobileMovementDetailToast;
+    pendingMobileMovementDetailToast = "";
+    requestAnimationFrame(() => {
+      showMobileMovementDetailAlert(successMessage);
+    });
+  }
+}
+
+function closeMobileMovementDetailScreen({ restoreFocus = true, preserveItem = false } = {}) {
+  if (!mobileMovementDetailScreen) {
+    return;
+  }
+
+  mobileMovementDetailOpen = false;
+  mobileMovementDetailScreen.classList.add("is-hidden");
+  mobileMovementDetailScreen.setAttribute("aria-hidden", "true");
+  updateOverlayScrollLock();
+
+  if (mobileMovementDetailAlert instanceof HTMLElement) {
+    mobileMovementDetailAlert.classList.remove("show");
+    mobileMovementDetailAlert.classList.add("is-hidden");
+  }
+  if (mobileMovementDetailAlertTimer) {
+    clearTimeout(mobileMovementDetailAlertTimer);
+    mobileMovementDetailAlertTimer = null;
+  }
+
+  const focusTarget = restoreFocus && mobileMovementDetailTrigger instanceof HTMLElement
+    ? mobileMovementDetailTrigger
+    : null;
+
+  if (!preserveItem) {
+    mobileMovementDetailItem = null;
+    mobileMovementDetailTrigger = null;
+  }
+
+  if (focusTarget) {
+    requestAnimationFrame(() => {
+      focusTarget.focus();
+    });
+  }
+}
+
+function openEditFlowFromMobileMovementDetail() {
+  if (!mobileMovementDetailItem) {
+    return;
+  }
+
+  openMobileExpenseEditScreen(mobileMovementDetailItem);
+}
+
+function openDeleteFlowFromMobileMovementDetail() {
+  if (!mobileMovementDetailItem) {
+    return;
+  }
+
+  const item = mobileMovementDetailItem;
+  const deleteTrigger = mobileMovementDetailDeleteBtn instanceof HTMLElement
+    ? mobileMovementDetailDeleteBtn
+    : mobileMovementDetailTrigger;
+  openDeleteConfirmModal(item, deleteTrigger, { mobilePresentation: "dialog" });
+}
+
 function getDefaultItemDateForMonth(monthKey = state.activeMonth) {
-  const today = new Date();
-  const targetMonth = normalizeMonthKey(monthKey);
-  return normalizeItemDate(buildDateForMonth(today, targetMonth));
+  return toDateInputValue(getMonthReferenceDate(monthKey));
 }
 
 function populateMobileQuickEntryCategories(movementType = "expense") {
@@ -5582,8 +6161,9 @@ function saveMobileQuickEntry() {
     return;
   }
 
-  const didSave = saveMovementRecord({
-    movementType: pendingMovementType,
+  const movementType = pendingMovementType;
+  const saveWithScope = (scope) => saveMovementRecord({
+    movementType,
     rawMovementDate: mobileQuickEntryDate.value,
     category: mobileQuickEntryCategory.value,
     name: mobileQuickEntryName.value,
@@ -5592,8 +6172,24 @@ function saveMobileQuickEntry() {
       : parseCurrencyInput(mobileQuickEntryAmountInput?.value || ""),
     isRecurring: mobileQuickEntryRecurring.checked,
     recurringMonths: parseRecurringDurationSelection(mobileQuickEntryRecurringMonths?.value || "12"),
-    editScope: mobileQuickEntryScope
+    editScope: scope
   });
+
+  const needsScopeModal = Boolean(editingItemId || editingProjectedItem) && mobileQuickEntryRecurring.checked;
+  if (needsScopeModal) {
+    openMobileExpenseEditScopeModal({
+      movementType,
+      onConfirm: (selectedScope) => {
+        const didScopedSave = saveWithScope(selectedScope);
+        if (didScopedSave) {
+          closeMobileQuickEntrySheet();
+        }
+      }
+    });
+    return;
+  }
+
+  const didSave = saveWithScope(mobileQuickEntryScope);
 
   if (!didSave) {
     return;
@@ -7257,6 +7853,32 @@ function closeDeleteConfirmModal() {
   }
 }
 
+function openMobileExpenseEditScopeModal({ movementType = null, onConfirm = null } = {}) {
+  if (!mobileExpenseEditScopeModal) {
+    return;
+  }
+
+  pendingRecurringEditScopeAction = typeof onConfirm === "function" ? onConfirm : null;
+  const resolvedType = normalizeMovementType(movementType || mobileExpenseEditItem?.type || pendingMovementType || "expense");
+  const movementLabel = resolvedType === "income" ? "ingreso" : "gasto";
+  if (mobileExpenseEditScopeModalText) {
+    mobileExpenseEditScopeModalText.textContent = `Elegí si querés aplicar el cambio solo en este mes o desde este mes en adelante para este ${movementLabel}.`;
+  }
+  mobileExpenseEditScopeModal.classList.add("show");
+  mobileExpenseEditScopeModal.setAttribute("aria-hidden", "false");
+  updateOverlayScrollLock();
+}
+
+function closeMobileExpenseEditScopeModal() {
+  if (!mobileExpenseEditScopeModal) {
+    return;
+  }
+
+  pendingRecurringEditScopeAction = null;
+  mobileExpenseEditScopeModal.classList.remove("show");
+  mobileExpenseEditScopeModal.setAttribute("aria-hidden", "true");
+  updateOverlayScrollLock();
+}
 function returnToHomeAfterDelete(successMessage) {
   modalTrigger = null;
   suspendOverlayBackStateSync = true;
@@ -7356,6 +7978,7 @@ function hasOpenOverlayState() {
   const onboardingIsOpen = onboardingModal ? onboardingModal.classList.contains("show") : false;
   const authIsOpen = authModal ? authModal.classList.contains("show") : false;
   const deleteIsOpen = deleteConfirmModal ? deleteConfirmModal.classList.contains("show") : false;
+  const mobileExpenseEditScopeIsOpen = mobileExpenseEditScopeModal ? mobileExpenseEditScopeModal.classList.contains("show") : false;
   const feedbackIsOpen = feedbackModal ? feedbackModal.classList.contains("show") : false;
   const salaryIsOpen = salaryModal ? salaryModal.classList.contains("show") : false;
   const walkthroughIsOpen = walkthroughOverlay ? !walkthroughOverlay.classList.contains("is-hidden") : false;
@@ -7373,6 +7996,7 @@ function hasOpenOverlayState() {
     || onboardingIsOpen
     || authIsOpen
     || deleteIsOpen
+    || mobileExpenseEditScopeIsOpen
     || feedbackIsOpen
     || walkthroughIsOpen
     || profileIsOpen
@@ -7395,6 +8019,10 @@ function hasOpenOverlayState() {
 }
 
 function closeActiveOverlayState() {
+  if (mobileExpenseEditScopeModal ? mobileExpenseEditScopeModal.classList.contains("show") : false) {
+    closeMobileExpenseEditScopeModal();
+    return true;
+  }
   if (mobileAmountRecurrenceSheetOpen) {
     closeMobileAmountRecurrenceSheet();
     return true;
@@ -8434,7 +9062,17 @@ function renderExpenseMobileList() {
     return;
   }
 
+  const shouldShowDateGroups = normalizeMonthKey(state.activeMonth) === getCurrentMonthKey();
+  let previousGroupDate = "";
   for (const item of filteredItems) {
+    const itemGroupDate = normalizeItemDate(item.date);
+    if (shouldShowDateGroups && itemGroupDate !== previousGroupDate) {
+      const groupLabel = document.createElement("p");
+      groupLabel.className = "mobile-item-group-label";
+      groupLabel.textContent = formatItemHomeDateGroupLabel(item.date);
+      expenseMobileList.appendChild(groupLabel);
+      previousGroupDate = itemGroupDate;
+    }
     const card = mobileItemTemplate.content.firstElementChild.cloneNode(true);
     populateItemNode(card, item);
     expenseMobileList.appendChild(card);
@@ -8459,11 +9097,14 @@ function populateItemNode(node, item) {
 
   const secondaryNode = node.querySelector(".mobile-item-secondary");
   if (secondaryNode) {
-    secondaryNode.textContent = config.label;
-    secondaryNode.setAttribute("title", config.label);
+    const secondaryLabel = config.label;
+    secondaryNode.textContent = secondaryLabel;
+    secondaryNode.setAttribute("title", secondaryLabel);
+    secondaryNode.classList.toggle("is-hidden", !secondaryLabel);
   }
 
   const dateNode = node.querySelector(".date-text");
+  const dateWrapNode = node.querySelector(".mobile-item-date-wrap");
   if (dateNode) {
     const dateLabel = isMobileRow
       ? formatItemCreatedTime(item.createdAt, item.date)
@@ -8471,6 +9112,9 @@ function populateItemNode(node, item) {
     dateNode.textContent = dateLabel;
     dateNode.setAttribute("title", dateLabel);
     dateNode.classList.toggle("is-hidden", !dateLabel);
+  }
+  if (dateWrapNode instanceof HTMLElement) {
+    dateWrapNode.classList.toggle("has-frequency", isMobileRow && isRecurring);
   }
 
   const chip = node.querySelector(".category-chip");
