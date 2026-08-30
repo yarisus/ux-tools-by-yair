@@ -139,6 +139,51 @@ const CATEGORY_CONFIG = {
 const EXPENSE_CATEGORY_KEYS = Object.keys(EXPENSE_CATEGORY_CONFIG);
 const INCOME_CATEGORY_KEYS = Object.keys(INCOME_CATEGORY_CONFIG);
 const CATEGORY_KEYS = Object.keys(CATEGORY_CONFIG);
+const CUSTOM_EXPENSE_CATEGORY_COLOR = "#213196";
+const CUSTOM_EXPENSE_CATEGORY_HELP = "Categoria personalizada creada por vos.";
+const CUSTOM_EXPENSE_CATEGORY_ICON_OPTIONS = [
+  { name: "pets", label: "Mascotas" },
+  { name: "restaurant", label: "Comida" },
+  { name: "local_cafe", label: "Cafe" },
+  { name: "shopping_bag", label: "Compras" },
+  { name: "storefront", label: "Tienda" },
+  { name: "home", label: "Casa" },
+  { name: "home_work", label: "Hogar" },
+  { name: "chair", label: "Muebles" },
+  { name: "bed", label: "Dormitorio" },
+  { name: "tv", label: "TV" },
+  { name: "smartphone", label: "Celular" },
+  { name: "laptop_mac", label: "Tecnologia" },
+  { name: "headphones", label: "Audio" },
+  { name: "directions_car", label: "Auto" },
+  { name: "directions_bus", label: "Colectivo" },
+  { name: "local_taxi", label: "Taxi" },
+  { name: "flight", label: "Viajes" },
+  { name: "hotel", label: "Hotel" },
+  { name: "school", label: "Escuela" },
+  { name: "menu_book", label: "Libros" },
+  { name: "fitness_center", label: "Gym" },
+  { name: "favorite", label: "Salud" },
+  { name: "medication", label: "Farmacia" },
+  { name: "medical_services", label: "Medico" },
+  { name: "child_care", label: "Ninos" },
+  { name: "celebration", label: "Fiesta" },
+  { name: "sports_esports", label: "Gaming" },
+  { name: "movie", label: "Peliculas" },
+  { name: "music_note", label: "Musica" },
+  { name: "sports_soccer", label: "Deportes" },
+  { name: "checkroom", label: "Ropa" },
+  { name: "diamond", label: "Belleza" },
+  { name: "content_cut", label: "Peluqueria" },
+  { name: "redeem", label: "Regalos" },
+  { name: "receipt_long", label: "Facturas" },
+  { name: "credit_card", label: "Tarjeta" },
+  { name: "savings", label: "Ahorro" },
+  { name: "account_balance_wallet", label: "Billetera" },
+  { name: "volunteer_activism", label: "Donaciones" },
+  { name: "construction", label: "Arreglos" }
+];
+const CUSTOM_EXPENSE_CATEGORY_ICON_SET = new Set(CUSTOM_EXPENSE_CATEGORY_ICON_OPTIONS.map((option) => option.name));
 const DEFAULT_EXPENSE_CATEGORY_KEY = "vivienda";
 const DEFAULT_INCOME_CATEGORY_KEY = "sueldo";
 const DEFAULT_CATEGORY_KEY = DEFAULT_EXPENSE_CATEGORY_KEY;
@@ -153,6 +198,7 @@ const ONBOARDING_STEPS = 3;
 const ONBOARDING_SWIPE_THRESHOLD = 36;
 const ONBOARDING_SWIPE_VERTICAL_TOLERANCE = 36;
 const ONBOARDING_TRANSITION_MS = 260;
+let customExpenseCategoryRegistry = [];
 const state = loadState();
 const cloudConfig = loadCloudConfig();
 let localUiState = loadLocalUiState();
@@ -182,6 +228,8 @@ let feedbackSubmitting = false;
 let monthModelOpen = false;
 let pendingDeleteProjection = null;
 let pendingDeleteRecurringContext = null;
+let categoryManagerTrigger = null;
+let selectedCustomExpenseCategoryIcon = CUSTOM_EXPENSE_CATEGORY_ICON_OPTIONS[0]?.name || "category";
 
 const salaryInput = document.getElementById("salaryInput");
 const toggleSalaryBtn = document.getElementById("toggleSalaryBtn");
@@ -247,6 +295,7 @@ const exportCsvBtn = document.getElementById("exportCsvBtn");
 const exportPdfBtn = document.getElementById("exportPdfBtn");
 const resetAllDataBtn = document.getElementById("resetAllDataBtn");
 const profileFeedbackBtn = document.getElementById("profileFeedbackBtn");
+const profileCategoriesBtn = document.getElementById("profileCategoriesBtn");
 const profileExportCsvBtn = document.getElementById("profileExportCsvBtn");
 const profileExportPdfBtn = document.getElementById("profileExportPdfBtn");
 const profileResetBtn = document.getElementById("profileResetBtn");
@@ -310,6 +359,19 @@ const feedbackRatingInput = document.getElementById("feedbackRatingInput");
 const feedbackEmailInput = document.getElementById("feedbackEmailInput");
 const feedbackMessageInput = document.getElementById("feedbackMessageInput");
 const feedbackSubmitBtn = document.getElementById("feedbackSubmitBtn");
+const categoryManagerModal = document.getElementById("categoryManagerModal");
+const closeCategoryManagerModalBtn = document.getElementById("closeCategoryManagerModalBtn");
+const defaultExpenseCategoryList = document.getElementById("defaultExpenseCategoryList");
+const customExpenseCategoryList = document.getElementById("customExpenseCategoryList");
+const customExpenseCategoryEmptyState = document.getElementById("customExpenseCategoryEmptyState");
+const showCreateCategoryBtn = document.getElementById("showCreateCategoryBtn");
+const createExpenseCategoryPanel = document.getElementById("createExpenseCategoryPanel");
+const createExpenseCategoryForm = document.getElementById("createExpenseCategoryForm");
+const customExpenseCategoryNameInput = document.getElementById("customExpenseCategoryNameInput");
+const customExpenseCategoryIconSearchInput = document.getElementById("customExpenseCategoryIconSearchInput");
+const customExpenseCategoryIconGrid = document.getElementById("customExpenseCategoryIconGrid");
+const customExpenseCategoryIconEmptyState = document.getElementById("customExpenseCategoryIconEmptyState");
+const cancelCreateCategoryBtn = document.getElementById("cancelCreateCategoryBtn");
 const appSidebar = document.getElementById("appSidebar");
 const sidebarToggleBtn = document.getElementById("sidebarToggleBtn");
 const heroGreeting = document.getElementById("heroGreeting");
@@ -1730,6 +1792,12 @@ if (profileFeedbackBtn) {
   });
 }
 
+if (profileCategoriesBtn) {
+  profileCategoriesBtn.addEventListener("click", () => {
+    openCategoryManagerModal(profileCategoriesBtn);
+  });
+}
+
 if (startWalkthroughBtn) {
   startWalkthroughBtn.addEventListener("click", () => {
     closeProfileDropdown();
@@ -1918,6 +1986,56 @@ if (feedbackModal) {
     if (target instanceof HTMLElement && target.dataset.closeFeedbackModal === "true") {
       closeFeedbackModal();
     }
+  });
+}
+
+if (closeCategoryManagerModalBtn) {
+  closeCategoryManagerModalBtn.addEventListener("click", closeCategoryManagerModal);
+}
+
+if (categoryManagerModal) {
+  categoryManagerModal.addEventListener("click", (event) => {
+    const target = event.target;
+    if (target instanceof HTMLElement && target.dataset.closeCategoryManagerModal === "true") {
+      closeCategoryManagerModal();
+    }
+  });
+}
+
+if (showCreateCategoryBtn) {
+  showCreateCategoryBtn.addEventListener("click", () => {
+    setCreateExpenseCategoryPanelOpen(true);
+  });
+}
+
+if (cancelCreateCategoryBtn) {
+  cancelCreateCategoryBtn.addEventListener("click", () => {
+    setCreateExpenseCategoryPanelOpen(false);
+  });
+}
+
+if (createExpenseCategoryForm) {
+  createExpenseCategoryForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    createCustomExpenseCategory();
+  });
+}
+
+if (customExpenseCategoryIconSearchInput) {
+  customExpenseCategoryIconSearchInput.addEventListener("input", () => {
+    renderCustomExpenseCategoryIconOptions(customExpenseCategoryIconSearchInput.value);
+  });
+}
+
+if (customExpenseCategoryIconGrid) {
+  customExpenseCategoryIconGrid.addEventListener("click", (event) => {
+    const target = event.target instanceof HTMLElement ? event.target.closest("[data-icon-name]") : null;
+    if (!(target instanceof HTMLButtonElement)) {
+      return;
+    }
+
+    selectedCustomExpenseCategoryIcon = String(target.dataset.iconName || "").trim() || selectedCustomExpenseCategoryIcon;
+    renderCustomExpenseCategoryIconOptions(customExpenseCategoryIconSearchInput?.value || "");
   });
 }
 
@@ -2378,6 +2496,7 @@ document.addEventListener("keydown", (event) => {
   closeOnboarding(false);
   closeAuthModal();
   closeFeedbackModal();
+  closeCategoryManagerModal();
   closeProfileDropdown();
   closeMobileQuickAddSheet();
   closeMobileAmountScreen();
@@ -2426,12 +2545,82 @@ function createItemId() {
   return `item_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
 }
 
+function normalizeCustomExpenseCategoryName(rawName) {
+  return String(rawName || "").replace(/\s+/g, " ").trim().slice(0, 32);
+}
+
+function sanitizeCustomExpenseCategory(candidate, fallbackIndex = 0) {
+  const name = normalizeCustomExpenseCategoryName(candidate?.name);
+  if (!name) {
+    return null;
+  }
+
+  const rawId = String(candidate?.id || "").trim().toLowerCase();
+  const id = /^custom_expense_[a-z0-9_-]+$/.test(rawId)
+    ? rawId
+    : `custom_expense_${String(fallbackIndex + 1).padStart(2, "0")}`;
+  const rawIcon = String(candidate?.icon || "").trim();
+  const icon = CUSTOM_EXPENSE_CATEGORY_ICON_SET.has(rawIcon)
+    ? rawIcon
+    : (CUSTOM_EXPENSE_CATEGORY_ICON_OPTIONS[0]?.name || "category");
+
+  return {
+    id,
+    name,
+    icon
+  };
+}
+
+function getCustomExpenseCategories() {
+  return Array.isArray(customExpenseCategoryRegistry) ? customExpenseCategoryRegistry : [];
+}
+
+function getExpenseCategoryConfigMap() {
+  const customEntries = Object.fromEntries(
+    getCustomExpenseCategories().map((entry) => [
+      entry.id,
+      {
+        label: entry.name,
+        help: CUSTOM_EXPENSE_CATEGORY_HELP,
+        color: CUSTOM_EXPENSE_CATEGORY_COLOR,
+        icon: entry.icon,
+        isCustom: true
+      }
+    ])
+  );
+
+  return {
+    ...EXPENSE_CATEGORY_CONFIG,
+    ...customEntries
+  };
+}
+
+function getCategoryConfigMap() {
+  return {
+    ...getExpenseCategoryConfigMap(),
+    ...INCOME_CATEGORY_CONFIG
+  };
+}
+
+function getExpenseCategoryKeys() {
+  return [...EXPENSE_CATEGORY_KEYS, ...getCustomExpenseCategories().map((entry) => entry.id)];
+}
+
+function getIncomeCategoryKeys() {
+  return [...INCOME_CATEGORY_KEYS];
+}
+
+function getAllCategoryKeys() {
+  return [...getExpenseCategoryKeys(), ...getIncomeCategoryKeys()];
+}
+
 function normalizeCategoryKey(rawCategory) {
   const value = String(rawCategory || "").trim().toLowerCase();
-  if (CATEGORY_CONFIG[value]) {
+  const categoryConfigMap = getCategoryConfigMap();
+  if (categoryConfigMap[value]) {
     return value;
   }
-  if (LEGACY_CATEGORY_MAP[value] && CATEGORY_CONFIG[LEGACY_CATEGORY_MAP[value]]) {
+  if (LEGACY_CATEGORY_MAP[value] && categoryConfigMap[LEGACY_CATEGORY_MAP[value]]) {
     return LEGACY_CATEGORY_MAP[value];
   }
   return FALLBACK_CATEGORY_KEY;
@@ -3240,12 +3429,17 @@ function formatItemLongDate(rawDate) {
 
 function getCategoryConfig(categoryKey) {
   const key = normalizeCategoryKey(categoryKey);
-  return CATEGORY_CONFIG[key] || CATEGORY_CONFIG[FALLBACK_CATEGORY_KEY];
+  const categoryConfigMap = getCategoryConfigMap();
+  return categoryConfigMap[key] || categoryConfigMap[FALLBACK_CATEGORY_KEY];
 }
 
 function getCategorySymbol(categoryKey, movementType = "expense") {
   const normalizedType = normalizeMovementType(movementType);
   const normalizedKey = normalizeCategoryKeyForType(categoryKey, normalizedType);
+  const categoryConfig = getCategoryConfig(normalizedKey);
+  if (categoryConfig?.icon) {
+    return categoryConfig.icon;
+  }
   const iconMap = {
     vivienda: "home_work",
     servicios: "bolt",
@@ -3826,7 +4020,7 @@ function getMonthExpenseSummary(monthKey = state.activeMonth) {
 }
 
 function getCategoryKeysForType(movementType) {
-  return normalizeMovementType(movementType) === "income" ? INCOME_CATEGORY_KEYS : EXPENSE_CATEGORY_KEYS;
+  return normalizeMovementType(movementType) === "income" ? getIncomeCategoryKeys() : getExpenseCategoryKeys();
 }
 
 function getDefaultCategoryKeyForType(movementType) {
@@ -3840,7 +4034,7 @@ function normalizeCategoryKeyForType(rawCategory, movementType) {
   if (normalizeMovementType(movementType) === "income") {
     return INCOME_CATEGORY_CONFIG[normalized] ? normalized : DEFAULT_INCOME_CATEGORY_KEY;
   }
-  return EXPENSE_CATEGORY_CONFIG[normalized] ? normalized : DEFAULT_EXPENSE_CATEGORY_KEY;
+  return getExpenseCategoryConfigMap()[normalized] ? normalized : DEFAULT_EXPENSE_CATEGORY_KEY;
 }
 
 function parseHexColor(hexColor) {
@@ -3943,7 +4137,8 @@ function populateCategoryControls() {
     ? selectedInputRaw
     : getDefaultCategoryKeyForType(movementType);
   const selectedFilterRaw = String(categoryFilter.value || "all").trim().toLowerCase();
-  const selectedFilter = selectedFilterRaw === "all" || CATEGORY_CONFIG[selectedFilterRaw] ? selectedFilterRaw : "all";
+  const categoryConfigMap = getCategoryConfigMap();
+  const selectedFilter = selectedFilterRaw === "all" || categoryConfigMap[selectedFilterRaw] ? selectedFilterRaw : "all";
 
   categoryInput.innerHTML = "";
   categoryFilter.innerHTML = "";
@@ -3985,7 +4180,7 @@ function populateCategoryControls() {
   optionsWrap.appendChild(allMenuItem);
 
   for (const key of inputCategoryKeys) {
-    const config = CATEGORY_CONFIG[key];
+    const config = getCategoryConfig(key);
 
     const formOption = document.createElement("option");
     formOption.value = key;
@@ -3993,8 +4188,8 @@ function populateCategoryControls() {
     categoryInput.appendChild(formOption);
   }
 
-  for (const key of CATEGORY_KEYS) {
-    const config = CATEGORY_CONFIG[key];
+  for (const key of getAllCategoryKeys()) {
+    const config = getCategoryConfig(key);
 
     const filterOption = document.createElement("option");
     filterOption.value = key;
@@ -4010,7 +4205,7 @@ function populateCategoryControls() {
     optionsWrap.appendChild(menuItem);
   }
 
-  categoryInput.value = CATEGORY_CONFIG[selectedInput] ? selectedInput : DEFAULT_CATEGORY_KEY;
+  categoryInput.value = categoryConfigMap[selectedInput] ? selectedInput : DEFAULT_CATEGORY_KEY;
   categoryFilter.value = selectedFilter;
   updateCategoryFilterMenuSelection();
   filterCategoryFilterMenuOptions("");
@@ -5473,7 +5668,7 @@ function saveMovementRecord({
     showToast(successMessage || (normalizedType === "income" ? "Ingreso actualizado correctamente." : "Gasto actualizado correctamente."));
   };
 
-  if (!trimmedName || numericAmount < 0 || !CATEGORY_CONFIG[normalizedCategory] || !hasValidItemDate(rawMovementDate)) {
+  if (!trimmedName || numericAmount < 0 || !getCategoryConfigMap()[normalizedCategory] || !hasValidItemDate(rawMovementDate)) {
     showToast("Revisa los campos: descripcion, fecha y monto validos.", true);
     return false;
   }
@@ -5844,7 +6039,7 @@ function renderMobileFilterCategoryOptions(query = "") {
   const normalizedQuery = String(query || "").trim().toLowerCase();
   const options = [
     { value: "all", label: "Todas" },
-    ...CATEGORY_KEYS.map((key) => ({ value: key, label: CATEGORY_CONFIG[key].label }))
+    ...getAllCategoryKeys().map((key) => ({ value: key, label: getCategoryConfig(key).label }))
   ].filter((option) => !normalizedQuery || option.label.toLowerCase().includes(normalizedQuery));
 
   mobileFilterCategoryOptions.innerHTML = options.map((option) => `
@@ -6736,6 +6931,202 @@ function closeFeedbackModal() {
   updateOverlayScrollLock();
 }
 
+function setCreateExpenseCategoryPanelOpen(shouldOpen) {
+  if (!(createExpenseCategoryPanel instanceof HTMLElement)) {
+    return;
+  }
+
+  const nextOpen = Boolean(shouldOpen);
+  createExpenseCategoryPanel.classList.toggle("is-hidden", !nextOpen);
+  createExpenseCategoryPanel.toggleAttribute("hidden", !nextOpen);
+  createExpenseCategoryPanel.setAttribute("aria-hidden", String(!nextOpen));
+
+  if (!nextOpen) {
+    createExpenseCategoryForm?.reset();
+    selectedCustomExpenseCategoryIcon = CUSTOM_EXPENSE_CATEGORY_ICON_OPTIONS[0]?.name || "category";
+    renderCustomExpenseCategoryIconOptions("");
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    customExpenseCategoryNameInput?.focus();
+  });
+}
+
+function buildCategoryManagerCard(categoryKey, { isCustom = false } = {}) {
+  const config = getCategoryConfig(categoryKey);
+  const card = document.createElement("article");
+  card.className = "category-manager-card";
+  card.dataset.categoryKey = categoryKey;
+
+  const iconWrap = document.createElement("span");
+  iconWrap.className = "category-manager-card-icon";
+  iconWrap.style.color = config.color;
+  iconWrap.style.background = `${config.color}1A`;
+
+  const icon = document.createElement("span");
+  icon.className = "material-symbols-rounded";
+  icon.setAttribute("aria-hidden", "true");
+  icon.textContent = getCategorySymbol(categoryKey, "expense");
+  iconWrap.appendChild(icon);
+
+  const copy = document.createElement("span");
+  copy.className = "category-manager-card-copy";
+
+  const title = document.createElement("strong");
+  title.className = "category-manager-card-title";
+  title.textContent = config.label;
+
+  const meta = document.createElement("span");
+  meta.className = "category-manager-card-meta";
+  meta.textContent = isCustom ? "Categoria personalizada" : "Categoria base de Dinaria";
+
+  copy.append(title, meta);
+  card.append(iconWrap, copy);
+  return card;
+}
+
+function renderCustomExpenseCategoryLists() {
+  if (!(defaultExpenseCategoryList instanceof HTMLElement) || !(customExpenseCategoryList instanceof HTMLElement)) {
+    return;
+  }
+
+  defaultExpenseCategoryList.replaceChildren();
+  customExpenseCategoryList.replaceChildren();
+
+  EXPENSE_CATEGORY_KEYS.forEach((key) => {
+    defaultExpenseCategoryList.appendChild(buildCategoryManagerCard(key));
+  });
+
+  const customCategories = getCustomExpenseCategories();
+  customExpenseCategoryEmptyState?.classList.toggle("is-hidden", customCategories.length > 0);
+
+  customCategories.forEach((entry) => {
+    customExpenseCategoryList.appendChild(buildCategoryManagerCard(entry.id, { isCustom: true }));
+  });
+}
+
+function renderCustomExpenseCategoryIconOptions(query = "") {
+  if (!(customExpenseCategoryIconGrid instanceof HTMLElement)) {
+    return;
+  }
+
+  const normalizedQuery = String(query || "").trim().toLowerCase();
+  const options = CUSTOM_EXPENSE_CATEGORY_ICON_OPTIONS.filter((option) => {
+    return !normalizedQuery
+      || option.name.toLowerCase().includes(normalizedQuery)
+      || option.label.toLowerCase().includes(normalizedQuery);
+  });
+
+  customExpenseCategoryIconGrid.replaceChildren();
+
+  options.forEach((option) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "category-icon-option";
+    button.dataset.iconName = option.name;
+    button.setAttribute("role", "option");
+    button.setAttribute("aria-selected", String(option.name === selectedCustomExpenseCategoryIcon));
+    button.classList.toggle("is-selected", option.name === selectedCustomExpenseCategoryIcon);
+
+    const icon = document.createElement("span");
+    icon.className = "material-symbols-rounded";
+    icon.setAttribute("aria-hidden", "true");
+    icon.textContent = option.name;
+
+    const label = document.createElement("span");
+    label.className = "category-icon-option-label";
+    label.textContent = option.label;
+
+    button.append(icon, label);
+    customExpenseCategoryIconGrid.append(button);
+  });
+
+  customExpenseCategoryIconEmptyState?.classList.toggle("is-hidden", options.length > 0);
+}
+
+function renderCategoryManagerModal() {
+  renderCustomExpenseCategoryLists();
+  renderCustomExpenseCategoryIconOptions(customExpenseCategoryIconSearchInput?.value || "");
+}
+
+function openCategoryManagerModal(trigger = null) {
+  if (!categoryManagerModal) {
+    return;
+  }
+
+  categoryManagerTrigger = trigger instanceof HTMLElement ? trigger : document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  closeProfileDropdown();
+  setCreateExpenseCategoryPanelOpen(false);
+  renderCategoryManagerModal();
+  categoryManagerModal.classList.add("show");
+  categoryManagerModal.setAttribute("aria-hidden", "false");
+  updateOverlayScrollLock();
+
+  requestAnimationFrame(() => {
+    showCreateCategoryBtn?.focus();
+  });
+}
+
+function closeCategoryManagerModal() {
+  if (!categoryManagerModal) {
+    return;
+  }
+
+  const wasOpen = categoryManagerModal.classList.contains("show");
+  categoryManagerModal.classList.remove("show");
+  categoryManagerModal.setAttribute("aria-hidden", "true");
+  setCreateExpenseCategoryPanelOpen(false);
+  updateOverlayScrollLock();
+
+  if (wasOpen && categoryManagerTrigger instanceof HTMLElement) {
+    categoryManagerTrigger.focus();
+  }
+
+  categoryManagerTrigger = null;
+}
+
+function createCustomExpenseCategory() {
+  const name = normalizeCustomExpenseCategoryName(customExpenseCategoryNameInput?.value);
+  if (!name) {
+    showToast("Escribe un nombre para la categoria.", true);
+    return;
+  }
+
+  const duplicateCategory = getExpenseCategoryKeys().find((key) => getCategoryConfig(key).label.toLowerCase() === name.toLowerCase());
+  if (duplicateCategory) {
+    showToast("Ya existe una categoria con ese nombre.", true);
+    return;
+  }
+
+  const nextCategory = sanitizeCustomExpenseCategory({
+    id: `custom_expense_${createItemId().replace(/[^a-z0-9_-]/gi, "").toLowerCase()}`,
+    name,
+    icon: selectedCustomExpenseCategoryIcon
+  }, getCustomExpenseCategories().length);
+
+  if (!nextCategory) {
+    showToast("No pudimos crear la categoria.", true);
+    return;
+  }
+
+  state.customExpenseCategories = [...getCustomExpenseCategories(), nextCategory];
+  customExpenseCategoryRegistry = state.customExpenseCategories;
+  saveState();
+  populateCategoryControls();
+  populateMobileDetailCategories(mobileAmountMode);
+  populateMobileExpenseEditCategories(
+    mobileExpenseEditCategory instanceof HTMLSelectElement ? mobileExpenseEditCategory.value : "",
+    pendingMovementType
+  );
+  populateMobileQuickEntryCategories(pendingMovementType);
+  renderMobileFilterCategoryOptions("");
+  renderCategoryManagerModal();
+  render();
+  showToast("Categoria creada correctamente.");
+  setCreateExpenseCategoryPanelOpen(false);
+}
+
 async function getFeedbackSupabaseClient() {
   if (feedbackClient) {
     return feedbackClient;
@@ -7582,6 +7973,7 @@ function hasOpenOverlayState() {
   const deleteIsOpen = deleteConfirmModal ? deleteConfirmModal.classList.contains("show") : false;
   const mobileExpenseEditScopeIsOpen = mobileExpenseEditScopeModal ? mobileExpenseEditScopeModal.classList.contains("show") : false;
   const feedbackIsOpen = feedbackModal ? feedbackModal.classList.contains("show") : false;
+  const categoryManagerIsOpen = categoryManagerModal ? categoryManagerModal.classList.contains("show") : false;
   const salaryIsOpen = salaryModal ? salaryModal.classList.contains("show") : false;
   const walkthroughIsOpen = walkthroughOverlay ? !walkthroughOverlay.classList.contains("is-hidden") : false;
   const profileIsOpen = profileDropdown ? !profileDropdown.classList.contains("is-hidden") : false;
@@ -7600,6 +7992,7 @@ function hasOpenOverlayState() {
     || deleteIsOpen
     || mobileExpenseEditScopeIsOpen
     || feedbackIsOpen
+    || categoryManagerIsOpen
     || walkthroughIsOpen
     || profileIsOpen
     || downloadIsOpen
@@ -7625,7 +8018,10 @@ function closeActiveOverlayState() {
     closeMobileExpenseEditScopeModal();
     return true;
   }
-
+  if (categoryManagerModal ? categoryManagerModal.classList.contains("show") : false) {
+    closeCategoryManagerModal();
+    return true;
+  }
   if (mobileAmountRecurrenceSheetOpen) {
     closeMobileAmountRecurrenceSheet();
     return true;
@@ -7973,6 +8369,7 @@ function loadState() {
       monthlySalaries: {},
       activeMonth: getCurrentMonthKey(),
       recurringSkips: [],
+      customExpenseCategories: [],
       items: [],
       hideSalary: false,
       theme: "light",
@@ -7994,6 +8391,7 @@ function loadState() {
       monthlySalaries: {},
       activeMonth: getCurrentMonthKey(),
       recurringSkips: [],
+      customExpenseCategories: [],
       items: [],
       hideSalary: false,
       theme: "light",
@@ -8008,6 +8406,13 @@ function loadState() {
 }
 
 function normalizeStateSnapshot(candidate, fallbackTimestamp = new Date().toISOString()) {
+  const customExpenseCategories = Array.isArray(candidate?.customExpenseCategories)
+    ? candidate.customExpenseCategories
+      .map((entry, index) => sanitizeCustomExpenseCategory(entry, index))
+      .filter(Boolean)
+      .filter((entry, index, list) => list.findIndex((candidateEntry) => candidateEntry.id === entry.id) === index)
+    : [];
+  customExpenseCategoryRegistry = customExpenseCategories;
   const items = Array.isArray(candidate?.items) ? candidate.items.map(sanitizeItem).filter(Boolean) : [];
   const currentMonthKey = getCurrentMonthKey();
   const monthlySalaries = Object.fromEntries(
@@ -8046,6 +8451,7 @@ function normalizeStateSnapshot(candidate, fallbackTimestamp = new Date().toISOS
     monthlySalaries,
     activeMonth: getCurrentMonthKey(),
     recurringSkips,
+    customExpenseCategories,
     items,
     hideSalary: Boolean(candidate?.hideSalary),
     theme,
@@ -8066,6 +8472,8 @@ function applySnapshotToState(snapshot) {
   state.monthlySalaries = normalized.monthlySalaries;
   state.activeMonth = preservedActiveMonth;
   state.recurringSkips = normalized.recurringSkips;
+  state.customExpenseCategories = normalized.customExpenseCategories;
+  customExpenseCategoryRegistry = normalized.customExpenseCategories;
   state.items = normalized.items;
   state.hideSalary = normalized.hideSalary;
   // Theme is intentionally NOT synced from cloud.
@@ -8187,8 +8595,8 @@ function money(value) {
 }
 
 function getTotals() {
-  const expenseByCategory = Object.fromEntries(EXPENSE_CATEGORY_KEYS.map((key) => [key, 0]));
-  const incomeByCategory = Object.fromEntries(INCOME_CATEGORY_KEYS.map((key) => [key, 0]));
+  const expenseByCategory = Object.fromEntries(getExpenseCategoryKeys().map((key) => [key, 0]));
+  const incomeByCategory = Object.fromEntries(getIncomeCategoryKeys().map((key) => [key, 0]));
   const expenseItems = getVisibleMonthExpenseItems(state.activeMonth);
   const incomeItems = getVisibleMonthIncomeItems(state.activeMonth);
   let monthlyIncome = 0;
@@ -8955,14 +9363,14 @@ function populateItemNode(node, item) {
 
 function renderDonut() {
   const { expenseByCategory } = getTotals();
-  const categoryKeys = EXPENSE_CATEGORY_KEYS;
+  const categoryKeys = getExpenseCategoryKeys();
   const categoryTotals = expenseByCategory;
 
   const series = categoryKeys.map((key) => ({
     key,
-    label: CATEGORY_CONFIG[key].label,
-    help: CATEGORY_CONFIG[key].help,
-    color: CATEGORY_CONFIG[key].color,
+    label: getCategoryConfig(key).label,
+    help: getCategoryConfig(key).help,
+    color: getCategoryConfig(key).color,
     amount: Number(categoryTotals[key] || 0)
   })).filter((item) => item.amount > 0).sort((a, b) => b.amount - a.amount);
 
@@ -9036,8 +9444,8 @@ function getCategoryFilterLabel() {
     return "Todas";
   }
   const value = String(categoryFilter.value || "all").trim().toLowerCase();
-  if (value !== "all" && CATEGORY_CONFIG[value]) {
-    return CATEGORY_CONFIG[value].label;
+  if (value !== "all" && getCategoryConfigMap()[value]) {
+    return getCategoryConfig(value).label;
   }
   return "Todas";
 }
@@ -9048,10 +9456,10 @@ function getActiveMovementFilters() {
   const selectedDate = isActiveMonthCurrent() ? normalizeDateFilterValue(dateFilter?.value || "all") : "all";
   const selectedStatus = normalizeStatusFilterValue(statusFilter?.value || "all");
 
-  if (selectedCategory !== "all" && CATEGORY_CONFIG[selectedCategory]) {
+  if (selectedCategory !== "all" && getCategoryConfigMap()[selectedCategory]) {
     activeFilters.push({
       key: "category",
-      label: `Categoria: ${CATEGORY_CONFIG[selectedCategory].label}`
+      label: `Categoria: ${getCategoryConfig(selectedCategory).label}`
     });
   }
 
