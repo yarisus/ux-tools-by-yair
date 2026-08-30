@@ -5,6 +5,7 @@ const APP_VARIANT_HOST_IS_QA = /(^|[-.])qa([-.]|$)/i.test(globalThis.location?.h
 const APP_VARIANT = APP_VARIANT_HINT === "qa" || APP_VARIANT_HOST_IS_QA || /(?:^|\/)qa\.html$/i.test(globalThis.location?.pathname || "") ? "qa" : "production";
 const IS_QA_APP = APP_VARIANT === "qa";
 const STATE_STORAGE_KEY = IS_QA_APP ? `${STORAGE_KEY}_qa` : STORAGE_KEY;
+const STATE_STORAGE_BACKUP_KEY = IS_QA_APP ? `${STORAGE_KEY}_qa_backup` : `${STORAGE_KEY}_backup`;
 const LOCAL_UI_STORAGE_KEY = IS_QA_APP ? `${STORAGE_KEY}_ui_qa` : `${STORAGE_KEY}_ui`;
 const ACTIVE_CLOUD_CONFIG_KEY = IS_QA_APP ? `${CLOUD_CONFIG_KEY}_qa` : CLOUD_CONFIG_KEY;
 const CLOUD_TABLE_NAME = "user_app_states";
@@ -9261,50 +9262,55 @@ function updateBudgetAlertMemory(patch = {}) {
 
 function loadState() {
   const fallbackTimestamp = new Date().toISOString();
-  const raw = localStorage.getItem(STATE_STORAGE_KEY);
-  if (!raw) {
-    return {
-      salary: 0,
-      monthlySalaries: {},
-      activeMonth: getCurrentMonthKey(),
-      recurringSkips: [],
-      expenseCategoryOverrides: {},
-      deletedExpenseCategoryIds: [],
-      customExpenseCategories: [],
-      items: [],
-      hideSalary: false,
-      theme: "light",
-      themeUserSet: false,
-      budgetPeriod: "monthly",
-      chartMode: "expense",
-      sidebarCollapsed: false,
-      onboardingSeen: false,
-      lastModifiedAt: fallbackTimestamp
-    };
+  const primarySnapshot = readStoredStateSnapshot(STATE_STORAGE_KEY, fallbackTimestamp);
+  const backupSnapshot = readStoredStateSnapshot(STATE_STORAGE_BACKUP_KEY, fallbackTimestamp);
+
+  if (primarySnapshot) {
+    return primarySnapshot;
   }
 
+  if (backupSnapshot) {
+    try {
+      localStorage.setItem(STATE_STORAGE_KEY, JSON.stringify(backupSnapshot));
+    } catch {
+      // Ignore restore write failures and keep the recovered in-memory state.
+    }
+    return backupSnapshot;
+  }
+
+  return createDefaultStateSnapshot(fallbackTimestamp);
+}
+
+function createDefaultStateSnapshot(fallbackTimestamp = new Date().toISOString()) {
+  return {
+    salary: 0,
+    monthlySalaries: {},
+    activeMonth: getCurrentMonthKey(),
+    recurringSkips: [],
+    expenseCategoryOverrides: {},
+    deletedExpenseCategoryIds: [],
+    customExpenseCategories: [],
+    items: [],
+    hideSalary: false,
+    theme: "light",
+    themeUserSet: false,
+    budgetPeriod: "monthly",
+    chartMode: "expense",
+    sidebarCollapsed: false,
+    onboardingSeen: false,
+    lastModifiedAt: fallbackTimestamp
+  };
+}
+
+function readStoredStateSnapshot(storageKey, fallbackTimestamp = new Date().toISOString()) {
   try {
-    const parsed = JSON.parse(raw);
-    return normalizeStateSnapshot(parsed, fallbackTimestamp);
+    const raw = localStorage.getItem(storageKey);
+    if (!raw) {
+      return null;
+    }
+    return normalizeStateSnapshot(JSON.parse(raw), fallbackTimestamp);
   } catch {
-    return {
-      salary: 0,
-      monthlySalaries: {},
-      activeMonth: getCurrentMonthKey(),
-      recurringSkips: [],
-      expenseCategoryOverrides: {},
-      deletedExpenseCategoryIds: [],
-      customExpenseCategories: [],
-      items: [],
-      hideSalary: false,
-      theme: "light",
-      themeUserSet: false,
-      budgetPeriod: "monthly",
-      chartMode: "expense",
-      sidebarCollapsed: false,
-      onboardingSeen: false,
-      lastModifiedAt: fallbackTimestamp
-    };
+    return null;
   }
 }
 
@@ -9406,7 +9412,10 @@ function saveState({ preserveTimestamp = false, skipCloudSync = false } = {}) {
     state.lastModifiedAt = new Date().toISOString();
   }
 
-  localStorage.setItem(STATE_STORAGE_KEY, JSON.stringify(snapshotFromState()));
+  const snapshot = snapshotFromState();
+  const serializedSnapshot = JSON.stringify(snapshot);
+  localStorage.setItem(STATE_STORAGE_KEY, serializedSnapshot);
+  localStorage.setItem(STATE_STORAGE_BACKUP_KEY, serializedSnapshot);
 
   if (!skipCloudSync) {
     scheduleCloudPush();
