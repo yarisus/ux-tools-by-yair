@@ -947,7 +947,7 @@ if (initialUsageDismissBtn) {
 if (mobileAddFabBtn) {
   mobileAddFabBtn.addEventListener("click", (event) => {
     event.stopPropagation();
-    if (mobileAddFabBtn.disabled || isViewingPastMonth()) {
+    if (mobileAddFabBtn.disabled || isViewingPastMonth() || hasOpenOverlayState()) {
       return;
     }
     openMobileAmountScreen("expense");
