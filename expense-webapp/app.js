@@ -1,11 +1,15 @@
 const STORAGE_KEY = "expense_webapp_state";
 const CLOUD_CONFIG_KEY = "expense_webapp_cloud_config";
+const APP_SEARCH_PARAMS = new URLSearchParams(globalThis.location?.search || "");
+const QA_PWA_MODE = APP_SEARCH_PARAMS.get("qa-pwa") === "1";
 const APP_VARIANT_HINT = String(globalThis.__DINARIA_APP_VARIANT__ || "").trim().toLowerCase();
 const APP_VARIANT_HOST_IS_QA = /(^|[-.])qa([-.]|$)/i.test(globalThis.location?.hostname || "");
-const APP_VARIANT = APP_VARIANT_HINT === "qa" || APP_VARIANT_HOST_IS_QA || /(?:^|\/)qa\.html$/i.test(globalThis.location?.pathname || "") ? "qa" : "production";
+const APP_VARIANT = APP_VARIANT_HINT === "qa" || APP_VARIANT_HOST_IS_QA || QA_PWA_MODE || /(?:^|\/)qa\.html$/i.test(globalThis.location?.pathname || "") ? "qa" : "production";
 const IS_QA_APP = APP_VARIANT === "qa";
 const STATE_STORAGE_KEY = IS_QA_APP ? `${STORAGE_KEY}_qa` : STORAGE_KEY;
 const STATE_STORAGE_BACKUP_KEY = IS_QA_APP ? `${STORAGE_KEY}_qa_backup` : `${STORAGE_KEY}_backup`;
+const STABLE_QA_STATE_STORAGE_KEY = `${STORAGE_KEY}_qa_install`;
+const STABLE_QA_STATE_STORAGE_BACKUP_KEY = `${STORAGE_KEY}_qa_install_backup`;
 const LOCAL_UI_STORAGE_KEY = IS_QA_APP ? `${STORAGE_KEY}_ui_qa` : `${STORAGE_KEY}_ui`;
 const ACTIVE_CLOUD_CONFIG_KEY = IS_QA_APP ? `${CLOUD_CONFIG_KEY}_qa` : CLOUD_CONFIG_KEY;
 const CLOUD_TABLE_NAME = "user_app_states";
@@ -9262,8 +9266,13 @@ function updateBudgetAlertMemory(patch = {}) {
 
 function loadState() {
   const fallbackTimestamp = new Date().toISOString();
-  const primarySnapshot = readStoredStateSnapshot(STATE_STORAGE_KEY, fallbackTimestamp);
-  const backupSnapshot = readStoredStateSnapshot(STATE_STORAGE_BACKUP_KEY, fallbackTimestamp);
+  const candidateStorageKeys = getStateStorageReadKeys();
+  const primarySnapshot = candidateStorageKeys
+    .map((storageKey) => readStoredStateSnapshot(storageKey, fallbackTimestamp))
+    .find(Boolean);
+  const backupSnapshot = getStateStorageBackupReadKeys()
+    .map((storageKey) => readStoredStateSnapshot(storageKey, fallbackTimestamp))
+    .find(Boolean);
 
   if (primarySnapshot) {
     return primarySnapshot;
@@ -9272,6 +9281,9 @@ function loadState() {
   if (backupSnapshot) {
     try {
       localStorage.setItem(STATE_STORAGE_KEY, JSON.stringify(backupSnapshot));
+      if (IS_QA_APP) {
+        localStorage.setItem(STABLE_QA_STATE_STORAGE_KEY, JSON.stringify(backupSnapshot));
+      }
     } catch {
       // Ignore restore write failures and keep the recovered in-memory state.
     }
@@ -9312,6 +9324,32 @@ function readStoredStateSnapshot(storageKey, fallbackTimestamp = new Date().toIS
   } catch {
     return null;
   }
+}
+
+function getStateStorageReadKeys() {
+  if (!IS_QA_APP) {
+    return [STATE_STORAGE_KEY];
+  }
+
+  return [...new Set([
+    STABLE_QA_STATE_STORAGE_KEY,
+    STATE_STORAGE_KEY,
+    `${STORAGE_KEY}_qa`,
+    STORAGE_KEY
+  ])];
+}
+
+function getStateStorageBackupReadKeys() {
+  if (!IS_QA_APP) {
+    return [STATE_STORAGE_BACKUP_KEY];
+  }
+
+  return [...new Set([
+    STABLE_QA_STATE_STORAGE_BACKUP_KEY,
+    STATE_STORAGE_BACKUP_KEY,
+    `${STORAGE_KEY}_qa_backup`,
+    `${STORAGE_KEY}_backup`
+  ])];
 }
 
 function normalizeStateSnapshot(candidate, fallbackTimestamp = new Date().toISOString()) {
@@ -9416,6 +9454,10 @@ function saveState({ preserveTimestamp = false, skipCloudSync = false } = {}) {
   const serializedSnapshot = JSON.stringify(snapshot);
   localStorage.setItem(STATE_STORAGE_KEY, serializedSnapshot);
   localStorage.setItem(STATE_STORAGE_BACKUP_KEY, serializedSnapshot);
+  if (IS_QA_APP) {
+    localStorage.setItem(STABLE_QA_STATE_STORAGE_KEY, serializedSnapshot);
+    localStorage.setItem(STABLE_QA_STATE_STORAGE_BACKUP_KEY, serializedSnapshot);
+  }
 
   if (!skipCloudSync) {
     scheduleCloudPush();
