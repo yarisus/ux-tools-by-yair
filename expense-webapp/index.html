@@ -1205,13 +1205,22 @@
                 <h3 class="category-manager-section-title">Categorias por defecto</h3>
                 <p class="category-manager-section-text">Estas ya vienen incluidas en Dinaria.</p>
               </div>
-              <button
-                id="showCreateCategoryBtn"
-                class="ghost-btn inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-700"
-                type="button"
-              >
-                <span class="material-symbols-rounded" aria-hidden="true">add</span> Crear categoria
-              </button>
+              <div class="category-manager-head-actions">
+                <button
+                  id="restoreFactoryCategoriesBtn"
+                  class="ghost-btn inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-700"
+                  type="button"
+                >
+                  <span class="material-symbols-rounded" aria-hidden="true">restart_alt</span> Restaurar fabrica
+                </button>
+                <button
+                  id="showCreateCategoryBtn"
+                  class="ghost-btn inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-700"
+                  type="button"
+                >
+                  <span class="material-symbols-rounded" aria-hidden="true">add</span> Crear categoria
+                </button>
+              </div>
             </div>
             <div id="defaultExpenseCategoryList" class="category-manager-list" aria-label="Categorias de gasto por defecto"></div>
           </section>
@@ -1230,8 +1239,8 @@
           <section id="createExpenseCategoryPanel" class="category-create-panel is-hidden" hidden aria-hidden="true">
             <div class="category-manager-section-head">
               <div>
-                <h3 class="category-manager-section-title">Nueva categoria</h3>
-                <p class="category-manager-section-text">Elige un nombre claro y un icono facil de reconocer.</p>
+                <h3 id="categoryEditorTitle" class="category-manager-section-title">Nueva categoria</h3>
+                <p id="categoryEditorText" class="category-manager-section-text">Elige un nombre claro, un icono facil de reconocer y un color.</p>
               </div>
             </div>
 
@@ -1249,6 +1258,11 @@
                 />
               </label>
 
+              <div class="category-create-field">
+                <span class="category-create-label">Elige un color</span>
+                <div id="customExpenseCategoryColorGrid" class="category-color-grid" role="listbox" aria-label="Selector de color"></div>
+              </div>
+
               <label class="category-create-field">
                 <span class="category-create-label">Buscar icono</span>
                 <input
@@ -1260,6 +1274,7 @@
                 />
               </label>
 
+              <p id="customExpenseCategoryIconHint" class="category-manager-section-text">Te mostramos primero iconos que todavia no estan en uso para evitar confusiones.</p>
               <div id="customExpenseCategoryIconGrid" class="category-icon-grid" role="listbox" aria-label="Selector de iconos"></div>
               <p id="customExpenseCategoryIconEmptyState" class="category-manager-empty is-hidden">No encontramos iconos para esa busqueda.</p>
 
@@ -1270,6 +1285,13 @@
                   type="button"
                 >
                   Cancelar
+                </button>
+                <button
+                  id="deleteEditedCategoryBtn"
+                  class="ghost-btn is-hidden inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-rose-200 bg-white px-4 py-2.5 text-rose-700"
+                  type="button"
+                >
+                  <span class="material-symbols-rounded" aria-hidden="true">delete</span> Eliminar
                 </button>
                 <button
                   id="saveCreateCategoryBtn"

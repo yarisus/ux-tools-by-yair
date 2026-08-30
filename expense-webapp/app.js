@@ -145,45 +145,112 @@ const CUSTOM_EXPENSE_CATEGORY_ICON_OPTIONS = [
   { name: "pets", label: "Mascotas" },
   { name: "restaurant", label: "Comida" },
   { name: "local_cafe", label: "Cafe" },
+  { name: "lunch_dining", label: "Almuerzo" },
+  { name: "local_pizza", label: "Pizza" },
+  { name: "icecream", label: "Helado" },
+  { name: "bakery_dining", label: "Panaderia" },
+  { name: "liquor", label: "Bebidas" },
   { name: "shopping_bag", label: "Compras" },
+  { name: "shopping_cart", label: "Supermercado" },
   { name: "storefront", label: "Tienda" },
+  { name: "sell", label: "Ofertas" },
+  { name: "bolt", label: "Servicios" },
   { name: "home", label: "Casa" },
   { name: "home_work", label: "Hogar" },
+  { name: "apartment", label: "Departamento" },
   { name: "chair", label: "Muebles" },
   { name: "bed", label: "Dormitorio" },
+  { name: "kitchen", label: "Cocina" },
   { name: "tv", label: "TV" },
   { name: "smartphone", label: "Celular" },
   { name: "laptop_mac", label: "Tecnologia" },
+  { name: "keyboard", label: "Accesorios" },
+  { name: "tablet_mac", label: "Tablet" },
   { name: "headphones", label: "Audio" },
   { name: "directions_car", label: "Auto" },
   { name: "directions_bus", label: "Colectivo" },
   { name: "local_taxi", label: "Taxi" },
+  { name: "train", label: "Tren" },
+  { name: "two_wheeler", label: "Moto" },
+  { name: "pedal_bike", label: "Bici" },
+  { name: "local_gas_station", label: "Nafta" },
   { name: "flight", label: "Viajes" },
   { name: "hotel", label: "Hotel" },
+  { name: "beach_access", label: "Playa" },
+  { name: "camping", label: "Camping" },
   { name: "school", label: "Escuela" },
   { name: "menu_book", label: "Libros" },
+  { name: "cast_for_education", label: "Cursos" },
   { name: "fitness_center", label: "Gym" },
   { name: "favorite", label: "Salud" },
+  { name: "health_and_safety", label: "Proteccion" },
   { name: "medication", label: "Farmacia" },
   { name: "medical_services", label: "Medico" },
+  { name: "vaccines", label: "Vacunas" },
+  { name: "spa", label: "Bienestar" },
   { name: "child_care", label: "Ninos" },
   { name: "celebration", label: "Fiesta" },
   { name: "sports_esports", label: "Gaming" },
   { name: "movie", label: "Peliculas" },
   { name: "music_note", label: "Musica" },
+  { name: "stadium", label: "Eventos" },
   { name: "sports_soccer", label: "Deportes" },
   { name: "checkroom", label: "Ropa" },
   { name: "diamond", label: "Belleza" },
   { name: "content_cut", label: "Peluqueria" },
+  { name: "face", label: "Cuidado" },
+  { name: "self_improvement", label: "Yoga" },
   { name: "redeem", label: "Regalos" },
   { name: "receipt_long", label: "Facturas" },
   { name: "credit_card", label: "Tarjeta" },
+  { name: "payments", label: "Dinero" },
+  { name: "paid", label: "Pagos" },
+  { name: "account_balance", label: "Banco" },
+  { name: "show_chart", label: "Inversion" },
+  { name: "trending_up", label: "Rendimiento" },
+  { name: "replay", label: "Reintegro" },
+  { name: "attach_money", label: "Ingreso" },
+  { name: "request_quote", label: "Prestamos" },
   { name: "savings", label: "Ahorro" },
   { name: "account_balance_wallet", label: "Billetera" },
   { name: "volunteer_activism", label: "Donaciones" },
-  { name: "construction", label: "Arreglos" }
+  { name: "construction", label: "Arreglos" },
+  { name: "plumbing", label: "Plomeria" },
+  { name: "electrical_services", label: "Electricidad" },
+  { name: "park", label: "Naturaleza" },
+  { name: "cruelty_free", label: "Veterinaria" },
+  { name: "eco", label: "Sustentable" },
+  { name: "cleaning_services", label: "Limpieza" },
+  { name: "local_laundry_service", label: "Lavanderia" },
+  { name: "inventory_2", label: "Varios" },
+  { name: "work", label: "Trabajo" },
+  { name: "business_center", label: "Oficina" },
+  { name: "handyman", label: "Herramientas" },
+  { name: "forest", label: "Aire libre" },
+  { name: "theater_comedy", label: "Teatro" },
+  { name: "palette", label: "Arte" },
+  { name: "photo_camera", label: "Foto" },
+  { name: "brush", label: "Diseno" }
 ];
 const CUSTOM_EXPENSE_CATEGORY_ICON_SET = new Set(CUSTOM_EXPENSE_CATEGORY_ICON_OPTIONS.map((option) => option.name));
+const CUSTOM_EXPENSE_CATEGORY_COLOR_OPTIONS = [
+  "#213196",
+  "#2563EB",
+  "#3B82F6",
+  "#0EA5E9",
+  "#06B6D4",
+  "#10B981",
+  "#22C55E",
+  "#84CC16",
+  "#F59E0B",
+  "#F97316",
+  "#EF4444",
+  "#EC4899",
+  "#8B5CF6",
+  "#7C3AED",
+  "#64748B",
+  "#111827"
+];
 const DEFAULT_EXPENSE_CATEGORY_KEY = "vivienda";
 const DEFAULT_INCOME_CATEGORY_KEY = "sueldo";
 const DEFAULT_CATEGORY_KEY = DEFAULT_EXPENSE_CATEGORY_KEY;
@@ -229,7 +296,10 @@ let monthModelOpen = false;
 let pendingDeleteProjection = null;
 let pendingDeleteRecurringContext = null;
 let categoryManagerTrigger = null;
+let categoryEditorMode = "create";
+let editingExpenseCategoryKey = "";
 let selectedCustomExpenseCategoryIcon = CUSTOM_EXPENSE_CATEGORY_ICON_OPTIONS[0]?.name || "category";
+let selectedCustomExpenseCategoryColor = CUSTOM_EXPENSE_CATEGORY_COLOR;
 
 const salaryInput = document.getElementById("salaryInput");
 const toggleSalaryBtn = document.getElementById("toggleSalaryBtn");
@@ -365,13 +435,19 @@ const defaultExpenseCategoryList = document.getElementById("defaultExpenseCatego
 const customExpenseCategoryList = document.getElementById("customExpenseCategoryList");
 const customExpenseCategoryEmptyState = document.getElementById("customExpenseCategoryEmptyState");
 const showCreateCategoryBtn = document.getElementById("showCreateCategoryBtn");
+const restoreFactoryCategoriesBtn = document.getElementById("restoreFactoryCategoriesBtn");
 const createExpenseCategoryPanel = document.getElementById("createExpenseCategoryPanel");
 const createExpenseCategoryForm = document.getElementById("createExpenseCategoryForm");
+const categoryEditorTitle = document.getElementById("categoryEditorTitle");
+const categoryEditorText = document.getElementById("categoryEditorText");
 const customExpenseCategoryNameInput = document.getElementById("customExpenseCategoryNameInput");
+const customExpenseCategoryColorGrid = document.getElementById("customExpenseCategoryColorGrid");
 const customExpenseCategoryIconSearchInput = document.getElementById("customExpenseCategoryIconSearchInput");
+const customExpenseCategoryIconHint = document.getElementById("customExpenseCategoryIconHint");
 const customExpenseCategoryIconGrid = document.getElementById("customExpenseCategoryIconGrid");
 const customExpenseCategoryIconEmptyState = document.getElementById("customExpenseCategoryIconEmptyState");
 const cancelCreateCategoryBtn = document.getElementById("cancelCreateCategoryBtn");
+const deleteEditedCategoryBtn = document.getElementById("deleteEditedCategoryBtn");
 const appSidebar = document.getElementById("appSidebar");
 const sidebarToggleBtn = document.getElementById("sidebarToggleBtn");
 const heroGreeting = document.getElementById("heroGreeting");
@@ -2003,7 +2079,7 @@ if (categoryManagerModal) {
 
 if (showCreateCategoryBtn) {
   showCreateCategoryBtn.addEventListener("click", () => {
-    setCreateExpenseCategoryPanelOpen(true);
+    openExpenseCategoryEditor({ mode: "create" });
   });
 }
 
@@ -2035,6 +2111,58 @@ if (customExpenseCategoryIconGrid) {
 
     selectedCustomExpenseCategoryIcon = String(target.dataset.iconName || "").trim() || selectedCustomExpenseCategoryIcon;
     renderCustomExpenseCategoryIconOptions(customExpenseCategoryIconSearchInput?.value || "");
+  });
+}
+
+if (customExpenseCategoryColorGrid) {
+  customExpenseCategoryColorGrid.addEventListener("click", (event) => {
+    const target = event.target instanceof HTMLElement ? event.target.closest("[data-color-value]") : null;
+    if (!(target instanceof HTMLButtonElement)) {
+      return;
+    }
+
+    selectedCustomExpenseCategoryColor = normalizeExpenseCategoryColor(target.dataset.colorValue);
+    renderCustomExpenseCategoryColorOptions();
+  });
+}
+
+if (restoreFactoryCategoriesBtn) {
+  restoreFactoryCategoriesBtn.addEventListener("click", () => {
+    restoreFactoryExpenseCategories();
+  });
+}
+
+if (deleteEditedCategoryBtn) {
+  deleteEditedCategoryBtn.addEventListener("click", () => {
+    if (!editingExpenseCategoryKey) {
+      return;
+    }
+    deleteExpenseCategory(editingExpenseCategoryKey);
+  });
+}
+
+for (const listNode of [defaultExpenseCategoryList, customExpenseCategoryList]) {
+  if (!(listNode instanceof HTMLElement)) {
+    continue;
+  }
+
+  listNode.addEventListener("click", (event) => {
+    const target = event.target instanceof HTMLElement ? event.target.closest("[data-edit-category], [data-delete-category]") : null;
+    if (!(target instanceof HTMLButtonElement)) {
+      return;
+    }
+
+    const editKey = String(target.dataset.editCategory || "").trim();
+    const deleteKey = String(target.dataset.deleteCategory || "").trim();
+
+    if (editKey) {
+      openExpenseCategoryEditor({ mode: "edit", categoryKey: editKey });
+      return;
+    }
+
+    if (deleteKey) {
+      deleteExpenseCategory(deleteKey);
+    }
   });
 }
 
@@ -2548,6 +2676,11 @@ function normalizeCustomExpenseCategoryName(rawName) {
   return String(rawName || "").replace(/\s+/g, " ").trim().slice(0, 32);
 }
 
+function normalizeExpenseCategoryColor(rawColor) {
+  const value = String(rawColor || "").trim().toUpperCase();
+  return /^#[0-9A-F]{6}$/.test(value) ? value : CUSTOM_EXPENSE_CATEGORY_COLOR;
+}
+
 function sanitizeCustomExpenseCategory(candidate, fallbackIndex = 0) {
   const name = normalizeCustomExpenseCategoryName(candidate?.name);
   if (!name) {
@@ -2562,11 +2695,13 @@ function sanitizeCustomExpenseCategory(candidate, fallbackIndex = 0) {
   const icon = CUSTOM_EXPENSE_CATEGORY_ICON_SET.has(rawIcon)
     ? rawIcon
     : (CUSTOM_EXPENSE_CATEGORY_ICON_OPTIONS[0]?.name || "category");
+  const color = normalizeExpenseCategoryColor(candidate?.color);
 
   return {
     id,
     name,
-    icon
+    icon,
+    color
   };
 }
 
@@ -2574,14 +2709,92 @@ function getCustomExpenseCategories() {
   return Array.isArray(customExpenseCategoryRegistry) ? customExpenseCategoryRegistry : [];
 }
 
+function sanitizeExpenseCategoryOverride(candidate) {
+  const entries = Object.entries(candidate || {});
+  const sanitizedEntries = entries
+    .filter(([key]) => EXPENSE_CATEGORY_CONFIG[key])
+    .map(([key, value]) => {
+      const name = normalizeCustomExpenseCategoryName(value?.name || EXPENSE_CATEGORY_CONFIG[key].label);
+      const icon = CUSTOM_EXPENSE_CATEGORY_ICON_SET.has(String(value?.icon || "").trim())
+        ? String(value.icon).trim()
+        : getCategoryBaseIcon(key);
+      const color = normalizeExpenseCategoryColor(value?.color || EXPENSE_CATEGORY_CONFIG[key].color);
+
+      return [key, { name, icon, color }];
+    });
+  return Object.fromEntries(sanitizedEntries);
+}
+
+function sanitizeDeletedExpenseCategoryIds(candidate) {
+  return Array.isArray(candidate)
+    ? [...new Set(candidate.map((value) => String(value || "").trim()).filter((value) => EXPENSE_CATEGORY_CONFIG[value]))]
+    : [];
+}
+
+function getExpenseCategoryOverrides() {
+  return state?.expenseCategoryOverrides && typeof state.expenseCategoryOverrides === "object"
+    ? state.expenseCategoryOverrides
+    : {};
+}
+
+function getDeletedExpenseCategoryIds() {
+  return Array.isArray(state?.deletedExpenseCategoryIds) ? state.deletedExpenseCategoryIds : [];
+}
+
+function getCategoryBaseIcon(categoryKey) {
+  const iconMap = {
+    vivienda: "home_work",
+    servicios: "bolt",
+    alimentacion: "shopping_cart",
+    transporte: "directions_car",
+    salud: "health_and_safety",
+    finanzas: "account_balance_wallet",
+    educacion: "menu_book",
+    compras: "shopping_bag",
+    ocio: "sports_esports",
+    ahorro: "savings",
+    impuestos: "receipt_long",
+    otros: "inventory_2",
+    sueldo: "payments",
+    freelance: "work",
+    ventas: "storefront",
+    bonos: "trending_up",
+    inversiones: "show_chart",
+    reintegros: "replay",
+    regalos: "redeem",
+    otros_ingresos: "attach_money"
+  };
+  return iconMap[String(categoryKey || "").trim()] || "receipt_long";
+}
+
 function getExpenseCategoryConfigMap() {
+  const overrides = getExpenseCategoryOverrides();
+  const deletedIds = new Set(getDeletedExpenseCategoryIds());
+  const baseEntries = Object.fromEntries(
+    Object.entries(EXPENSE_CATEGORY_CONFIG)
+      .filter(([key]) => !deletedIds.has(key))
+      .map(([key, config]) => {
+        const override = overrides[key] || {};
+        return [
+          key,
+          {
+            ...config,
+            label: normalizeCustomExpenseCategoryName(override.name || config.label),
+            color: normalizeExpenseCategoryColor(override.color || config.color),
+            icon: CUSTOM_EXPENSE_CATEGORY_ICON_SET.has(String(override.icon || "").trim())
+              ? String(override.icon).trim()
+              : getCategoryBaseIcon(key)
+          }
+        ];
+      })
+  );
   const customEntries = Object.fromEntries(
     getCustomExpenseCategories().map((entry) => [
       entry.id,
       {
         label: entry.name,
         help: CUSTOM_EXPENSE_CATEGORY_HELP,
-        color: CUSTOM_EXPENSE_CATEGORY_COLOR,
+        color: normalizeExpenseCategoryColor(entry.color),
         icon: entry.icon,
         isCustom: true
       }
@@ -2589,7 +2802,7 @@ function getExpenseCategoryConfigMap() {
   );
 
   return {
-    ...EXPENSE_CATEGORY_CONFIG,
+    ...baseEntries,
     ...customEntries
   };
 }
@@ -2602,7 +2815,11 @@ function getCategoryConfigMap() {
 }
 
 function getExpenseCategoryKeys() {
-  return [...EXPENSE_CATEGORY_KEYS, ...getCustomExpenseCategories().map((entry) => entry.id)];
+  const deletedIds = new Set(getDeletedExpenseCategoryIds());
+  return [
+    ...EXPENSE_CATEGORY_KEYS.filter((key) => !deletedIds.has(key)),
+    ...getCustomExpenseCategories().map((entry) => entry.id)
+  ];
 }
 
 function getIncomeCategoryKeys() {
@@ -2611,6 +2828,29 @@ function getIncomeCategoryKeys() {
 
 function getAllCategoryKeys() {
   return [...getExpenseCategoryKeys(), ...getIncomeCategoryKeys()];
+}
+
+function isCustomExpenseCategoryKey(categoryKey) {
+  return String(categoryKey || "").trim().startsWith("custom_expense_");
+}
+
+function getExpenseCategoryUsageCount(categoryKey) {
+  const normalizedKey = String(categoryKey || "").trim();
+  return (state?.items || []).reduce((count, item) => {
+    return normalizeMovementType(item?.type) === "expense" && String(item?.category || "").trim() === normalizedKey
+      ? count + 1
+      : count;
+  }, 0);
+}
+
+function getUsedExpenseCategoryIcons(excludedCategoryKey = "") {
+  const excludedKey = String(excludedCategoryKey || "").trim();
+  return new Set(
+    getExpenseCategoryKeys()
+      .filter((key) => key !== excludedKey)
+      .map((key) => getCategorySymbol(key, "expense"))
+      .filter(Boolean)
+  );
 }
 
 function normalizeCategoryKey(rawCategory) {
@@ -3429,7 +3669,10 @@ function formatItemLongDate(rawDate) {
 function getCategoryConfig(categoryKey) {
   const key = normalizeCategoryKey(categoryKey);
   const categoryConfigMap = getCategoryConfigMap();
-  return categoryConfigMap[key] || categoryConfigMap[FALLBACK_CATEGORY_KEY];
+  return categoryConfigMap[key]
+    || categoryConfigMap[FALLBACK_CATEGORY_KEY]
+    || categoryConfigMap[getExpenseCategoryKeys()[0]]
+    || categoryConfigMap[getIncomeCategoryKeys()[0]];
 }
 
 function getCategorySymbol(categoryKey, movementType = "expense") {
@@ -4025,7 +4268,7 @@ function getCategoryKeysForType(movementType) {
 function getDefaultCategoryKeyForType(movementType) {
   return normalizeMovementType(movementType) === "income"
     ? DEFAULT_INCOME_CATEGORY_KEY
-    : DEFAULT_EXPENSE_CATEGORY_KEY;
+    : (getExpenseCategoryKeys()[0] || DEFAULT_EXPENSE_CATEGORY_KEY);
 }
 
 function normalizeCategoryKeyForType(rawCategory, movementType) {
@@ -4033,7 +4276,7 @@ function normalizeCategoryKeyForType(rawCategory, movementType) {
   if (normalizeMovementType(movementType) === "income") {
     return INCOME_CATEGORY_CONFIG[normalized] ? normalized : DEFAULT_INCOME_CATEGORY_KEY;
   }
-  return getExpenseCategoryConfigMap()[normalized] ? normalized : DEFAULT_EXPENSE_CATEGORY_KEY;
+  return getExpenseCategoryConfigMap()[normalized] ? normalized : getDefaultCategoryKeyForType("expense");
 }
 
 function parseHexColor(hexColor) {
@@ -7420,14 +7663,55 @@ function setCreateExpenseCategoryPanelOpen(shouldOpen) {
 
   if (!nextOpen) {
     createExpenseCategoryForm?.reset();
+    categoryEditorMode = "create";
+    editingExpenseCategoryKey = "";
     selectedCustomExpenseCategoryIcon = CUSTOM_EXPENSE_CATEGORY_ICON_OPTIONS[0]?.name || "category";
+    selectedCustomExpenseCategoryColor = CUSTOM_EXPENSE_CATEGORY_COLOR;
+    syncExpenseCategoryEditorUi();
+    renderCustomExpenseCategoryColorOptions();
     renderCustomExpenseCategoryIconOptions("");
     return;
   }
 
+  syncExpenseCategoryEditorUi();
+  renderCustomExpenseCategoryColorOptions();
+  renderCustomExpenseCategoryIconOptions(customExpenseCategoryIconSearchInput?.value || "");
   requestAnimationFrame(() => {
     customExpenseCategoryNameInput?.focus();
   });
+}
+
+function syncExpenseCategoryEditorUi() {
+  if (categoryEditorTitle) {
+    categoryEditorTitle.textContent = categoryEditorMode === "edit" ? "Editar categoria" : "Nueva categoria";
+  }
+  if (categoryEditorText) {
+    categoryEditorText.textContent = categoryEditorMode === "edit"
+      ? "Puedes ajustar nombre, icono y color de esta categoria."
+      : "Elige un nombre claro, un icono facil de reconocer y un color.";
+  }
+  if (deleteEditedCategoryBtn) {
+    deleteEditedCategoryBtn.classList.toggle("is-hidden", categoryEditorMode !== "edit");
+  }
+  if (saveCreateCategoryBtn instanceof HTMLElement) {
+    saveCreateCategoryBtn.innerHTML = categoryEditorMode === "edit"
+      ? '<span class="material-symbols-rounded" aria-hidden="true">save</span> Guardar cambios'
+      : '<span class="material-symbols-rounded" aria-hidden="true">check</span> Guardar categoria';
+  }
+}
+
+function refreshCategoryDependentUi({ preserveCategoryKey = "" } = {}) {
+  const nextCategory = preserveCategoryKey || "";
+  populateCategoryControls();
+  populateMobileDetailCategories(mobileAmountMode);
+  populateMobileExpenseEditCategories(
+    mobileExpenseEditCategory instanceof HTMLSelectElement ? (nextCategory || mobileExpenseEditCategory.value) : nextCategory,
+    pendingMovementType
+  );
+  populateMobileQuickEntryCategories(pendingMovementType);
+  renderMobileFilterCategoryOptions("");
+  renderCategoryManagerModal();
+  render();
 }
 
 function buildCategoryManagerCard(categoryKey, { isCustom = false } = {}) {
@@ -7456,10 +7740,32 @@ function buildCategoryManagerCard(categoryKey, { isCustom = false } = {}) {
 
   const meta = document.createElement("span");
   meta.className = "category-manager-card-meta";
-  meta.textContent = isCustom ? "Categoria personalizada" : "Categoria base de Dinaria";
+  const usageCount = getExpenseCategoryUsageCount(categoryKey);
+  meta.textContent = usageCount > 0
+    ? `${usageCount} movimiento${usageCount === 1 ? "" : "s"}`
+    : (isCustom ? "Categoria personalizada" : "Categoria base de Dinaria");
 
   copy.append(title, meta);
-  card.append(iconWrap, copy);
+
+  const actions = document.createElement("span");
+  actions.className = "category-manager-card-actions";
+
+  const editBtn = document.createElement("button");
+  editBtn.type = "button";
+  editBtn.className = "category-manager-card-action-btn";
+  editBtn.dataset.editCategory = categoryKey;
+  editBtn.setAttribute("aria-label", `Editar categoria ${config.label}`);
+  editBtn.innerHTML = '<span class="material-symbols-rounded" aria-hidden="true">edit</span>';
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.type = "button";
+  deleteBtn.className = "category-manager-card-action-btn is-danger";
+  deleteBtn.dataset.deleteCategory = categoryKey;
+  deleteBtn.setAttribute("aria-label", `Eliminar categoria ${config.label}`);
+  deleteBtn.innerHTML = '<span class="material-symbols-rounded" aria-hidden="true">delete</span>';
+
+  actions.append(editBtn, deleteBtn);
+  card.append(iconWrap, copy, actions);
   return card;
 }
 
@@ -7471,7 +7777,7 @@ function renderCustomExpenseCategoryLists() {
   defaultExpenseCategoryList.replaceChildren();
   customExpenseCategoryList.replaceChildren();
 
-  EXPENSE_CATEGORY_KEYS.forEach((key) => {
+  getExpenseCategoryKeys().filter((key) => Boolean(EXPENSE_CATEGORY_CONFIG[key])).forEach((key) => {
     defaultExpenseCategoryList.appendChild(buildCategoryManagerCard(key));
   });
 
@@ -7489,11 +7795,15 @@ function renderCustomExpenseCategoryIconOptions(query = "") {
   }
 
   const normalizedQuery = String(query || "").trim().toLowerCase();
-  const options = CUSTOM_EXPENSE_CATEGORY_ICON_OPTIONS.filter((option) => {
+  const usedIcons = getUsedExpenseCategoryIcons(editingExpenseCategoryKey);
+  const matchingOptions = CUSTOM_EXPENSE_CATEGORY_ICON_OPTIONS.filter((option) => {
     return !normalizedQuery
       || option.name.toLowerCase().includes(normalizedQuery)
       || option.label.toLowerCase().includes(normalizedQuery);
   });
+  const availableOptions = matchingOptions.filter((option) => option.name === selectedCustomExpenseCategoryIcon || !usedIcons.has(option.name));
+  const usedOptions = matchingOptions.filter((option) => option.name !== selectedCustomExpenseCategoryIcon && usedIcons.has(option.name));
+  const options = [...availableOptions, ...usedOptions];
 
   customExpenseCategoryIconGrid.replaceChildren();
 
@@ -7505,6 +7815,7 @@ function renderCustomExpenseCategoryIconOptions(query = "") {
     button.setAttribute("role", "option");
     button.setAttribute("aria-selected", String(option.name === selectedCustomExpenseCategoryIcon));
     button.classList.toggle("is-selected", option.name === selectedCustomExpenseCategoryIcon);
+    button.classList.toggle("is-used", usedIcons.has(option.name) && option.name !== selectedCustomExpenseCategoryIcon);
 
     const icon = document.createElement("span");
     icon.className = "material-symbols-rounded";
@@ -7519,12 +7830,99 @@ function renderCustomExpenseCategoryIconOptions(query = "") {
     customExpenseCategoryIconGrid.append(button);
   });
 
+  if (customExpenseCategoryIconHint) {
+    customExpenseCategoryIconHint.textContent = usedIcons.size
+      ? "Te mostramos primero iconos que todavia no estan en uso para evitar confusiones."
+      : "Todavia no hay iconos repetidos, puedes elegir el que mejor te represente.";
+  }
   customExpenseCategoryIconEmptyState?.classList.toggle("is-hidden", options.length > 0);
+}
+
+function renderCustomExpenseCategoryColorOptions() {
+  if (!(customExpenseCategoryColorGrid instanceof HTMLElement)) {
+    return;
+  }
+
+  customExpenseCategoryColorGrid.replaceChildren();
+  CUSTOM_EXPENSE_CATEGORY_COLOR_OPTIONS.forEach((color) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "category-color-option";
+    button.dataset.colorValue = color;
+    button.style.setProperty("--category-color", color);
+    button.setAttribute("role", "option");
+    button.setAttribute("aria-selected", String(color === selectedCustomExpenseCategoryColor));
+    button.classList.toggle("is-selected", color === selectedCustomExpenseCategoryColor);
+    button.innerHTML = '<span class="category-color-option-swatch" aria-hidden="true"></span>';
+    customExpenseCategoryColorGrid.append(button);
+  });
 }
 
 function renderCategoryManagerModal() {
   renderCustomExpenseCategoryLists();
+  renderCustomExpenseCategoryColorOptions();
   renderCustomExpenseCategoryIconOptions(customExpenseCategoryIconSearchInput?.value || "");
+}
+
+function openExpenseCategoryEditor({ mode = "create", categoryKey = "" } = {}) {
+  categoryEditorMode = mode === "edit" ? "edit" : "create";
+  editingExpenseCategoryKey = categoryEditorMode === "edit" ? String(categoryKey || "").trim() : "";
+  const config = editingExpenseCategoryKey ? getCategoryConfig(editingExpenseCategoryKey) : null;
+
+  if (customExpenseCategoryNameInput) {
+    customExpenseCategoryNameInput.value = config?.label || "";
+  }
+  if (customExpenseCategoryIconSearchInput) {
+    customExpenseCategoryIconSearchInput.value = "";
+  }
+
+  selectedCustomExpenseCategoryIcon = config?.icon || getCategoryBaseIcon(editingExpenseCategoryKey) || (CUSTOM_EXPENSE_CATEGORY_ICON_OPTIONS[0]?.name || "category");
+  selectedCustomExpenseCategoryColor = config?.color || CUSTOM_EXPENSE_CATEGORY_COLOR;
+  setCreateExpenseCategoryPanelOpen(true);
+}
+
+function deleteExpenseCategory(categoryKey) {
+  const normalizedKey = String(categoryKey || "").trim();
+  if (!normalizedKey) {
+    return;
+  }
+
+  if (getExpenseCategoryKeys().length <= 1) {
+    showToast("Necesitas al menos una categoria de gasto activa.", true);
+    return;
+  }
+
+  const usageCount = getExpenseCategoryUsageCount(normalizedKey);
+  if (usageCount > 0) {
+    showToast("No puedes eliminar una categoria que ya tiene movimientos asociados.", true);
+    return;
+  }
+
+  if (isCustomExpenseCategoryKey(normalizedKey)) {
+    state.customExpenseCategories = getCustomExpenseCategories().filter((entry) => entry.id !== normalizedKey);
+    customExpenseCategoryRegistry = state.customExpenseCategories;
+  } else if (EXPENSE_CATEGORY_CONFIG[normalizedKey]) {
+    state.deletedExpenseCategoryIds = [...new Set([...getDeletedExpenseCategoryIds(), normalizedKey])];
+    if (state.expenseCategoryOverrides?.[normalizedKey]) {
+      delete state.expenseCategoryOverrides[normalizedKey];
+    }
+  } else {
+    return;
+  }
+
+  saveState();
+  refreshCategoryDependentUi();
+  showToast("Categoria eliminada correctamente.");
+  setCreateExpenseCategoryPanelOpen(false);
+}
+
+function restoreFactoryExpenseCategories() {
+  state.expenseCategoryOverrides = {};
+  state.deletedExpenseCategoryIds = [];
+  saveState();
+  refreshCategoryDependentUi();
+  setCreateExpenseCategoryPanelOpen(false);
+  showToast("Restauramos las categorias de fabrica.");
 }
 
 function openCategoryManagerModal(trigger = null) {
@@ -7570,37 +7968,62 @@ function createCustomExpenseCategory() {
     return;
   }
 
-  const duplicateCategory = getExpenseCategoryKeys().find((key) => getCategoryConfig(key).label.toLowerCase() === name.toLowerCase());
+  const duplicateCategory = getExpenseCategoryKeys().find((key) => {
+    if (categoryEditorMode === "edit" && key === editingExpenseCategoryKey) {
+      return false;
+    }
+    return getCategoryConfig(key).label.toLowerCase() === name.toLowerCase();
+  });
   if (duplicateCategory) {
     showToast("Ya existe una categoria con ese nombre.", true);
     return;
   }
 
-  const nextCategory = sanitizeCustomExpenseCategory({
-    id: `custom_expense_${createItemId().replace(/[^a-z0-9_-]/gi, "").toLowerCase()}`,
-    name,
-    icon: selectedCustomExpenseCategoryIcon
-  }, getCustomExpenseCategories().length);
+  if (categoryEditorMode === "edit" && editingExpenseCategoryKey) {
+    if (isCustomExpenseCategoryKey(editingExpenseCategoryKey)) {
+      state.customExpenseCategories = getCustomExpenseCategories().map((entry) => {
+        if (entry.id !== editingExpenseCategoryKey) {
+          return entry;
+        }
+        return sanitizeCustomExpenseCategory({
+          ...entry,
+          name,
+          icon: selectedCustomExpenseCategoryIcon,
+          color: selectedCustomExpenseCategoryColor
+        });
+      }).filter(Boolean);
+      customExpenseCategoryRegistry = state.customExpenseCategories;
+    } else if (EXPENSE_CATEGORY_CONFIG[editingExpenseCategoryKey]) {
+      state.expenseCategoryOverrides = {
+        ...(state.expenseCategoryOverrides || {}),
+        [editingExpenseCategoryKey]: {
+          name,
+          icon: selectedCustomExpenseCategoryIcon,
+          color: selectedCustomExpenseCategoryColor
+        }
+      };
+      state.deletedExpenseCategoryIds = getDeletedExpenseCategoryIds().filter((key) => key !== editingExpenseCategoryKey);
+    }
+  } else {
+    const nextCategory = sanitizeCustomExpenseCategory({
+      id: `custom_expense_${createItemId().replace(/[^a-z0-9_-]/gi, "").toLowerCase()}`,
+      name,
+      icon: selectedCustomExpenseCategoryIcon,
+      color: selectedCustomExpenseCategoryColor
+    }, getCustomExpenseCategories().length);
 
-  if (!nextCategory) {
-    showToast("No pudimos crear la categoria.", true);
-    return;
+    if (!nextCategory) {
+      showToast("No pudimos crear la categoria.", true);
+      return;
+    }
+
+    state.customExpenseCategories = [...getCustomExpenseCategories(), nextCategory];
+    customExpenseCategoryRegistry = state.customExpenseCategories;
   }
 
-  state.customExpenseCategories = [...getCustomExpenseCategories(), nextCategory];
-  customExpenseCategoryRegistry = state.customExpenseCategories;
   saveState();
-  populateCategoryControls();
-  populateMobileDetailCategories(mobileAmountMode);
-  populateMobileExpenseEditCategories(
-    mobileExpenseEditCategory instanceof HTMLSelectElement ? mobileExpenseEditCategory.value : "",
-    pendingMovementType
-  );
-  populateMobileQuickEntryCategories(pendingMovementType);
-  renderMobileFilterCategoryOptions("");
-  renderCategoryManagerModal();
-  render();
-  showToast("Categoria creada correctamente.");
+  refreshCategoryDependentUi({ preserveCategoryKey: editingExpenseCategoryKey });
+  showToast(categoryEditorMode === "edit" ? "Categoria actualizada correctamente." : "Categoria creada correctamente.");
   setCreateExpenseCategoryPanelOpen(false);
 }
 
@@ -8845,6 +9268,8 @@ function loadState() {
       monthlySalaries: {},
       activeMonth: getCurrentMonthKey(),
       recurringSkips: [],
+      expenseCategoryOverrides: {},
+      deletedExpenseCategoryIds: [],
       customExpenseCategories: [],
       items: [],
       hideSalary: false,
@@ -8867,6 +9292,8 @@ function loadState() {
       monthlySalaries: {},
       activeMonth: getCurrentMonthKey(),
       recurringSkips: [],
+      expenseCategoryOverrides: {},
+      deletedExpenseCategoryIds: [],
       customExpenseCategories: [],
       items: [],
       hideSalary: false,
@@ -8888,6 +9315,8 @@ function normalizeStateSnapshot(candidate, fallbackTimestamp = new Date().toISOS
       .filter(Boolean)
       .filter((entry, index, list) => list.findIndex((candidateEntry) => candidateEntry.id === entry.id) === index)
     : [];
+  const expenseCategoryOverrides = sanitizeExpenseCategoryOverride(candidate?.expenseCategoryOverrides);
+  const deletedExpenseCategoryIds = sanitizeDeletedExpenseCategoryIds(candidate?.deletedExpenseCategoryIds);
   customExpenseCategoryRegistry = customExpenseCategories;
   const items = Array.isArray(candidate?.items) ? candidate.items.map(sanitizeItem).filter(Boolean) : [];
   const currentMonthKey = getCurrentMonthKey();
@@ -8927,6 +9356,8 @@ function normalizeStateSnapshot(candidate, fallbackTimestamp = new Date().toISOS
     monthlySalaries,
     activeMonth: getCurrentMonthKey(),
     recurringSkips,
+    expenseCategoryOverrides,
+    deletedExpenseCategoryIds,
     customExpenseCategories,
     items,
     hideSalary: Boolean(candidate?.hideSalary),
@@ -8948,6 +9379,8 @@ function applySnapshotToState(snapshot) {
   state.monthlySalaries = normalized.monthlySalaries;
   state.activeMonth = preservedActiveMonth;
   state.recurringSkips = normalized.recurringSkips;
+  state.expenseCategoryOverrides = normalized.expenseCategoryOverrides;
+  state.deletedExpenseCategoryIds = normalized.deletedExpenseCategoryIds;
   state.customExpenseCategories = normalized.customExpenseCategories;
   customExpenseCategoryRegistry = normalized.customExpenseCategories;
   state.items = normalized.items;
