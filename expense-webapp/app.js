@@ -9438,6 +9438,72 @@ function applySnapshotToState(snapshot) {
   state.lastModifiedAt = normalized.lastModifiedAt;
 }
 
+function replaceStateFromSnapshot(snapshot, { preserveActiveMonth = false, preserveTheme = false } = {}) {
+  const normalized = normalizeStateSnapshot(snapshot);
+  const previousActiveMonth = normalizeMonthKey(state?.activeMonth || getCurrentMonthKey());
+  const previousTheme = String(state?.theme || "light").trim() === "dark" ? "dark" : "light";
+  const previousThemeUserSet = Boolean(state?.themeUserSet);
+
+  state.salary = normalized.salary;
+  state.monthlySalaries = normalized.monthlySalaries;
+  state.activeMonth = preserveActiveMonth ? previousActiveMonth : normalized.activeMonth;
+  state.recurringSkips = normalized.recurringSkips;
+  state.expenseCategoryOverrides = normalized.expenseCategoryOverrides;
+  state.deletedExpenseCategoryIds = normalized.deletedExpenseCategoryIds;
+  state.customExpenseCategories = normalized.customExpenseCategories;
+  customExpenseCategoryRegistry = normalized.customExpenseCategories;
+  state.items = normalized.items;
+  state.hideSalary = normalized.hideSalary;
+  state.theme = preserveTheme ? previousTheme : normalized.theme;
+  state.themeUserSet = preserveTheme ? previousThemeUserSet : normalized.themeUserSet;
+  state.budgetPeriod = normalized.budgetPeriod;
+  state.chartMode = normalized.chartMode;
+  state.sidebarCollapsed = normalized.sidebarCollapsed;
+  state.onboardingSeen = normalized.onboardingSeen;
+  state.lastModifiedAt = normalized.lastModifiedAt;
+}
+
+function snapshotHasPersistedUserData(snapshot) {
+  const normalized = normalizeStateSnapshot(snapshot);
+  return (
+    hasMeaningfulFinanceData(normalized)
+    || Boolean(normalized.onboardingSeen)
+    || (normalized.customExpenseCategories?.length || 0) > 0
+    || Object.keys(normalized.expenseCategoryOverrides || {}).length > 0
+    || (normalized.deletedExpenseCategoryIds?.length || 0) > 0
+  );
+}
+
+function stateLooksFresh(snapshot = state) {
+  const normalized = normalizeStateSnapshot(snapshot);
+  return (
+    !hasMeaningfulFinanceData(normalized)
+    && !normalized.onboardingSeen
+    && (normalized.customExpenseCategories?.length || 0) === 0
+    && Object.keys(normalized.expenseCategoryOverrides || {}).length === 0
+    && (normalized.deletedExpenseCategoryIds?.length || 0) === 0
+  );
+}
+
+function reconcileStateWithStorage() {
+  const storedSnapshot = loadState();
+  if (!stateLooksFresh(state) || !snapshotHasPersistedUserData(storedSnapshot)) {
+    return false;
+  }
+
+  replaceStateFromSnapshot(storedSnapshot);
+  return true;
+}
+
+function hydrateStateFromStorageSafely() {
+  const didRestore = reconcileStateWithStorage();
+  if (didRestore) {
+    render();
+    scheduleMetricValueFit();
+  }
+  return didRestore;
+}
+
 function snapshotFromState() {
   const snapshot = normalizeStateSnapshot(state);
   snapshot.salary = getMonthSalary(getCurrentMonthKey());
@@ -11857,6 +11923,8 @@ bindSheetHeaderSwipeClose(mobileQuickEntrySheet?.querySelector(".mobile-quick-en
 bindSheetHeaderSwipeClose(mobileFilterSheet?.querySelector(".mobile-filter-sheet-head"), closeMobileFilterSheet);
 
 render();
+hydrateStateFromStorageSafely();
+window.setTimeout(hydrateStateFromStorageSafely, 120);
 syncMonthHistoryState(state.activeMonth, { replace: true });
 scheduleInitialOnboarding();
 
