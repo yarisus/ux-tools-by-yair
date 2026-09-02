@@ -718,6 +718,137 @@
   }
 }
 
+/* Persistent contextual budget alert below the mobile KPI cards. */
+@media (max-width: 767px) {
+  body .mobile-context-alert {
+    --context-alert-bg: #eef2ff;
+    --context-alert-border: #c7d2fe;
+    --context-alert-accent: var(--ds-brand-500);
+    display: grid !important;
+    grid-template-columns: 40px minmax(0, 1fr) 44px !important;
+    align-items: start !important;
+    gap: var(--ds-space-3) !important;
+    width: calc(100% - 32px) !important;
+    margin: var(--ds-space-3) var(--ds-space-4) 0 !important;
+    padding: var(--ds-space-3) var(--ds-space-2) var(--ds-space-3) var(--ds-space-3) !important;
+    border: 1px solid var(--context-alert-border) !important;
+    border-radius: var(--ds-radius-lg) !important;
+    background: var(--context-alert-bg) !important;
+    color: var(--ds-text-primary) !important;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08) !important;
+    box-sizing: border-box !important;
+    animation: mobile-context-alert-enter 220ms ease-out both;
+  }
+
+  body .mobile-context-alert.is-hidden {
+    display: none !important;
+  }
+
+  body .mobile-context-alert[data-tone="success"] {
+    --context-alert-bg: #ecfdf3;
+    --context-alert-border: #bbf7d0;
+    --context-alert-accent: var(--ds-success-700);
+  }
+
+  body .mobile-context-alert[data-tone="warning"] {
+    --context-alert-bg: #fff8e8;
+    --context-alert-border: #fde3a7;
+    --context-alert-accent: var(--ds-warning-500);
+  }
+
+  body .mobile-context-alert[data-tone="danger"] {
+    --context-alert-bg: #fff1f3;
+    --context-alert-border: #fecdd3;
+    --context-alert-accent: var(--ds-danger-700);
+  }
+
+  body .mobile-context-alert-icon {
+    display: inline-grid !important;
+    width: 40px !important;
+    height: 40px !important;
+    place-items: center !important;
+    border-radius: var(--ds-radius-md) !important;
+    background: color-mix(in srgb, var(--context-alert-accent) 12%, transparent) !important;
+    color: var(--context-alert-accent) !important;
+    font-size: 24px !important;
+  }
+
+  body .mobile-context-alert-copy {
+    min-width: 0 !important;
+    padding-top: var(--ds-space-1) !important;
+  }
+
+  body .mobile-context-alert[data-tone] .mobile-context-alert-title {
+    display: block !important;
+    margin: 0 !important;
+    color: #172033 !important;
+    font-size: 15px !important;
+    line-height: 1.25 !important;
+    font-weight: 700 !important;
+  }
+
+  body .mobile-context-alert[data-tone] #mobileBudgetHint.mobile-context-alert-message {
+    display: block !important;
+    margin: var(--ds-space-1) 0 0 !important;
+    max-width: none !important;
+    color: #475569 !important;
+    text-align: left !important;
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+    font-weight: 500 !important;
+  }
+
+  body .mobile-context-alert-close {
+    display: inline-grid !important;
+    width: 44px !important;
+    height: 44px !important;
+    padding: 0 !important;
+    place-items: center !important;
+    border: 0 !important;
+    border-radius: var(--ds-radius-md) !important;
+    background: transparent !important;
+    color: var(--context-alert-accent) !important;
+  }
+
+  body .mobile-context-alert-close:active {
+    background: color-mix(in srgb, var(--context-alert-accent) 10%, transparent) !important;
+  }
+
+  body .mobile-context-alert-close .material-symbols-rounded {
+    font-size: 22px !important;
+  }
+
+  body.theme-dark .mobile-context-alert {
+    --context-alert-bg: rgba(30, 41, 59, 0.96);
+    --context-alert-border: rgba(148, 163, 184, 0.28);
+  }
+
+  body.theme-dark .mobile-context-alert[data-tone] .mobile-context-alert-title {
+    color: #f8fafc !important;
+  }
+
+  body.theme-dark .mobile-context-alert[data-tone] #mobileBudgetHint.mobile-context-alert-message {
+    color: #cbd5e1 !important;
+  }
+}
+
+@keyframes mobile-context-alert-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body .mobile-context-alert {
+    animation: none !important;
+  }
+}
+
 /* 2026-03-22 Mobile final lock v3 */
 @media (max-width: 767px) {
   body .mobile-home-experience {

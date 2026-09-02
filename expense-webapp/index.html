@@ -336,7 +336,6 @@
             </div>
 
             <p id="mobileAvailableBalance" class="mobile-primary-value font-space">$ 0</p>
-            <p id="mobileBudgetHint" class="mobile-summary-hint is-hidden">Sugerencia del mes</p>
           </article>
 
           <div class="mobile-mini-kpis">
@@ -359,6 +358,17 @@
               <strong id="mobileMonthlySpend" class="mobile-mini-kpi-value font-space">$ 0</strong>
             </article>
           </div>
+
+          <aside id="mobileBudgetAlert" class="mobile-context-alert is-hidden" data-tone="info" role="status" aria-live="polite">
+            <span class="mobile-context-alert-icon material-symbols-rounded" id="mobileBudgetAlertIcon" aria-hidden="true">tips_and_updates</span>
+            <div class="mobile-context-alert-copy">
+              <strong id="mobileBudgetAlertTitle" class="mobile-context-alert-title">Tu disponible</strong>
+              <p id="mobileBudgetHint" class="mobile-context-alert-message">Resumen de tu disponible.</p>
+            </div>
+            <button id="mobileBudgetAlertCloseBtn" class="mobile-context-alert-close" type="button" aria-label="Cerrar alerta">
+              <span class="material-symbols-rounded" aria-hidden="true">close</span>
+            </button>
+          </aside>
         </section>
 
         <section id="initialUsageState" class="initial-usage-state is-hidden" aria-live="polite" aria-hidden="true">

@@ -480,6 +480,10 @@ const mobileActiveMonthEyebrow = document.getElementById("mobileActiveMonthEyebr
 const mobileActiveMonthLabel = document.getElementById("mobileActiveMonthLabel");
 const mobileActiveMonthMeta = document.getElementById("mobileActiveMonthMeta");
 const mobileAvailableBalanceEl = document.getElementById("mobileAvailableBalance");
+const mobileBudgetAlert = document.getElementById("mobileBudgetAlert");
+const mobileBudgetAlertIcon = document.getElementById("mobileBudgetAlertIcon");
+const mobileBudgetAlertTitle = document.getElementById("mobileBudgetAlertTitle");
+const mobileBudgetAlertCloseBtn = document.getElementById("mobileBudgetAlertCloseBtn");
 const mobileBudgetHintEl = document.getElementById("mobileBudgetHint");
 const mobileMonthlyIncomeEl = document.getElementById("mobileMonthlyIncome");
 const mobileMonthlySpendEl = document.getElementById("mobileMonthlySpend");
@@ -1822,6 +1826,13 @@ if (budgetPeriodMenu) {
 for (const button of mobileBudgetPeriodButtons) {
   button.addEventListener("click", () => {
     applyBudgetPeriodSelection(button.dataset.mobileBudgetPeriod || "daily");
+  });
+}
+
+if (mobileBudgetAlertCloseBtn) {
+  mobileBudgetAlertCloseBtn.addEventListener("click", () => {
+    dismissBudgetContextAlert(mobileBudgetAlert?.dataset.contextKey || "");
+    mobileBudgetAlert?.classList.add("is-hidden");
   });
 }
 
@@ -9187,6 +9198,9 @@ function normalizeLocalUiState(candidate) {
   const dismissedMonths = Array.isArray(candidate?.incomeMissingAlertDismissedMonths)
     ? [...new Set(candidate.incomeMissingAlertDismissedMonths.map((month) => normalizeMonthKey(month)).filter(Boolean))]
     : [];
+  const dismissedBudgetContextKeys = Array.isArray(candidate?.dismissedBudgetContextKeys)
+    ? [...new Set(candidate.dismissedBudgetContextKeys.map((value) => String(value || "").trim()).filter(Boolean))].slice(-30)
+    : [];
   const rawEnvelope = candidate?.budgetEnvelopeState || {};
   const dailyThresholds = new Set(["near", "reached", "exceeded"]);
   const weeklyStates = new Set(["HIGH_PACE", "WEEKLY_LIMIT_REACHED", "WEEKLY_LIMIT_EXCEEDED"]);
@@ -9211,6 +9225,7 @@ function normalizeLocalUiState(candidate) {
 
   return {
     incomeMissingAlertDismissedMonths: dismissedMonths,
+    dismissedBudgetContextKeys,
     budgetEnvelopeState
   };
 }
@@ -9271,6 +9286,19 @@ function updateBudgetEnvelopeState(patch = {}) {
       ...currentUiState.budgetEnvelopeState,
       ...patch
     }
+  };
+  saveLocalUiState();
+}
+
+function dismissBudgetContextAlert(contextKey) {
+  const normalizedKey = String(contextKey || "").trim();
+  if (!normalizedKey) {
+    return;
+  }
+  const currentUiState = normalizeLocalUiState(localUiState);
+  localUiState = {
+    ...currentUiState,
+    dismissedBudgetContextKeys: [...new Set([...currentUiState.dismissedBudgetContextKeys, normalizedKey])].slice(-30)
   };
   saveLocalUiState();
 }
@@ -9885,9 +9913,9 @@ function maybeNotifyBudgetAlerts(periodMetrics, selectedPeriod, monthKey = state
   }
 }
 
-function getBudgetContextMessage(periodMetrics, selectedPeriod = "monthly") {
+function getBudgetContextAlert(periodMetrics, selectedPeriod = "monthly") {
   if (periodMetrics?.mode !== "live") {
-    return "";
+    return null;
   }
 
   const dailyBudget = Number(periodMetrics.dailyOpening || 0);
@@ -9897,53 +9925,137 @@ function getBudgetContextMessage(periodMetrics, selectedPeriod = "monthly") {
   const weeklySpend = Math.max(0, Number(periodMetrics.weeklySpend || 0));
   const weeklyRatio = weeklyBudget > 0 ? weeklySpend / weeklyBudget : 0;
   const weeklyPace = periodMetrics.weeklyPace || { state: "ON_TRACK", expectedPace: 0, actualPace: 0 };
+  const periodKey = selectedPeriod === "weekly" ? periodMetrics.weeklyAlertKey : periodMetrics.dailyAlertKey;
+  const buildAlert = (stateKey, title, message, tone = "info", icon = "tips_and_updates") => ({
+    title,
+    message,
+    tone,
+    icon,
+    contextKey: `${periodKey}:${selectedPeriod}:${stateKey}`
+  });
 
   if (periodMetrics.monthly < 0) {
-    return `Tus gastos superan tus ingresos del mes por ${money(Math.abs(periodMetrics.monthly))}.`;
+    return buildAlert(
+      "monthly_negative",
+      "Atención con tu balance",
+      `Tus gastos superan tus ingresos del mes por ${money(Math.abs(periodMetrics.monthly))}.`,
+      "danger",
+      "error"
+    );
   }
   if (periodMetrics.monthly === 0 && dailyBudget <= 0 && weeklyBudget <= 0) {
-    return "No tenés disponible para este mes. Registrá un ingreso para empezar a planificar.";
+    return buildAlert(
+      "no_available",
+      "Sin disponible por ahora",
+      "Registrá un ingreso para empezar a planificar este mes.",
+      "warning",
+      "account_balance_wallet"
+    );
   }
 
-  if (selectedPeriod === "daily") {
-    if (periodMetrics.daily < 0) {
-      return `Gastaste ${money(Math.abs(periodMetrics.daily))} más que tu disponible de hoy. Dinaria ajustará los próximos días.`;
-    }
-    if (dailyBudget > 0 && dailyRatio >= 1) {
-      return "Alcanzaste tu disponible de hoy.";
-    }
-    if (dailyBudget > 0 && dailyRatio >= 0.8) {
-      return `Estás cerca de tu disponible diario. Te quedan ${money(Math.max(0, periodMetrics.daily))} para hoy.`;
-    }
+  if (periodMetrics.daily < 0) {
+    return buildAlert(
+      "daily_exceeded",
+      "Superaste tu disponible de hoy",
+      `Gastaste ${money(Math.abs(periodMetrics.daily))} de más. Dinaria ajustará los próximos días.`,
+      "danger",
+      "trending_up"
+    );
+  }
+  if (weeklyPace.state === "WEEKLY_LIMIT_EXCEEDED") {
+    return buildAlert(
+      "weekly_exceeded",
+      "Superaste tu disponible semanal",
+      `Te excediste por ${money(Math.abs(periodMetrics.weekly))}. Dinaria ajustará los próximos días.`,
+      "danger",
+      "trending_up"
+    );
+  }
+  if (dailyBudget > 0 && dailyRatio >= 1) {
+    return buildAlert("daily_reached", "Disponible diario alcanzado", "Alcanzaste tu disponible de hoy.", "warning", "flag");
+  }
+  if (weeklyPace.state === "WEEKLY_LIMIT_REACHED") {
+    return buildAlert("weekly_reached", "Disponible semanal alcanzado", "Alcanzaste tu disponible de esta semana.", "warning", "flag");
+  }
+  if (weeklyPace.state === "HIGH_PACE") {
+    const projectedPeriodUse = weeklyPace.actualPace > 0
+      ? weeklyPace.expectedPace / weeklyPace.actualPace
+      : 1;
+    return buildAlert(
+      "weekly_high_pace",
+      "Ritmo alto esta semana",
+      projectedPeriodUse < 0.85
+        ? "Si seguís así, podrías quedarte sin disponible antes del fin de semana."
+        : "Venís gastando más rápido de lo previsto.",
+      "warning",
+      "speed"
+    );
+  }
+  if (dailyBudget > 0 && dailyRatio >= 0.8) {
+    return buildAlert(
+      "daily_near",
+      "Cerca del límite diario",
+      `Te quedan ${money(Math.max(0, periodMetrics.daily))} para hoy.`,
+      "warning",
+      "schedule"
+    );
+  }
+  if (weeklyBudget > 0 && weeklyRatio >= 0.8) {
+    return buildAlert(
+      "weekly_near",
+      "Poco disponible semanal",
+      `Te queda el ${Math.max(0, Math.round((1 - weeklyRatio) * 100))}% de tu disponible semanal.`,
+      "warning",
+      "hourglass_bottom"
+    );
+  }
+  if (weeklyPace.state === "SLIGHTLY_AHEAD") {
+    return buildAlert(
+      "weekly_slightly_ahead",
+      "Un poco por encima del ritmo",
+      "Venís gastando un poco más rápido de lo previsto esta semana.",
+      "info",
+      "insights"
+    );
+  }
+  if (selectedPeriod === "weekly" && weeklySpend > 0) {
+    return buildAlert(
+      "weekly_on_track",
+      "Vas bien esta semana",
+      `Te quedan ${money(Math.max(0, periodMetrics.weekly))} disponibles.`,
+      "success",
+      "check_circle"
+    );
   }
 
-  if (selectedPeriod === "weekly") {
-    if (weeklyPace.state === "WEEKLY_LIMIT_EXCEEDED") {
-      return `Superaste tu disponible semanal por ${money(Math.abs(periodMetrics.weekly))}. Dinaria ajustará los próximos días.`;
-    }
-    if (weeklyPace.state === "WEEKLY_LIMIT_REACHED") {
-      return "Alcanzaste tu disponible semanal.";
-    }
-    if (weeklyPace.state === "HIGH_PACE") {
-      const projectedPeriodUse = weeklyPace.actualPace > 0
-        ? weeklyPace.expectedPace / weeklyPace.actualPace
-        : 1;
-      return projectedPeriodUse < 0.85
-        ? "Si seguís a este ritmo, podrías quedarte sin disponible semanal antes del fin de semana."
-        : "Venís gastando más rápido de lo previsto esta semana.";
-    }
-    if (weeklyBudget > 0 && weeklyRatio >= 0.8) {
-      return `Te queda el ${Math.max(0, Math.round((1 - weeklyRatio) * 100))}% de tu disponible semanal.`;
-    }
-    if (weeklyPace.state === "SLIGHTLY_AHEAD") {
-      return "Venís gastando un poco más rápido de lo previsto esta semana.";
-    }
-    if (weeklySpend > 0) {
-      return `Vas bien esta semana. Te quedan ${money(Math.max(0, periodMetrics.weekly))} disponibles.`;
-    }
+  return buildAlert(
+    "period_summary",
+    "Tu disponible",
+    `Tenés ${money(periodMetrics.daily)} para hoy y ${money(periodMetrics.weekly)} para esta semana.`,
+    "info",
+    "tips_and_updates"
+  );
+}
+
+function renderBudgetContextAlert(contextAlert) {
+  if (!mobileBudgetAlert || !mobileBudgetHintEl || !mobileBudgetAlertTitle || !mobileBudgetAlertIcon) {
+    return;
   }
 
-  return `Tenés ${money(periodMetrics.daily)} disponibles para hoy y ${money(periodMetrics.weekly)} para esta semana.`;
+  const dismissedKeys = normalizeLocalUiState(localUiState).dismissedBudgetContextKeys;
+  const shouldShow = Boolean(contextAlert?.contextKey) && !dismissedKeys.includes(contextAlert.contextKey);
+  mobileBudgetAlert.classList.toggle("is-hidden", !shouldShow);
+  mobileBudgetAlert.setAttribute("aria-hidden", String(!shouldShow));
+  if (!shouldShow) {
+    mobileBudgetAlert.dataset.contextKey = "";
+    return;
+  }
+
+  mobileBudgetAlert.dataset.contextKey = contextAlert.contextKey;
+  mobileBudgetAlert.dataset.tone = contextAlert.tone || "info";
+  mobileBudgetAlertTitle.textContent = contextAlert.title;
+  mobileBudgetHintEl.textContent = contextAlert.message;
+  mobileBudgetAlertIcon.textContent = contextAlert.icon;
 }
 
 function renderSummary() {
@@ -10036,19 +10148,9 @@ function renderSummary() {
     mobileStickyAvailableLabel.textContent = stickyAvailableLabel;
   }
 
-  if (mobileBudgetHintEl) {
-    if (!hasAnyData) {
-      mobileBudgetHintEl.textContent = `Carga tu primer ingreso y tu primer gasto de ${monthLabel} para ver tu disponible diario, semanal o mensual.`;
-    } else if (periodMetrics.mode === "live") {
-      mobileBudgetHintEl.textContent = getBudgetContextMessage(periodMetrics, selectedPeriod);
-    } else if (selectedPeriod === "monthly") {
-      mobileBudgetHintEl.textContent = `Balance disponible estimado para ${monthLabel}: ${money(periodValue)}.`;
-    } else if (selectedPeriod === "weekly") {
-      mobileBudgetHintEl.textContent = `Disponible semanal estimado para ${monthLabel}: ${money(periodValue)}.`;
-    } else {
-      mobileBudgetHintEl.textContent = `Disponible diario estimado para ${monthLabel}: ${money(periodValue)}.`;
-    }
-  }
+  renderBudgetContextAlert(hasAnyData && periodMetrics.mode === "live"
+    ? getBudgetContextAlert(periodMetrics, selectedPeriod)
+    : null);
 
   if (salaryInput && !salaryEditMode) {
     salaryInput.value = formatAmountNumber(getMonthSalary(state.activeMonth), { withSymbol: false });
@@ -10065,7 +10167,6 @@ function renderSummary() {
   ].forEach(applyMetricValueDensity);
 
   scheduleMetricValueFit();
-  maybeNotifyBudgetAlerts(periodMetrics, selectedPeriod, state.activeMonth);
   renderInitialUsageState({
     totalIncome: monthlyIncome,
     totalExpenses: monthlySpend,
