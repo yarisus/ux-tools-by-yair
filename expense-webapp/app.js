@@ -9718,7 +9718,9 @@ function getBudgetPeriodMetrics(monthKey = state.activeMonth, monthlyAvailable =
   const todaySpend = sumVisibleMonthExpensesInRange(todayStart, todayStart, normalizedMonth);
   const dayStartAvailable = monthlyAvailable + todaySpend;
   const dayOpeningBudget = dayStartAvailable / remainingDays;
-  const realDaily = dayOpeningBudget - todaySpend;
+  // The monthly balance already includes every expense. Subtracting today's
+  // spend again makes the daily amount count the same movement twice.
+  const realDaily = suggestedDaily;
 
   const weekStart = getLaterDate(getStartOfWeek(referenceDate), monthStart);
   const weekEnd = getEarlierDate(getEndOfWeek(referenceDate), monthEnd);
@@ -9728,7 +9730,8 @@ function getBudgetPeriodMetrics(monthKey = state.activeMonth, monthlyAvailable =
   const weekStartAvailable = monthlyAvailable + weekSpend;
   const weekOpeningDailyBudget = weekStartAvailable / daysFromWeekStartToMonthEnd;
   const weeklyTarget = weekOpeningDailyBudget * daysInCurrentWeekWindow;
-  const realWeekly = weeklyTarget - weekSpend;
+  const weeklyDaySpan = Math.min(7, remainingDays);
+  const realWeekly = suggestedDaily * weeklyDaySpan;
   const dailyAlertKey = `${normalizedMonth}:${toDateInputValue(todayStart)}`;
   const weeklyAlertKey = `${normalizedMonth}:${toDateInputValue(weekStart)}`;
 
