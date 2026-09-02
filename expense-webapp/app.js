@@ -9187,20 +9187,31 @@ function normalizeLocalUiState(candidate) {
   const dismissedMonths = Array.isArray(candidate?.incomeMissingAlertDismissedMonths)
     ? [...new Set(candidate.incomeMissingAlertDismissedMonths.map((month) => normalizeMonthKey(month)).filter(Boolean))]
     : [];
-  const budgetAlertMemory = {
-    dailyKey: String(candidate?.budgetAlertMemory?.dailyKey || "").trim(),
-    dailyRemaining: Number.isFinite(Number(candidate?.budgetAlertMemory?.dailyRemaining))
-      ? Number(candidate.budgetAlertMemory.dailyRemaining)
+  const rawEnvelope = candidate?.budgetEnvelopeState || {};
+  const dailyThresholds = new Set(["near", "reached", "exceeded"]);
+  const weeklyStates = new Set(["HIGH_PACE", "WEEKLY_LIMIT_REACHED", "WEEKLY_LIMIT_EXCEEDED"]);
+  const budgetEnvelopeState = {
+    dailyKey: String(rawEnvelope.dailyKey || "").trim(),
+    dailyBudget: rawEnvelope.dailyBudget !== null && rawEnvelope.dailyBudget !== "" && Number.isFinite(Number(rawEnvelope.dailyBudget))
+      ? Number(rawEnvelope.dailyBudget)
       : null,
-    weeklyKey: String(candidate?.budgetAlertMemory?.weeklyKey || "").trim(),
-    weeklyRemaining: Number.isFinite(Number(candidate?.budgetAlertMemory?.weeklyRemaining))
-      ? Number(candidate.budgetAlertMemory.weeklyRemaining)
-      : null
+    dailyShownThresholds: Array.isArray(rawEnvelope.dailyShownThresholds)
+      ? [...new Set(rawEnvelope.dailyShownThresholds.filter((value) => dailyThresholds.has(value)))]
+      : [],
+    weeklyKey: String(rawEnvelope.weeklyKey || "").trim(),
+    weeklyBudget: rawEnvelope.weeklyBudget !== null && rawEnvelope.weeklyBudget !== "" && Number.isFinite(Number(rawEnvelope.weeklyBudget))
+      ? Number(rawEnvelope.weeklyBudget)
+      : null,
+    weeklyStart: String(rawEnvelope.weeklyStart || "").trim(),
+    weeklyEnd: String(rawEnvelope.weeklyEnd || "").trim(),
+    weeklyShownStates: Array.isArray(rawEnvelope.weeklyShownStates)
+      ? [...new Set(rawEnvelope.weeklyShownStates.filter((value) => weeklyStates.has(value)))]
+      : []
   };
 
   return {
     incomeMissingAlertDismissedMonths: dismissedMonths,
-    budgetAlertMemory
+    budgetEnvelopeState
   };
 }
 
@@ -9252,12 +9263,12 @@ function clearIncomeMissingAlertDismissal(monthKey = state.activeMonth) {
   }
 }
 
-function updateBudgetAlertMemory(patch = {}) {
+function updateBudgetEnvelopeState(patch = {}) {
   const currentUiState = normalizeLocalUiState(localUiState);
   localUiState = {
     ...currentUiState,
-    budgetAlertMemory: {
-      ...currentUiState.budgetAlertMemory,
+    budgetEnvelopeState: {
+      ...currentUiState.budgetEnvelopeState,
       ...patch
     }
   };
@@ -9688,7 +9699,35 @@ function getBudgetSuggestions(available, remainingDays) {
   };
 }
 
-function getBudgetPeriodMetrics(monthKey = state.activeMonth, monthlyAvailable = 0) {
+function getWeeklySpendingPace({ budget = 0, spent = 0, periodStart, periodEnd, now = new Date() } = {}) {
+  const safeBudget = Number.isFinite(Number(budget)) ? Number(budget) : 0;
+  const safeSpent = Math.max(0, Number(spent) || 0);
+  const start = getStartOfDay(periodStart);
+  const end = getEndOfDay(periodEnd);
+  const current = now instanceof Date ? now : new Date(now);
+  const periodDuration = start && end ? Math.max(1, end.getTime() - start.getTime() + 1) : 1;
+  const elapsedDuration = start && end && !Number.isNaN(current.getTime())
+    ? Math.min(periodDuration, Math.max(0, current.getTime() - start.getTime()))
+    : 0;
+  const expectedPace = Math.min(1, elapsedDuration / periodDuration);
+  const actualPace = safeBudget > 0 ? safeSpent / safeBudget : (safeSpent > 0 ? 1 : 0);
+  const available = safeBudget - safeSpent;
+  let stateName = "ON_TRACK";
+
+  if (available < 0) {
+    stateName = "WEEKLY_LIMIT_EXCEEDED";
+  } else if (safeBudget > 0 && actualPace >= 1) {
+    stateName = "WEEKLY_LIMIT_REACHED";
+  } else if (actualPace - expectedPace >= 0.25) {
+    stateName = "HIGH_PACE";
+  } else if (actualPace - expectedPace >= 0.1) {
+    stateName = "SLIGHTLY_AHEAD";
+  }
+
+  return { state: stateName, expectedPace, actualPace };
+}
+
+function getBudgetPeriodMetrics(monthKey = state.activeMonth, monthlyAvailable = 0, { hasFinancialData = true } = {}) {
   const normalizedMonth = normalizeMonthKey(monthKey);
   const referenceDate = getMonthReferenceDate(normalizedMonth);
   const remainingDays = getBudgetDaySpanForMonth(normalizedMonth);
@@ -9716,24 +9755,61 @@ function getBudgetPeriodMetrics(monthKey = state.activeMonth, monthlyAvailable =
   const { monthStart, monthEnd } = getMonthWindow(normalizedMonth);
   const todayStart = getStartOfDay(referenceDate);
   const todaySpend = sumVisibleMonthExpensesInRange(todayStart, todayStart, normalizedMonth);
-  const dayStartAvailable = monthlyAvailable + todaySpend;
-  const dayOpeningBudget = dayStartAvailable / remainingDays;
-  // The monthly balance already includes every expense. Subtracting today's
-  // spend again makes the daily amount count the same movement twice.
-  const realDaily = suggestedDaily;
-
   const weekStart = getLaterDate(getStartOfWeek(referenceDate), monthStart);
   const weekEnd = getEarlierDate(getEndOfWeek(referenceDate), monthEnd);
-  const weekSpend = sumVisibleMonthExpensesInRange(weekStart, weekEnd, normalizedMonth);
+  const weekSpendEnd = getEarlierDate(todayStart, weekEnd);
+  const weekSpend = sumVisibleMonthExpensesInRange(weekStart, weekSpendEnd, normalizedMonth);
   const daysInCurrentWeekWindow = Math.max(1, getDaySpanInclusive(weekStart, weekEnd));
   const daysFromWeekStartToMonthEnd = Math.max(1, getDaySpanInclusive(weekStart, monthEnd));
-  const weekStartAvailable = monthlyAvailable + weekSpend;
-  const weekOpeningDailyBudget = weekStartAvailable / daysFromWeekStartToMonthEnd;
-  const weeklyTarget = weekOpeningDailyBudget * daysInCurrentWeekWindow;
-  const weeklyDaySpan = Math.min(7, remainingDays);
-  const realWeekly = suggestedDaily * weeklyDaySpan;
   const dailyAlertKey = `${normalizedMonth}:${toDateInputValue(todayStart)}`;
-  const weeklyAlertKey = `${normalizedMonth}:${toDateInputValue(weekStart)}`;
+  const weeklyAlertKey = `${normalizedMonth}:${toDateInputValue(weekStart)}:${toDateInputValue(weekEnd)}`;
+  const currentEnvelope = normalizeLocalUiState(localUiState).budgetEnvelopeState;
+  const nextEnvelope = { ...currentEnvelope };
+  let envelopeChanged = false;
+
+  if (!hasFinancialData) {
+    nextEnvelope.dailyKey = "";
+    nextEnvelope.dailyBudget = 0;
+    nextEnvelope.dailyShownThresholds = [];
+    nextEnvelope.weeklyKey = "";
+    nextEnvelope.weeklyBudget = 0;
+    nextEnvelope.weeklyStart = "";
+    nextEnvelope.weeklyEnd = "";
+    nextEnvelope.weeklyShownStates = [];
+  }
+
+  if (hasFinancialData && (currentEnvelope.dailyKey !== dailyAlertKey || !Number.isFinite(currentEnvelope.dailyBudget))) {
+    nextEnvelope.dailyKey = dailyAlertKey;
+    nextEnvelope.dailyBudget = (monthlyAvailable + todaySpend) / remainingDays;
+    nextEnvelope.dailyShownThresholds = [];
+    envelopeChanged = true;
+  }
+
+  if (hasFinancialData && (currentEnvelope.weeklyKey !== weeklyAlertKey || !Number.isFinite(currentEnvelope.weeklyBudget))) {
+    const weekStartAvailable = monthlyAvailable + weekSpend;
+    const weekOpeningDailyBudget = weekStartAvailable / daysFromWeekStartToMonthEnd;
+    nextEnvelope.weeklyKey = weeklyAlertKey;
+    nextEnvelope.weeklyBudget = weekOpeningDailyBudget * daysInCurrentWeekWindow;
+    nextEnvelope.weeklyStart = toDateInputValue(weekStart);
+    nextEnvelope.weeklyEnd = toDateInputValue(weekEnd);
+    nextEnvelope.weeklyShownStates = [];
+    envelopeChanged = true;
+  }
+
+  if (envelopeChanged) {
+    updateBudgetEnvelopeState(nextEnvelope);
+  }
+
+  const dailyOpeningBudget = Number(nextEnvelope.dailyBudget || 0);
+  const weeklyOpeningBudget = Number(nextEnvelope.weeklyBudget || 0);
+  const realDaily = dailyOpeningBudget - todaySpend;
+  const realWeekly = weeklyOpeningBudget - weekSpend;
+  const weeklyPace = getWeeklySpendingPace({
+    budget: weeklyOpeningBudget,
+    spent: weekSpend,
+    periodStart: weekStart,
+    periodEnd: weekEnd
+  });
 
   return {
     monthly,
@@ -9745,10 +9821,15 @@ function getBudgetPeriodMetrics(monthKey = state.activeMonth, monthlyAvailable =
       daily: "Disponible diario"
     },
     mode: "live",
-    dailyOpening: dayOpeningBudget,
-    weeklyOpening: weeklyTarget,
+    dailyOpening: dailyOpeningBudget,
+    weeklyOpening: weeklyOpeningBudget,
+    dailySpend: todaySpend,
+    weeklySpend: weekSpend,
     dailyAlertKey,
-    weeklyAlertKey
+    weeklyAlertKey,
+    weeklyPeriodStart: toDateInputValue(weekStart),
+    weeklyPeriodEnd: toDateInputValue(weekEnd),
+    weeklyPace
   };
 }
 
@@ -9757,37 +9838,112 @@ function maybeNotifyBudgetAlerts(periodMetrics, selectedPeriod, monthKey = state
     return;
   }
 
-  const alertMemory = normalizeLocalUiState(localUiState).budgetAlertMemory;
-  const weeklyHalfThreshold = Number(periodMetrics.weeklyOpening || 0) * 0.5;
-  const dailyThresholdCrossed = selectedPeriod === "daily"
-    && Number.isFinite(periodMetrics.dailyOpening)
-    && periodMetrics.dailyOpening > 0
-    && alertMemory.dailyKey === periodMetrics.dailyAlertKey
-    && Number.isFinite(alertMemory.dailyRemaining)
-    && alertMemory.dailyRemaining > 0
-    && periodMetrics.daily <= 0;
-  const weeklyThresholdCrossed = selectedPeriod === "weekly"
-    && Number.isFinite(periodMetrics.weeklyOpening)
-    && periodMetrics.weeklyOpening > 0
-    && alertMemory.weeklyKey === periodMetrics.weeklyAlertKey
-    && Number.isFinite(alertMemory.weeklyRemaining)
-    && alertMemory.weeklyRemaining > weeklyHalfThreshold
-    && periodMetrics.weekly <= weeklyHalfThreshold;
+  const envelope = normalizeLocalUiState(localUiState).budgetEnvelopeState;
+  const shownDaily = new Set(envelope.dailyShownThresholds || []);
+  const shownWeekly = new Set(envelope.weeklyShownStates || []);
+  const dailyBudget = Number(periodMetrics.dailyOpening || 0);
+  const dailySpend = Math.max(0, Number(periodMetrics.dailySpend || 0));
+  const dailyRatio = dailyBudget > 0 ? dailySpend / dailyBudget : 0;
+  let toastMessage = "";
 
-  updateBudgetAlertMemory({
-    dailyKey: periodMetrics.dailyAlertKey,
-    dailyRemaining: Number.isFinite(periodMetrics.daily) ? periodMetrics.daily : null,
-    weeklyKey: periodMetrics.weeklyAlertKey,
-    weeklyRemaining: Number.isFinite(periodMetrics.weekly) ? periodMetrics.weekly : null
-  });
-
-  if (dailyThresholdCrossed) {
-    showToast("Ya consumiste tu disponible diario.");
+  if (dailyBudget > 0 && dailyRatio > 1 && !shownDaily.has("exceeded")) {
+    shownDaily.add("near");
+    shownDaily.add("reached");
+    shownDaily.add("exceeded");
+    toastMessage = `Gastaste ${money(Math.abs(periodMetrics.daily))} más que tu disponible de hoy. Dinaria ajustará los próximos días.`;
+  } else if (dailyBudget > 0 && dailyRatio >= 1 && !shownDaily.has("reached")) {
+    shownDaily.add("near");
+    shownDaily.add("reached");
+    toastMessage = "Alcanzaste tu disponible de hoy.";
+  } else if (dailyBudget > 0 && dailyRatio >= 0.8 && !shownDaily.has("near")) {
+    shownDaily.add("near");
+    toastMessage = `Estás cerca de tu disponible diario. Te quedan ${money(Math.max(0, periodMetrics.daily))} para hoy.`;
   }
 
-  if (weeklyThresholdCrossed) {
-    showToast("Cuidado: ya usaste mas de la mitad de tu disponible semanal.");
+  const weeklyState = periodMetrics.weeklyPace?.state || "ON_TRACK";
+  if (!toastMessage && weeklyState === "WEEKLY_LIMIT_EXCEEDED" && !shownWeekly.has(weeklyState)) {
+    shownWeekly.add("WEEKLY_LIMIT_REACHED");
+    shownWeekly.add(weeklyState);
+    toastMessage = `Superaste tu disponible semanal por ${money(Math.abs(periodMetrics.weekly))}. Dinaria ajustará los próximos días.`;
+  } else if (!toastMessage && weeklyState === "WEEKLY_LIMIT_REACHED" && !shownWeekly.has(weeklyState)) {
+    shownWeekly.add(weeklyState);
+    toastMessage = "Alcanzaste tu disponible semanal.";
   }
+
+  if (
+    shownDaily.size !== (envelope.dailyShownThresholds || []).length
+    || shownWeekly.size !== (envelope.weeklyShownStates || []).length
+  ) {
+    updateBudgetEnvelopeState({
+      dailyShownThresholds: [...shownDaily],
+      weeklyShownStates: [...shownWeekly]
+    });
+  }
+
+  if (toastMessage) {
+    showToast(toastMessage);
+  }
+}
+
+function getBudgetContextMessage(periodMetrics, selectedPeriod = "monthly") {
+  if (periodMetrics?.mode !== "live") {
+    return "";
+  }
+
+  const dailyBudget = Number(periodMetrics.dailyOpening || 0);
+  const dailySpend = Math.max(0, Number(periodMetrics.dailySpend || 0));
+  const dailyRatio = dailyBudget > 0 ? dailySpend / dailyBudget : 0;
+  const weeklyBudget = Number(periodMetrics.weeklyOpening || 0);
+  const weeklySpend = Math.max(0, Number(periodMetrics.weeklySpend || 0));
+  const weeklyRatio = weeklyBudget > 0 ? weeklySpend / weeklyBudget : 0;
+  const weeklyPace = periodMetrics.weeklyPace || { state: "ON_TRACK", expectedPace: 0, actualPace: 0 };
+
+  if (periodMetrics.monthly < 0) {
+    return `Tus gastos superan tus ingresos del mes por ${money(Math.abs(periodMetrics.monthly))}.`;
+  }
+  if (periodMetrics.monthly === 0 && dailyBudget <= 0 && weeklyBudget <= 0) {
+    return "No tenés disponible para este mes. Registrá un ingreso para empezar a planificar.";
+  }
+
+  if (selectedPeriod === "daily") {
+    if (periodMetrics.daily < 0) {
+      return `Gastaste ${money(Math.abs(periodMetrics.daily))} más que tu disponible de hoy. Dinaria ajustará los próximos días.`;
+    }
+    if (dailyBudget > 0 && dailyRatio >= 1) {
+      return "Alcanzaste tu disponible de hoy.";
+    }
+    if (dailyBudget > 0 && dailyRatio >= 0.8) {
+      return `Estás cerca de tu disponible diario. Te quedan ${money(Math.max(0, periodMetrics.daily))} para hoy.`;
+    }
+  }
+
+  if (selectedPeriod === "weekly") {
+    if (weeklyPace.state === "WEEKLY_LIMIT_EXCEEDED") {
+      return `Superaste tu disponible semanal por ${money(Math.abs(periodMetrics.weekly))}. Dinaria ajustará los próximos días.`;
+    }
+    if (weeklyPace.state === "WEEKLY_LIMIT_REACHED") {
+      return "Alcanzaste tu disponible semanal.";
+    }
+    if (weeklyPace.state === "HIGH_PACE") {
+      const projectedPeriodUse = weeklyPace.actualPace > 0
+        ? weeklyPace.expectedPace / weeklyPace.actualPace
+        : 1;
+      return projectedPeriodUse < 0.85
+        ? "Si seguís a este ritmo, podrías quedarte sin disponible semanal antes del fin de semana."
+        : "Venís gastando más rápido de lo previsto esta semana.";
+    }
+    if (weeklyBudget > 0 && weeklyRatio >= 0.8) {
+      return `Te queda el ${Math.max(0, Math.round((1 - weeklyRatio) * 100))}% de tu disponible semanal.`;
+    }
+    if (weeklyPace.state === "SLIGHTLY_AHEAD") {
+      return "Venís gastando un poco más rápido de lo previsto esta semana.";
+    }
+    if (weeklySpend > 0) {
+      return `Vas bien esta semana. Te quedan ${money(Math.max(0, periodMetrics.weekly))} disponibles.`;
+    }
+  }
+
+  return `Tenés ${money(periodMetrics.daily)} disponibles para hoy y ${money(periodMetrics.weekly)} para esta semana.`;
 }
 
 function renderSummary() {
@@ -9797,7 +9953,7 @@ function renderSummary() {
   const monthLabel = formatMonthLabel(state.activeMonth);
   const hasAnyData = monthItems.length > 0 || monthIncomeItems.length > 0;
   const available = monthlyIncome - monthlySpend;
-  const periodMetrics = getBudgetPeriodMetrics(state.activeMonth, available);
+  const periodMetrics = getBudgetPeriodMetrics(state.activeMonth, available, { hasFinancialData: hasAnyData });
   const selectedPeriod = normalizeBudgetPeriod(state.budgetPeriod);
   const periodLabel = periodMetrics.labels[selectedPeriod] || periodMetrics.labels.monthly;
   const periodValue = Number.isFinite(periodMetrics[selectedPeriod]) ? periodMetrics[selectedPeriod] : periodMetrics.monthly;
@@ -9883,16 +10039,14 @@ function renderSummary() {
   if (mobileBudgetHintEl) {
     if (!hasAnyData) {
       mobileBudgetHintEl.textContent = `Carga tu primer ingreso y tu primer gasto de ${monthLabel} para ver tu disponible diario, semanal o mensual.`;
+    } else if (periodMetrics.mode === "live") {
+      mobileBudgetHintEl.textContent = getBudgetContextMessage(periodMetrics, selectedPeriod);
     } else if (selectedPeriod === "monthly") {
       mobileBudgetHintEl.textContent = `Balance disponible estimado para ${monthLabel}: ${money(periodValue)}.`;
     } else if (selectedPeriod === "weekly") {
-      mobileBudgetHintEl.textContent = periodMetrics.mode === "live"
-        ? `Disponible real para esta semana: ${money(periodValue)}.`
-        : `Disponible semanal estimado para ${monthLabel}: ${money(periodValue)}.`;
+      mobileBudgetHintEl.textContent = `Disponible semanal estimado para ${monthLabel}: ${money(periodValue)}.`;
     } else {
-      mobileBudgetHintEl.textContent = periodMetrics.mode === "live"
-        ? `Disponible real para hoy: ${money(periodValue)}.`
-        : `Disponible diario estimado para ${monthLabel}: ${money(periodValue)}.`;
+      mobileBudgetHintEl.textContent = `Disponible diario estimado para ${monthLabel}: ${money(periodValue)}.`;
     }
   }
 
