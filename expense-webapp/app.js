@@ -10230,11 +10230,10 @@ function renderExpenseMobileList() {
     return;
   }
 
-  const shouldShowDateGroups = normalizeMonthKey(state.activeMonth) === getCurrentMonthKey();
   let previousGroupDate = "";
   for (const item of filteredItems) {
     const itemGroupDate = normalizeItemDate(item.date);
-    if (shouldShowDateGroups && itemGroupDate !== previousGroupDate) {
+    if (itemGroupDate !== previousGroupDate) {
       const groupLabel = document.createElement("p");
       groupLabel.className = "mobile-item-group-label";
       groupLabel.textContent = formatItemHomeDateGroupLabel(item.date);
