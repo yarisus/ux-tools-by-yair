@@ -2911,11 +2911,11 @@ function normalizeEditScope(rawScope) {
 }
 
 function shouldShowRecurringEditScope(item = null, { isProjected = Boolean(editingProjectedItem) } = {}) {
-  return Boolean(isProjected || item?.isRecurring || getRecurringSeriesId(item));
+  return Boolean(isProjected || item?.isProjectedRecurring || item?.isRecurring);
 }
 
 function isRecurringEditContext(item = null, { isProjected = Boolean(editingProjectedItem) } = {}) {
-  return Boolean(isProjected || item?.isRecurring || getRecurringSeriesId(item));
+  return Boolean(isProjected || item?.isProjectedRecurring || item?.isRecurring);
 }
 
 function applyExpenseRecurringEditRestrictions({ isRecurringEdit = false } = {}) {
