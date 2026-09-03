@@ -17,7 +17,7 @@ const FEEDBACK_TABLE_NAME = "feedback_entries";
 const CLOUD_SYNC_DEBOUNCE_MS = 700;
 const CLOUD_PULL_INTERVAL_MS = 8000;
 const CLOUD_OP_TIMEOUT_MS = 12000;
-const BUDGET_ENVELOPE_VERSION = 2;
+const BUDGET_ENVELOPE_VERSION = 3;
 const APP_RUNTIME_ORIGIN = /^https?:\/\//i.test(String(globalThis.location?.origin || ""))
   ? String(globalThis.location.origin)
   : "https://dinariafinanzas.vercel.app";
@@ -26,7 +26,7 @@ const APP_PUBLIC_URL = IS_QA_APP
     ? `${APP_RUNTIME_ORIGIN}/qa.html`
     : `${APP_RUNTIME_ORIGIN}/`
   : `${APP_RUNTIME_ORIGIN}/`;
-const APP_VERSION = "20260902-02";
+const APP_VERSION = "20260902-04";
 const APP_DISPLAY_NAME = IS_QA_APP ? "Dinaria Finanzas QA" : "Dinaria Finanzas";
 const ENABLE_LOCAL_MOBILE_DESIGN_SYSTEM =
   /^(localhost|127\.0\.0\.1)$/i.test(globalThis.location?.hostname || "")
@@ -3477,12 +3477,7 @@ function getDaySpanInclusive(startDate, endDate) {
   return Math.max(0, Math.round((end.getTime() - start.getTime()) / 86400000) + 1);
 }
 
-function sumVisibleMonthExpensesInRange(
-  startDate,
-  endDate,
-  monthKey = state.activeMonth,
-  { excludeBackfilled = false } = {}
-) {
+function sumVisibleMonthExpensesInRange(startDate, endDate, monthKey = state.activeMonth) {
   const rangeStart = getStartOfDay(startDate);
   const rangeEnd = getEndOfDay(endDate);
   if (!rangeStart || !rangeEnd) {
@@ -3497,11 +3492,6 @@ function sumVisibleMonthExpensesInRange(
 
     const itemDate = getStartOfDay(`${normalizeItemDate(item.date)}T00:00:00`);
     if (!itemDate) {
-      return total;
-    }
-
-    const createdDate = getStartOfDay(item.createdAt);
-    if (excludeBackfilled && createdDate && createdDate > itemDate) {
       return total;
     }
 
@@ -9804,11 +9794,11 @@ function getBudgetPeriodMetrics(monthKey = state.activeMonth, monthlyAvailable =
 
   const { monthStart, monthEnd } = getMonthWindow(normalizedMonth);
   const todayStart = getStartOfDay(referenceDate);
-  const todaySpend = sumVisibleMonthExpensesInRange(todayStart, todayStart, normalizedMonth, { excludeBackfilled: true });
+  const todaySpend = sumVisibleMonthExpensesInRange(todayStart, todayStart, normalizedMonth);
   const weekStart = getLaterDate(getStartOfWeek(referenceDate), monthStart);
   const weekEnd = getEarlierDate(getEndOfWeek(referenceDate), monthEnd);
   const weekSpendEnd = getEarlierDate(todayStart, weekEnd);
-  const weekSpend = sumVisibleMonthExpensesInRange(weekStart, weekSpendEnd, normalizedMonth, { excludeBackfilled: true });
+  const weekSpend = sumVisibleMonthExpensesInRange(weekStart, weekSpendEnd, normalizedMonth);
   const daysInCurrentWeekWindow = Math.max(1, getDaySpanInclusive(weekStart, weekEnd));
   const daysFromWeekStartToMonthEnd = Math.max(1, getDaySpanInclusive(weekStart, monthEnd));
   const dailyBasisAvailable = monthlyAvailable + todaySpend;
@@ -9836,7 +9826,8 @@ function getBudgetPeriodMetrics(monthKey = state.activeMonth, monthlyAvailable =
   const dailyEnvelopeNeedsRefresh = currentEnvelope.dailyKey !== dailyAlertKey
     || currentEnvelope.version !== BUDGET_ENVELOPE_VERSION
     || !Number.isFinite(currentEnvelope.dailyBudget)
-    || !Number.isFinite(currentEnvelope.dailyBasisAvailable);
+    || !Number.isFinite(currentEnvelope.dailyBasisAvailable)
+    || currentEnvelope.dailyBasisAvailable !== dailyBasisAvailable;
   if (hasFinancialData && dailyEnvelopeNeedsRefresh) {
     nextEnvelope.dailyKey = dailyAlertKey;
     nextEnvelope.dailyBudget = dailyBasisAvailable / remainingDays;
@@ -9848,7 +9839,8 @@ function getBudgetPeriodMetrics(monthKey = state.activeMonth, monthlyAvailable =
   const weeklyEnvelopeNeedsRefresh = currentEnvelope.weeklyKey !== weeklyAlertKey
     || currentEnvelope.version !== BUDGET_ENVELOPE_VERSION
     || !Number.isFinite(currentEnvelope.weeklyBudget)
-    || !Number.isFinite(currentEnvelope.weeklyBasisAvailable);
+    || !Number.isFinite(currentEnvelope.weeklyBasisAvailable)
+    || currentEnvelope.weeklyBasisAvailable !== weeklyBasisAvailable;
   if (hasFinancialData && weeklyEnvelopeNeedsRefresh) {
     const weekOpeningDailyBudget = weeklyBasisAvailable / daysFromWeekStartToMonthEnd;
     nextEnvelope.weeklyKey = weeklyAlertKey;
