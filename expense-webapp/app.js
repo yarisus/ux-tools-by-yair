@@ -17,6 +17,7 @@ const FEEDBACK_TABLE_NAME = "feedback_entries";
 const CLOUD_SYNC_DEBOUNCE_MS = 700;
 const CLOUD_PULL_INTERVAL_MS = 8000;
 const CLOUD_OP_TIMEOUT_MS = 12000;
+const BUDGET_ENVELOPE_VERSION = 2;
 const APP_RUNTIME_ORIGIN = /^https?:\/\//i.test(String(globalThis.location?.origin || ""))
   ? String(globalThis.location.origin)
   : "https://dinariafinanzas.vercel.app";
@@ -25,7 +26,7 @@ const APP_PUBLIC_URL = IS_QA_APP
     ? `${APP_RUNTIME_ORIGIN}/qa.html`
     : `${APP_RUNTIME_ORIGIN}/`
   : `${APP_RUNTIME_ORIGIN}/`;
-const APP_VERSION = "20260403-03";
+const APP_VERSION = "20260902-02";
 const APP_DISPLAY_NAME = IS_QA_APP ? "Dinaria Finanzas QA" : "Dinaria Finanzas";
 const ENABLE_LOCAL_MOBILE_DESIGN_SYSTEM =
   /^(localhost|127\.0\.0\.1)$/i.test(globalThis.location?.hostname || "")
@@ -9215,6 +9216,7 @@ function normalizeLocalUiState(candidate) {
   const dailyThresholds = new Set(["near", "reached", "exceeded"]);
   const weeklyStates = new Set(["HIGH_PACE", "WEEKLY_LIMIT_REACHED", "WEEKLY_LIMIT_EXCEEDED"]);
   const budgetEnvelopeState = {
+    version: Number(rawEnvelope.version) === BUDGET_ENVELOPE_VERSION ? BUDGET_ENVELOPE_VERSION : 0,
     dailyKey: String(rawEnvelope.dailyKey || "").trim(),
     dailyBudget: rawEnvelope.dailyBudget !== null && rawEnvelope.dailyBudget !== "" && Number.isFinite(Number(rawEnvelope.dailyBudget))
       ? Number(rawEnvelope.dailyBudget)
@@ -9815,7 +9817,8 @@ function getBudgetPeriodMetrics(monthKey = state.activeMonth, monthlyAvailable =
   const weeklyAlertKey = `${normalizedMonth}:${toDateInputValue(weekStart)}:${toDateInputValue(weekEnd)}`;
   const currentEnvelope = normalizeLocalUiState(localUiState).budgetEnvelopeState;
   const nextEnvelope = { ...currentEnvelope };
-  let envelopeChanged = false;
+  let envelopeChanged = currentEnvelope.version !== BUDGET_ENVELOPE_VERSION;
+  nextEnvelope.version = BUDGET_ENVELOPE_VERSION;
 
   if (!hasFinancialData) {
     nextEnvelope.dailyKey = "";
@@ -9831,6 +9834,7 @@ function getBudgetPeriodMetrics(monthKey = state.activeMonth, monthlyAvailable =
   }
 
   const dailyEnvelopeNeedsRefresh = currentEnvelope.dailyKey !== dailyAlertKey
+    || currentEnvelope.version !== BUDGET_ENVELOPE_VERSION
     || !Number.isFinite(currentEnvelope.dailyBudget)
     || !Number.isFinite(currentEnvelope.dailyBasisAvailable);
   if (hasFinancialData && dailyEnvelopeNeedsRefresh) {
@@ -9842,6 +9846,7 @@ function getBudgetPeriodMetrics(monthKey = state.activeMonth, monthlyAvailable =
   }
 
   const weeklyEnvelopeNeedsRefresh = currentEnvelope.weeklyKey !== weeklyAlertKey
+    || currentEnvelope.version !== BUDGET_ENVELOPE_VERSION
     || !Number.isFinite(currentEnvelope.weeklyBudget)
     || !Number.isFinite(currentEnvelope.weeklyBasisAvailable);
   if (hasFinancialData && weeklyEnvelopeNeedsRefresh) {
