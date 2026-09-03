@@ -3476,7 +3476,12 @@ function getDaySpanInclusive(startDate, endDate) {
   return Math.max(0, Math.round((end.getTime() - start.getTime()) / 86400000) + 1);
 }
 
-function sumVisibleMonthExpensesInRange(startDate, endDate, monthKey = state.activeMonth) {
+function sumVisibleMonthExpensesInRange(
+  startDate,
+  endDate,
+  monthKey = state.activeMonth,
+  { excludeBackfilled = false } = {}
+) {
   const rangeStart = getStartOfDay(startDate);
   const rangeEnd = getEndOfDay(endDate);
   if (!rangeStart || !rangeEnd) {
@@ -3491,6 +3496,11 @@ function sumVisibleMonthExpensesInRange(startDate, endDate, monthKey = state.act
 
     const itemDate = getStartOfDay(`${normalizeItemDate(item.date)}T00:00:00`);
     if (!itemDate) {
+      return total;
+    }
+
+    const createdDate = getStartOfDay(item.createdAt);
+    if (excludeBackfilled && createdDate && createdDate > itemDate) {
       return total;
     }
 
@@ -9209,12 +9219,22 @@ function normalizeLocalUiState(candidate) {
     dailyBudget: rawEnvelope.dailyBudget !== null && rawEnvelope.dailyBudget !== "" && Number.isFinite(Number(rawEnvelope.dailyBudget))
       ? Number(rawEnvelope.dailyBudget)
       : null,
+    dailyBasisAvailable: rawEnvelope.dailyBasisAvailable !== null
+      && rawEnvelope.dailyBasisAvailable !== ""
+      && Number.isFinite(Number(rawEnvelope.dailyBasisAvailable))
+      ? Number(rawEnvelope.dailyBasisAvailable)
+      : null,
     dailyShownThresholds: Array.isArray(rawEnvelope.dailyShownThresholds)
       ? [...new Set(rawEnvelope.dailyShownThresholds.filter((value) => dailyThresholds.has(value)))]
       : [],
     weeklyKey: String(rawEnvelope.weeklyKey || "").trim(),
     weeklyBudget: rawEnvelope.weeklyBudget !== null && rawEnvelope.weeklyBudget !== "" && Number.isFinite(Number(rawEnvelope.weeklyBudget))
       ? Number(rawEnvelope.weeklyBudget)
+      : null,
+    weeklyBasisAvailable: rawEnvelope.weeklyBasisAvailable !== null
+      && rawEnvelope.weeklyBasisAvailable !== ""
+      && Number.isFinite(Number(rawEnvelope.weeklyBasisAvailable))
+      ? Number(rawEnvelope.weeklyBasisAvailable)
       : null,
     weeklyStart: String(rawEnvelope.weeklyStart || "").trim(),
     weeklyEnd: String(rawEnvelope.weeklyEnd || "").trim(),
@@ -9782,13 +9802,15 @@ function getBudgetPeriodMetrics(monthKey = state.activeMonth, monthlyAvailable =
 
   const { monthStart, monthEnd } = getMonthWindow(normalizedMonth);
   const todayStart = getStartOfDay(referenceDate);
-  const todaySpend = sumVisibleMonthExpensesInRange(todayStart, todayStart, normalizedMonth);
+  const todaySpend = sumVisibleMonthExpensesInRange(todayStart, todayStart, normalizedMonth, { excludeBackfilled: true });
   const weekStart = getLaterDate(getStartOfWeek(referenceDate), monthStart);
   const weekEnd = getEarlierDate(getEndOfWeek(referenceDate), monthEnd);
   const weekSpendEnd = getEarlierDate(todayStart, weekEnd);
-  const weekSpend = sumVisibleMonthExpensesInRange(weekStart, weekSpendEnd, normalizedMonth);
+  const weekSpend = sumVisibleMonthExpensesInRange(weekStart, weekSpendEnd, normalizedMonth, { excludeBackfilled: true });
   const daysInCurrentWeekWindow = Math.max(1, getDaySpanInclusive(weekStart, weekEnd));
   const daysFromWeekStartToMonthEnd = Math.max(1, getDaySpanInclusive(weekStart, monthEnd));
+  const dailyBasisAvailable = monthlyAvailable + todaySpend;
+  const weeklyBasisAvailable = monthlyAvailable + weekSpend;
   const dailyAlertKey = `${normalizedMonth}:${toDateInputValue(todayStart)}`;
   const weeklyAlertKey = `${normalizedMonth}:${toDateInputValue(weekStart)}:${toDateInputValue(weekEnd)}`;
   const currentEnvelope = normalizeLocalUiState(localUiState).budgetEnvelopeState;
@@ -9798,26 +9820,35 @@ function getBudgetPeriodMetrics(monthKey = state.activeMonth, monthlyAvailable =
   if (!hasFinancialData) {
     nextEnvelope.dailyKey = "";
     nextEnvelope.dailyBudget = 0;
+    nextEnvelope.dailyBasisAvailable = null;
     nextEnvelope.dailyShownThresholds = [];
     nextEnvelope.weeklyKey = "";
     nextEnvelope.weeklyBudget = 0;
+    nextEnvelope.weeklyBasisAvailable = null;
     nextEnvelope.weeklyStart = "";
     nextEnvelope.weeklyEnd = "";
     nextEnvelope.weeklyShownStates = [];
   }
 
-  if (hasFinancialData && (currentEnvelope.dailyKey !== dailyAlertKey || !Number.isFinite(currentEnvelope.dailyBudget))) {
+  const dailyEnvelopeNeedsRefresh = currentEnvelope.dailyKey !== dailyAlertKey
+    || !Number.isFinite(currentEnvelope.dailyBudget)
+    || !Number.isFinite(currentEnvelope.dailyBasisAvailable);
+  if (hasFinancialData && dailyEnvelopeNeedsRefresh) {
     nextEnvelope.dailyKey = dailyAlertKey;
-    nextEnvelope.dailyBudget = (monthlyAvailable + todaySpend) / remainingDays;
+    nextEnvelope.dailyBudget = dailyBasisAvailable / remainingDays;
+    nextEnvelope.dailyBasisAvailable = dailyBasisAvailable;
     nextEnvelope.dailyShownThresholds = [];
     envelopeChanged = true;
   }
 
-  if (hasFinancialData && (currentEnvelope.weeklyKey !== weeklyAlertKey || !Number.isFinite(currentEnvelope.weeklyBudget))) {
-    const weekStartAvailable = monthlyAvailable + weekSpend;
-    const weekOpeningDailyBudget = weekStartAvailable / daysFromWeekStartToMonthEnd;
+  const weeklyEnvelopeNeedsRefresh = currentEnvelope.weeklyKey !== weeklyAlertKey
+    || !Number.isFinite(currentEnvelope.weeklyBudget)
+    || !Number.isFinite(currentEnvelope.weeklyBasisAvailable);
+  if (hasFinancialData && weeklyEnvelopeNeedsRefresh) {
+    const weekOpeningDailyBudget = weeklyBasisAvailable / daysFromWeekStartToMonthEnd;
     nextEnvelope.weeklyKey = weeklyAlertKey;
     nextEnvelope.weeklyBudget = weekOpeningDailyBudget * daysInCurrentWeekWindow;
+    nextEnvelope.weeklyBasisAvailable = weeklyBasisAvailable;
     nextEnvelope.weeklyStart = toDateInputValue(weekStart);
     nextEnvelope.weeklyEnd = toDateInputValue(weekEnd);
     nextEnvelope.weeklyShownStates = [];
