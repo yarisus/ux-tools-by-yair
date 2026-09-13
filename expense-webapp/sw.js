@@ -1,4 +1,4 @@
-const CACHE_NAME = "expense-webapp-v108";
+const CACHE_NAME = "expense-webapp-v109";
 const APP_SHELL = "./index.html";
 const ASSETS = [
   "./",
@@ -25,7 +25,7 @@ const ASSETS = [
   "./design-system/tokens.css?v=20260403-03",
   "./design-system/app-mobile.css?v=20260403-03",
   "./styles.css?v=20260403-03",
-  "./app.js?v=20260913-01",
+  "./app.js?v=20260913-02",
   "./manifest.webmanifest",
   "./manifest.webmanifest?v=20260403-03",
   "./assets/brand/dinaria-favicon-primary.svg?v=20260403-03",

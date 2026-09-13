@@ -26,7 +26,7 @@ const APP_PUBLIC_URL = IS_QA_APP
     ? `${APP_RUNTIME_ORIGIN}/qa.html`
     : `${APP_RUNTIME_ORIGIN}/`
   : `${APP_RUNTIME_ORIGIN}/`;
-const APP_VERSION = "20260913-01";
+const APP_VERSION = "20260913-02";
 const APP_DISPLAY_NAME = IS_QA_APP ? "Dinaria Finanzas QA" : "Dinaria Finanzas";
 const ENABLE_LOCAL_MOBILE_DESIGN_SYSTEM =
   /^(localhost|127\.0\.0\.1)$/i.test(globalThis.location?.hostname || "")
@@ -11768,8 +11768,7 @@ async function initializeCloudAuthClient({ forceRecreate = false } = {}) {
 }
 
 async function signInWithGoogle() {
-  const initialized = await initializeCloudAuthClient();
-  if (!initialized || !supabaseClient) {
+  if (!hasCloudConfig()) {
     showToast("No pudimos iniciar cloud. Revisa la configuracion.", true);
     return;
   }
@@ -11778,34 +11777,11 @@ async function signInWithGoogle() {
 
   try {
     closeProfileDropdown();
-    const redirectTo = APP_PUBLIC_URL;
-    const { data, error } = await supabaseClient.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo,
-        skipBrowserRedirect: true
-      }
-    });
-
-    if (error) {
-      const rawMessage = String(error.message || "").toLowerCase();
-      if (rawMessage.includes("provider") && rawMessage.includes("disabled")) {
-        showToast("Google Auth no esta habilitado en Supabase. Activalo en Authentication > Providers.", true);
-      } else {
-        showToast("No pudimos abrir login con Google. Intenta de nuevo.", true);
-      }
-      setAuthButtonsBusy(false);
-      return;
-    }
-
-    const oauthUrl = String(data?.url || "").trim();
-    if (!oauthUrl) {
-      showToast("No pudimos abrir login con Google. Intenta de nuevo.", true);
-      setAuthButtonsBusy(false);
-      return;
-    }
-
-    window.location.assign(oauthUrl);
+    const supabaseOrigin = new URL(cloudConfig.url).origin;
+    const oauthUrl = new URL("/auth/v1/authorize", supabaseOrigin);
+    oauthUrl.searchParams.set("provider", "google");
+    oauthUrl.searchParams.set("redirect_to", APP_PUBLIC_URL);
+    window.location.assign(oauthUrl.toString());
   } catch {
     showToast("No pudimos abrir login con Google. Intenta de nuevo.", true);
     setAuthButtonsBusy(false);
