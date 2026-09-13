@@ -26,7 +26,7 @@ const APP_PUBLIC_URL = IS_QA_APP
     ? `${APP_RUNTIME_ORIGIN}/qa.html`
     : `${APP_RUNTIME_ORIGIN}/`
   : `${APP_RUNTIME_ORIGIN}/`;
-const APP_VERSION = "20260913-03";
+const APP_VERSION = "20260913-04";
 const APP_DISPLAY_NAME = IS_QA_APP ? "Dinaria Finanzas QA" : "Dinaria Finanzas";
 const ENABLE_LOCAL_MOBILE_DESIGN_SYSTEM =
   /^(localhost|127\.0\.0\.1)$/i.test(globalThis.location?.hostname || "")
@@ -2249,18 +2249,6 @@ if (clearCloudConfigBtn) {
     setCloudStatus("local", "Sin sincronizacion");
     updateAuthUi();
     showToast("Configuracion cloud eliminada.");
-  });
-}
-
-if (signInGoogleBtn) {
-  signInGoogleBtn.addEventListener("click", (event) => {
-    if (!hasCloudConfig()) {
-      event.preventDefault();
-      showToast("No pudimos iniciar cloud. Revisa la configuracion.", true);
-      return;
-    }
-
-    closeProfileDropdown();
   });
 }
 
