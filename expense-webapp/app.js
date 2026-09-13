@@ -26,7 +26,7 @@ const APP_PUBLIC_URL = IS_QA_APP
     ? `${APP_RUNTIME_ORIGIN}/qa.html`
     : `${APP_RUNTIME_ORIGIN}/`
   : `${APP_RUNTIME_ORIGIN}/`;
-const APP_VERSION = "20260913-02";
+const APP_VERSION = "20260913-03";
 const APP_DISPLAY_NAME = IS_QA_APP ? "Dinaria Finanzas QA" : "Dinaria Finanzas";
 const ENABLE_LOCAL_MOBILE_DESIGN_SYSTEM =
   /^(localhost|127\.0\.0\.1)$/i.test(globalThis.location?.hostname || "")
@@ -2253,8 +2253,14 @@ if (clearCloudConfigBtn) {
 }
 
 if (signInGoogleBtn) {
-  signInGoogleBtn.addEventListener("click", async () => {
-    await signInWithGoogle();
+  signInGoogleBtn.addEventListener("click", (event) => {
+    if (!hasCloudConfig()) {
+      event.preventDefault();
+      showToast("No pudimos iniciar cloud. Revisa la configuracion.", true);
+      return;
+    }
+
+    closeProfileDropdown();
   });
 }
 
@@ -11671,7 +11677,9 @@ function setAuthButtonsBusy(isBusy) {
       continue;
     }
 
-    button.disabled = isBusy;
+    if (button instanceof HTMLButtonElement) {
+      button.disabled = isBusy;
+    }
   }
 }
 
@@ -11765,27 +11773,6 @@ async function initializeCloudAuthClient({ forceRecreate = false } = {}) {
   }
 
   return Boolean(supabaseClient);
-}
-
-async function signInWithGoogle() {
-  if (!hasCloudConfig()) {
-    showToast("No pudimos iniciar cloud. Revisa la configuracion.", true);
-    return;
-  }
-
-  setAuthButtonsBusy(true);
-
-  try {
-    closeProfileDropdown();
-    const supabaseOrigin = new URL(cloudConfig.url).origin;
-    const oauthUrl = new URL("/auth/v1/authorize", supabaseOrigin);
-    oauthUrl.searchParams.set("provider", "google");
-    oauthUrl.searchParams.set("redirect_to", APP_PUBLIC_URL);
-    window.location.assign(oauthUrl.toString());
-  } catch {
-    showToast("No pudimos abrir login con Google. Intenta de nuevo.", true);
-    setAuthButtonsBusy(false);
-  }
 }
 
 async function performLogout() {
@@ -11928,6 +11915,12 @@ function updateAuthUi() {
 
   if (signInGoogleBtn) {
     signInGoogleBtn.classList.toggle("is-hidden", isLoggedIn);
+    if (!isLoggedIn && hasCloudConfig()) {
+      const oauthUrl = new URL("/auth/v1/authorize", new URL(cloudConfig.url).origin);
+      oauthUrl.searchParams.set("provider", "google");
+      oauthUrl.searchParams.set("redirect_to", APP_PUBLIC_URL);
+      signInGoogleBtn.href = oauthUrl.toString();
+    }
   }
 
   if (authLoggedBox) {
