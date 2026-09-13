@@ -1,4 +1,4 @@
-const CACHE_NAME = "expense-webapp-v111";
+const CACHE_NAME = "expense-webapp-v112";
 const APP_SHELL = "./index.html";
 const ASSETS = [
   "./",
@@ -24,7 +24,7 @@ const ASSETS = [
   "./vendor/supabase/supabase.umd.js?v=2-local-02",
   "./design-system/tokens.css?v=20260403-03",
   "./design-system/app-mobile.css?v=20260403-03",
-  "./styles.css?v=20260403-03",
+  "./styles.css?v=20260913-05",
   "./app.js?v=20260913-04",
   "./manifest.webmanifest",
   "./manifest.webmanifest?v=20260403-03",

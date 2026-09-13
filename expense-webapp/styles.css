@@ -2972,7 +2972,7 @@ h3,
 
 .profile-dropdown {
   width: min(360px, calc(100vw - 24px));
-  z-index: 30;
+  z-index: 120;
   backdrop-filter: blur(8px);
 }
 
