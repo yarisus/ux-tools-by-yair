@@ -26,7 +26,7 @@ const APP_PUBLIC_URL = IS_QA_APP
     ? `${APP_RUNTIME_ORIGIN}/qa.html`
     : `${APP_RUNTIME_ORIGIN}/`
   : `${APP_RUNTIME_ORIGIN}/`;
-const APP_VERSION = "20260902-04";
+const APP_VERSION = "20260913-01";
 const APP_DISPLAY_NAME = IS_QA_APP ? "Dinaria Finanzas QA" : "Dinaria Finanzas";
 const ENABLE_LOCAL_MOBILE_DESIGN_SYSTEM =
   /^(localhost|127\.0\.0\.1)$/i.test(globalThis.location?.hostname || "")
@@ -11779,10 +11779,11 @@ async function signInWithGoogle() {
   try {
     closeProfileDropdown();
     const redirectTo = APP_PUBLIC_URL;
-    const { error } = await supabaseClient.auth.signInWithOAuth({
+    const { data, error } = await supabaseClient.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo
+        redirectTo,
+        skipBrowserRedirect: true
       }
     });
 
@@ -11796,6 +11797,15 @@ async function signInWithGoogle() {
       setAuthButtonsBusy(false);
       return;
     }
+
+    const oauthUrl = String(data?.url || "").trim();
+    if (!oauthUrl) {
+      showToast("No pudimos abrir login con Google. Intenta de nuevo.", true);
+      setAuthButtonsBusy(false);
+      return;
+    }
+
+    window.location.assign(oauthUrl);
   } catch {
     showToast("No pudimos abrir login con Google. Intenta de nuevo.", true);
     setAuthButtonsBusy(false);
