@@ -26,7 +26,7 @@ const APP_PUBLIC_URL = IS_QA_APP
     ? `${APP_RUNTIME_ORIGIN}/qa.html`
     : `${APP_RUNTIME_ORIGIN}/`
   : `${APP_RUNTIME_ORIGIN}/`;
-const APP_VERSION = "20260913-04";
+const APP_VERSION = "20260913-06";
 const APP_DISPLAY_NAME = IS_QA_APP ? "Dinaria Finanzas QA" : "Dinaria Finanzas";
 const ENABLE_LOCAL_MOBILE_DESIGN_SYSTEM =
   /^(localhost|127\.0\.0\.1)$/i.test(globalThis.location?.hostname || "")
@@ -8693,6 +8693,7 @@ function openProfileDropdown() {
   closeMobileFilterSheet();
   hideDownloadMenu();
   profileDropdown.classList.remove("is-hidden");
+  document.body.classList.add("profile-dropdown-open");
   openAuthModalBtn.setAttribute("aria-expanded", "true");
   mobileProfileBtn?.setAttribute("aria-expanded", "true");
   updateOverlayScrollLock();
@@ -8704,6 +8705,7 @@ function closeProfileDropdown() {
   }
 
   profileDropdown.classList.add("is-hidden");
+  document.body.classList.remove("profile-dropdown-open");
   openAuthModalBtn.setAttribute("aria-expanded", "false");
   mobileProfileBtn?.setAttribute("aria-expanded", "false");
   updateOverlayScrollLock();

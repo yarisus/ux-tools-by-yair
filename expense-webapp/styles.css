@@ -2976,6 +2976,10 @@ h3,
   backdrop-filter: blur(8px);
 }
 
+body.profile-dropdown-open .app-topbar {
+  z-index: 120 !important;
+}
+
 .profile-user p {
   margin: 0;
 }
